@@ -2,30 +2,17 @@ package slice
 
 import "github.com/clipperhouse/typewriter"
 
-var mean = &typewriter.Template{
-	Name: "Mean",
+var numericT = &typewriter.Template{
+	Name: "Numeric",
 	Text: `
-// Mean sums {{.SliceName}} over all elements and divides by len({{.SliceName}}). See: http://clipperhouse.github.io/gen/#Mean
-func (rcv {{.SliceName}}) Mean() ({{.Type}}, error) {
-	var result {{.Type}}
-
-	l := len(rcv)
-	if l == 0 {
-		return result, errors.New("cannot determine Mean of zero-length {{.SliceName}}")
-	}
+// Sum{{.TypeParameter.LongName}} sums {{.Type}} over elements in {{.SliceName}}. See: http://clipperhouse.github.io/gen/#Sum
+func (rcv {{.SliceName}}) Sum{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
 	for _, v := range rcv {
-		result += v
+		result += fn(v)
 	}
-	result = result / {{.Type}}(l)
-	return result, nil
-}
-`,
-	TypeConstraint: typewriter.Constraint{Numeric: true},
+	return
 }
 
-var meanT = &typewriter.Template{
-	Name: "Mean",
-	Text: `
 // Mean{{.TypeParameter.LongName}} sums {{.TypeParameter}} over all elements and divides by len({{.SliceName}}). See: http://clipperhouse.github.io/gen/#Mean
 func (rcv {{.SliceName}}) Mean{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}, err error) {
 	l := len(rcv)

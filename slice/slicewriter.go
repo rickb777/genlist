@@ -4,6 +4,7 @@ import (
 	"io"
 	"regexp"
 	"strings"
+	"text/template"
 
 	"github.com/clipperhouse/typewriter"
 )
@@ -34,6 +35,37 @@ func (sw *SliceWriter) Imports(typ typewriter.Type) (result []typewriter.ImportS
 	return
 }
 
+func (sw *SliceWriter) writeTemplate(w io.Writer, typ typewriter.Type, v typewriter.TagValue, tmpl *template.Template) error {
+	var tp typewriter.Type
+
+	if len(v.TypeParameters) > 0 {
+		tp = v.TypeParameters[0]
+	}
+
+	m := model{
+		Type:          typ,
+		SliceName:     SliceName(typ),
+		TypeParameter: tp,
+		TagValue:      v,
+	}
+
+	if err := tmpl.Execute(w, m); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (sw *SliceWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.TagValue) error {
+	tmpl, err := templates.ByTagValue(typ, v)
+
+	if err != nil {
+		return err
+	}
+
+	return sw.writeTemplate(w, typ, v, tmpl)
+}
+
 func (sw *SliceWriter) Write(w io.Writer, typ typewriter.Type) error {
 	tag, found := typ.FindTag(sw)
 
@@ -52,7 +84,7 @@ func (sw *SliceWriter) Write(w io.Writer, typ typewriter.Type) error {
 	}
 
 	// start with the slice template
-	tmpl, err := templates.ByTag(typ, tag)
+	tmpl, err := slice.Parse()
 
 	if err != nil {
 		return err
@@ -68,26 +100,8 @@ func (sw *SliceWriter) Write(w io.Writer, typ typewriter.Type) error {
 	}
 
 	for _, v := range tag.Values {
-		var tp typewriter.Type
-
-		if len(v.TypeParameters) > 0 {
-			tp = v.TypeParameters[0]
-		}
-
-		m := model{
-			Type:          typ,
-			SliceName:     SliceName(typ),
-			TypeParameter: tp,
-			TagValue:      v,
-		}
-
-		tmpl, err := templates.ByTagValue(typ, v)
-
+		err = sw.writeOne(w, typ, v)
 		if err != nil {
-			return err
-		}
-
-		if err := tmpl.Execute(w, m); err != nil {
 			return err
 		}
 	}

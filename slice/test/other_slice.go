@@ -6,27 +6,162 @@ package main
 
 import (
 	"errors"
+	"math/rand"
 	"sort"
 )
 
 // OtherSlice is a slice of type Other. Use it where you would use []Other.
 type OtherSlice []Other
 
-// Max returns the maximum value of OtherSlice. In the case of multiple items being equally maximal,
-// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Max
-func (rcv OtherSlice) Max() (result Other, err error) {
-	l := len(rcv)
-	if l == 0 {
-		err = errors.New("cannot determine the Max of an empty slice")
-		return
+// Len returns the number of items in the slice.
+// There is no Size() method; use Len() instead.
+func (rcv OtherSlice) Len() int {
+	return len(rcv)
+}
+
+// IsEmpty tests whether OtherSlice is empty.
+func (slice OtherSlice) IsEmpty() bool {
+	return len(slice) == 0
+}
+
+// NonEmpty tests whether OtherSlice is empty.
+func (slice OtherSlice) NonEmpty() bool {
+	return len(slice) > 0
+}
+
+// Exists verifies that one or more elements of OtherSlice return true for the passed func.
+func (slice OtherSlice) Exists(fn func(Other) bool) bool {
+	for _, v := range slice {
+		if fn(v) {
+			return true
+		}
 	}
-	result = rcv[0]
+	return false
+}
+
+// Forall verifies that all elements of OtherSlice return true for the passed func.
+func (slice OtherSlice) Forall(fn func(Other) bool) bool {
+	for _, v := range slice {
+		if !fn(v) {
+			return false
+		}
+	}
+	return true
+}
+
+// Foreach iterates over OtherSlice and executes the passed func against each element.
+func (slice OtherSlice) Foreach(fn func(Other)) {
+	for _, v := range slice {
+		fn(v)
+	}
+}
+
+// Filter returns a new OtherSlice whose elements return true for func.
+func (rcv OtherSlice) Filter(fn func(Other) bool) (result OtherSlice) {
 	for _, v := range rcv {
-		if v > result {
-			result = v
+		if fn(v) {
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
+// Partition returns two new OtherSlices whose elements return true or false for the predicate, p.
+// The first result consists of all elements that satisfy the predicate and the second result consists of
+// all elements that don't. The relative order of the elements in the results is the same as in the
+// original slice.
+func (slice OtherSlice) Partition(p func(Other) bool) (matching OtherSlice, others OtherSlice) {
+	for _, v := range slice {
+		if p(v) {
+			matching = append(matching, v)
+		} else {
+			others = append(others, v)
 		}
 	}
 	return
+}
+
+// Reverse returns a copy of OtherSlice with all elements in the reverse order.
+func (rcv OtherSlice) Reverse() OtherSlice {
+	numItems := len(rcv)
+	result := make(OtherSlice, numItems)
+	last := numItems - 1
+	for i, v := range rcv {
+		result[last-i] = v
+	}
+	return result
+}
+
+// Shuffle returns a shuffled copy of OtherSlice, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+func (rcv OtherSlice) Shuffle() OtherSlice {
+	numItems := len(rcv)
+	result := make(OtherSlice, numItems)
+	copy(result, rcv)
+	for i := 0; i < numItems; i++ {
+		r := i + rand.Intn(numItems-i)
+		result[r], result[i] = result[i], result[r]
+	}
+	return result
+}
+
+// CountBy gives the number elements of OtherSlice that return true for the passed predicate.
+func (rcv OtherSlice) CountBy(predicate func(Other) bool) (result int) {
+	for _, v := range rcv {
+		if predicate(v) {
+			result++
+		}
+	}
+	return
+}
+
+// MinBy returns an element of OtherSlice containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
+func (rcv OtherSlice) MinBy(less func(Other, Other) bool) (result Other, err error) {
+	l := len(rcv)
+	if l == 0 {
+		err = errors.New("cannot determine the Min of an empty slice")
+		return
+	}
+	m := 0
+	for i := 1; i < l; i++ {
+		if less(rcv[i], rcv[m]) {
+			m = i
+		}
+	}
+	result = rcv[m]
+	return
+}
+
+// MaxBy returns an element of OtherSlice containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
+func (rcv OtherSlice) MaxBy(less func(Other, Other) bool) (result Other, err error) {
+	l := len(rcv)
+	if l == 0 {
+		err = errors.New("cannot determine the MaxBy of an empty slice")
+		return
+	}
+	m := 0
+	for i := 1; i < l; i++ {
+		if rcv[i] != rcv[m] && !less(rcv[i], rcv[m]) {
+			m = i
+		}
+	}
+	result = rcv[m]
+	return
+}
+
+// DistinctBy returns a new OtherSlice whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
+func (rcv OtherSlice) DistinctBy(equal func(Other, Other) bool) (result OtherSlice) {
+Outer:
+	for _, v := range rcv {
+		for _, r := range result {
+			if equal(v, r) {
+				continue Outer
+			}
+		}
+		result = append(result, v)
+	}
+	return result
 }
 
 // Min returns the minimum value of OtherSlice. In the case of multiple items being equally minimal,
@@ -46,6 +181,31 @@ func (rcv OtherSlice) Min() (result Other, err error) {
 	return
 }
 
+// Max returns the maximum value of OtherSlice. In the case of multiple items being equally maximal,
+// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Max
+func (rcv OtherSlice) Max() (result Other, err error) {
+	l := len(rcv)
+	if l == 0 {
+		err = errors.New("cannot determine the Max of an empty slice")
+		return
+	}
+	result = rcv[0]
+	for _, v := range rcv {
+		if v > result {
+			result = v
+		}
+	}
+	return
+}
+
+// Sum sums Other elements in OtherSlice. See: http://clipperhouse.github.io/gen/#Sum
+func (rcv OtherSlice) Sum() (result Other) {
+	for _, v := range rcv {
+		result += v
+	}
+	return
+}
+
 // Mean sums OtherSlice over all elements and divides by len(OtherSlice). See: http://clipperhouse.github.io/gen/#Mean
 func (rcv OtherSlice) Mean() (Other, error) {
 	var result Other
@@ -59,14 +219,6 @@ func (rcv OtherSlice) Mean() (Other, error) {
 	}
 	result = result / Other(l)
 	return result, nil
-}
-
-// Sum sums Other elements in OtherSlice. See: http://clipperhouse.github.io/gen/#Sum
-func (rcv OtherSlice) Sum() (result Other) {
-	for _, v := range rcv {
-		result += v
-	}
-	return
 }
 
 // Sort returns a new ordered OtherSlice. See: http://clipperhouse.github.io/gen/#Sort
@@ -95,12 +247,10 @@ func (rcv OtherSlice) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(rcv))
 }
 
-func (rcv OtherSlice) Len() int {
-	return len(rcv)
-}
 func (rcv OtherSlice) Less(i, j int) bool {
 	return rcv[i] < rcv[j]
 }
+
 func (rcv OtherSlice) Swap(i, j int) {
 	rcv[i], rcv[j] = rcv[j], rcv[i]
 }

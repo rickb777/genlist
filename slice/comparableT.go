@@ -2,8 +2,8 @@ package slice
 
 import "github.com/clipperhouse/typewriter"
 
-var groupByT = &typewriter.Template{
-	Name: "GroupBy",
+var comparableT = &typewriter.Template{
+	Name: "Comparable",
 	Text: `
 // GroupBy{{.TypeParameter.LongName}} groups elements into a map keyed by {{.TypeParameter}}. See: http://clipperhouse.github.io/gen/#GroupBy
 func (rcv {{.SliceName}}) GroupBy{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) map[{{.TypeParameter}}]{{.SliceName}} {

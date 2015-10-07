@@ -9,7 +9,7 @@ func TestSize(t *testing.T) {
 		{"Third", 100},
 	}
 
-	if things.Size() != 3 {
+	if things.Len() != 3 {
 		t.Errorf("Size should be 3")
 	}
 
@@ -23,7 +23,7 @@ func TestSize(t *testing.T) {
 
 	noThings := ThingSlice{}
 
-	if noThings.Size() != 0 {
+	if noThings.Len() != 0 {
 		t.Errorf("Size should be 0")
 	}
 

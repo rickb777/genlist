@@ -14,46 +14,19 @@ type model struct {
 }
 
 var templates = typewriter.TemplateSlice{
-	slice,
-	size,
-
 	aggregateT,
-	forall,
-	contains,
-	exists,
-	mean,
-	meanT,
-	count,
-	countBy,
-	distinct,
-	distinctBy,
-	foreach,
+	comparable,
+	numeric,
+	numericT,
+	ordered,
+	orderedT,
 	first,
-	groupByT,
-	max,
-	maxT,
-	maxBy,
-	min,
-	minT,
-	minBy,
+	comparableT,
 	mapToT,
-	sum,
-	sumT,
-	filter,
-	partition,
 
 	sort,
-	isSorted,
-	sortDesc,
-	isSortedDesc,
-
 	sortBy,
-	isSortedBy,
-	sortByDesc,
-	isSortedByDesc,
 
 	sortImplementation,
 	sortInterface,
-
-    shuffle,
 }
