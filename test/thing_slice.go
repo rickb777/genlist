@@ -17,6 +17,21 @@ import (
 // ThingSlice is a slice of type Thing. Use it where you would use []Thing.
 type ThingSlice []Thing
 
+// Size gets the length of ThingSlice.
+func (rcv ThingSlice) Size() int {
+	return len(rcv)
+}
+
+// IsEmpty tests whether ThingSlice is empty.
+func (rcv ThingSlice) IsEmpty() bool {
+	return len(rcv) == 0
+}
+
+// NonEmpty tests whether ThingSlice is empty.
+func (rcv ThingSlice) NonEmpty() bool {
+	return len(rcv) > 0
+}
+
 // Exists verifies that one or more elements of ThingSlice return true for the passed func.
 func (rcv ThingSlice) Exists(fn func(Thing) bool) bool {
 	for _, v := range rcv {

@@ -15,6 +15,7 @@ type model struct {
 
 var templates = typewriter.TemplateSlice{
 	slice,
+	size,
 
 	aggregateT,
 	forall,
