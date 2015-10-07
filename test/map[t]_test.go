@@ -16,10 +16,10 @@ func TestSelectOther(t *testing.T) {
 		return x.Number
 	}
 
-	select1 := things.SelectOther(number)
-	expected1 := []Other{60, -20, 100}
+	select1 := things.MapToOther(number)
+	expected1 := OtherSlice{60, -20, 100}
 
 	if !reflect.DeepEqual(select1, expected1) {
-		t.Errorf("SelectOther should result in %v, got %v", expected1, select1)
+		t.Errorf("MapToOther should result in %v, got %v", expected1, select1)
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestWhere(t *testing.T) {
+func TestFilter(t *testing.T) {
 	things := ThingSlice{
 		{"First", 0},
 		{"Second", 0},
@@ -13,7 +13,7 @@ func TestWhere(t *testing.T) {
 		{"Second", 10},
 	}
 
-	where1 := things.Where(func(x Thing) bool {
+	where1 := things.Filter(func(x Thing) bool {
 		return x.Name == "Second"
 	})
 
@@ -23,22 +23,22 @@ func TestWhere(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(where1, expected1) {
-		t.Errorf("Where should result in %v, got %v", expected1, where1)
+		t.Errorf("Filter should result in %v, got %v", expected1, where1)
 	}
 
-	where2 := things.Where(func(x Thing) bool {
+	where2 := things.Filter(func(x Thing) bool {
 		return x.Name == "Dummy"
 	})
 
 	if len(where2) != 0 {
-		t.Errorf("Where should result in empty slice, got %v", where2)
+		t.Errorf("Filter should result in empty slice, got %v", where2)
 	}
 
-	where3 := ThingSlice{}.Where(func(x Thing) bool {
+	where3 := ThingSlice{}.Filter(func(x Thing) bool {
 		return true
 	})
 
 	if len(where3) != 0 {
-		t.Errorf("Where should result in empty slice, got %v", where3)
+		t.Errorf("Filter should result in empty slice, got %v", where3)
 	}
 }

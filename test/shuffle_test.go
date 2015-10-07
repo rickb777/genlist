@@ -20,7 +20,7 @@ func TestShuffle(t *testing.T) {
 		return true
 	}
 
-	if original.Any(notFound) {
+	if original.Exists(notFound) {
 		t.Error("The shuffled slice is missing elements")
 	}
 }

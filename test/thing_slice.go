@@ -17,8 +17,8 @@ import (
 // ThingSlice is a slice of type Thing. Use it where you would use []Thing.
 type ThingSlice []Thing
 
-// Any verifies that one or more elements of ThingSlice return true for the passed func. See: http://clipperhouse.github.io/gen/#Any
-func (rcv ThingSlice) Any(fn func(Thing) bool) bool {
+// Exists verifies that one or more elements of ThingSlice return true for the passed func.
+func (rcv ThingSlice) Exists(fn func(Thing) bool) bool {
 	for _, v := range rcv {
 		if fn(v) {
 			return true
@@ -27,8 +27,8 @@ func (rcv ThingSlice) Any(fn func(Thing) bool) bool {
 	return false
 }
 
-// All verifies that all elements of ThingSlice return true for the passed func. See: http://clipperhouse.github.io/gen/#All
-func (rcv ThingSlice) All(fn func(Thing) bool) bool {
+// Forall verifies that all elements of ThingSlice return true for the passed func.
+func (rcv ThingSlice) Forall(fn func(Thing) bool) bool {
 	for _, v := range rcv {
 		if !fn(v) {
 			return false
@@ -73,8 +73,8 @@ Outer:
 	return result
 }
 
-// Each iterates over ThingSlice and executes the passed func against each element. See: http://clipperhouse.github.io/gen/#Each
-func (rcv ThingSlice) Each(fn func(Thing)) {
+// Foreach iterates over ThingSlice and executes the passed func against each element.
+func (rcv ThingSlice) Foreach(fn func(Thing)) {
 	for _, v := range rcv {
 		fn(v)
 	}
@@ -148,8 +148,8 @@ func (rcv ThingSlice) Single(fn func(Thing) bool) (result Thing, err error) {
 	return
 }
 
-// Where returns a new ThingSlice whose elements return true for func. See: http://clipperhouse.github.io/gen/#Where
-func (rcv ThingSlice) Where(fn func(Thing) bool) (result ThingSlice) {
+// Filter returns a new ThingSlice whose elements return true for func.
+func (rcv ThingSlice) Filter(fn func(Thing) bool) (result ThingSlice) {
 	for _, v := range rcv {
 		if fn(v) {
 			result = append(result, v)
@@ -270,8 +270,8 @@ func (rcv ThingSlice) MinOther(fn func(Thing) Other) (result Other, err error) {
 	return
 }
 
-// SelectOther projects a slice of Other from ThingSlice, typically called a map in other frameworks. See: http://clipperhouse.github.io/gen/#Select
-func (rcv ThingSlice) SelectOther(fn func(Thing) Other) (result []Other) {
+// MapToOther transforms a slice of Other from ThingSlice.
+func (rcv ThingSlice) MapToOther(fn func(Thing) Other) (result OtherSlice) {
 	for _, v := range rcv {
 		result = append(result, fn(v))
 	}
