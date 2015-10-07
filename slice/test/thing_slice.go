@@ -173,6 +173,21 @@ func (rcv ThingSlice) Filter(fn func(Thing) bool) (result ThingSlice) {
 	return result
 }
 
+// Partition returns two new ThingSlices whose elements return true or false for the predicate, p.
+// The first result consists of all elements that satisfy the predicate and the second result consists of
+// all elements that don't. The relative order of the elements in the results is the same as in the
+// original slice.
+func (slice ThingSlice) Partition(p func(Thing) bool) (matching ThingSlice, others ThingSlice) {
+	for _, v := range slice {
+		if p(v) {
+			matching = append(matching, v)
+		} else {
+			others = append(others, v)
+		}
+	}
+	return
+}
+
 // SortBy returns a new ordered ThingSlice, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
 func (rcv ThingSlice) SortBy(less func(Thing, Thing) bool) ThingSlice {
 	result := make(ThingSlice, len(rcv))

@@ -39,6 +39,7 @@ var templates = typewriter.TemplateSlice{
 	sum,
 	sumT,
 	filter,
+	partition,
 
 	sort,
 	isSorted,
