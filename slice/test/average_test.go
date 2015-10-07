@@ -2,24 +2,24 @@ package main
 
 import "testing"
 
-func TestAverage(t *testing.T) {
+func TestMean(t *testing.T) {
 	others := OtherSlice{50, 100, 9, 7, 100, 99}
 
-	average1, err := others.Average()
+	mean1, err := others.Mean()
 
 	if err != nil {
-		t.Errorf("Average should succeed")
+		t.Errorf("Mean should succeed")
 	}
 
 	avg1 := Other(60)
 
-	if average1 != avg1 {
-		t.Errorf("Average should be %v, got %v", avg1, average1)
+	if mean1 != avg1 {
+		t.Errorf("Mean should be %v, got %v", avg1, mean1)
 	}
 
-	average2, err := OtherSlice{}.Average()
+	mean2, err := OtherSlice{}.Mean()
 
-	if err == nil || average2 != 0 {
-		t.Errorf("Average should fail on empty slice")
+	if err == nil || mean2 != 0 {
+		t.Errorf("Mean should fail on empty slice")
 	}
 }

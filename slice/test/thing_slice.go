@@ -33,8 +33,18 @@ func (rcv ThingSlice) NonEmpty() bool {
 }
 
 // Exists verifies that one or more elements of ThingSlice return true for the passed func.
-func (rcv ThingSlice) Exists(fn func(Thing) bool) bool {
-	for _, v := range rcv {
+func (slice ThingSlice) Contains(value Thing) bool {
+	for _, v := range slice {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
+// Exists verifies that one or more elements of ThingSlice return true for the passed func.
+func (slice ThingSlice) Exists(fn func(Thing) bool) bool {
+	for _, v := range slice {
 		if fn(v) {
 			return true
 		}
@@ -52,8 +62,18 @@ func (rcv ThingSlice) Forall(fn func(Thing) bool) bool {
 	return true
 }
 
-// Count gives the number elements of ThingSlice that return true for the passed func. See: http://clipperhouse.github.io/gen/#Count
-func (rcv ThingSlice) Count(fn func(Thing) bool) (result int) {
+// Count gives the number elements of ThingSlice that match a certain value.
+func (rcv ThingSlice) Count(value Thing) (result int) {
+	for _, v := range rcv {
+		if v == value {
+			result++
+		}
+	}
+	return
+}
+
+// CountBy gives the number elements of ThingSlice that return true for the passed func.
+func (rcv ThingSlice) CountBy(fn func(Thing) bool) (result int) {
 	for _, v := range rcv {
 		if fn(v) {
 			result++
@@ -107,7 +127,9 @@ func (rcv ThingSlice) First(fn func(Thing) bool) (result Thing, err error) {
 	return
 }
 
-// MaxBy returns an element of ThingSlice containing the maximum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
+// MaxBy returns an element of ThingSlice containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
 func (rcv ThingSlice) MaxBy(less func(Thing, Thing) bool) (result Thing, err error) {
 	l := len(rcv)
 	if l == 0 {
@@ -138,28 +160,6 @@ func (rcv ThingSlice) MinBy(less func(Thing, Thing) bool) (result Thing, err err
 		}
 	}
 	result = rcv[m]
-	return
-}
-
-// Single returns exactly one element of ThingSlice that returns true for the passed func. Returns error if no or multiple elements return true. See: http://clipperhouse.github.io/gen/#Single
-func (rcv ThingSlice) Single(fn func(Thing) bool) (result Thing, err error) {
-	var candidate Thing
-	found := false
-	for _, v := range rcv {
-		if fn(v) {
-			if found {
-				err = errors.New("multiple ThingSlice elements return true for passed func")
-				return
-			}
-			candidate = v
-			found = true
-		}
-	}
-	if found {
-		result = candidate
-	} else {
-		err = errors.New("no ThingSlice elements return true for passed func")
-	}
 	return
 }
 
@@ -238,11 +238,11 @@ func (rcv ThingSlice) AggregateOther(fn func(Other, Thing) Other) (result Other)
 	return
 }
 
-// AverageOther sums Other over all elements and divides by len(ThingSlice). See: http://clipperhouse.github.io/gen/#Average
-func (rcv ThingSlice) AverageOther(fn func(Thing) Other) (result Other, err error) {
+// MeanOther sums Other over all elements and divides by len(ThingSlice). See: http://clipperhouse.github.io/gen/#Mean
+func (rcv ThingSlice) MeanOther(fn func(Thing) Other) (result Other, err error) {
 	l := len(rcv)
 	if l == 0 {
-		err = errors.New("cannot determine Average[Other] of zero-length ThingSlice")
+		err = errors.New("cannot determine Mean[Other] of zero-length ThingSlice")
 		return
 	}
 	for _, v := range rcv {
@@ -262,7 +262,8 @@ func (rcv ThingSlice) GroupByOther(fn func(Thing) Other) map[Other]ThingSlice {
 	return result
 }
 
-// MaxOther selects the largest value of Other in ThingSlice. Returns error on ThingSlice with no elements. See: http://clipperhouse.github.io/gen/#MaxCustom
+// MaxOther selects the largest value of Other in ThingSlice.
+// Returns error on ThingSlice with no elements. See: http://clipperhouse.github.io/gen/#MaxCustom
 func (rcv ThingSlice) MaxOther(fn func(Thing) Other) (result Other, err error) {
 	l := len(rcv)
 	if l == 0 {
@@ -281,7 +282,8 @@ func (rcv ThingSlice) MaxOther(fn func(Thing) Other) (result Other, err error) {
 	return
 }
 
-// MinOther selects the least value of Other in ThingSlice. Returns error on ThingSlice with no elements. See: http://clipperhouse.github.io/gen/#MinCustom
+// MinOther selects the least value of Other in ThingSlice.
+// Returns error on ThingSlice with no elements. See: http://clipperhouse.github.io/gen/#MinCustom
 func (rcv ThingSlice) MinOther(fn func(Thing) Other) (result Other, err error) {
 	l := len(rcv)
 	if l == 0 {

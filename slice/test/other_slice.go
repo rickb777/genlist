@@ -12,7 +12,8 @@ import (
 // OtherSlice is a slice of type Other. Use it where you would use []Other.
 type OtherSlice []Other
 
-// Max returns the maximum value of OtherSlice. In the case of multiple items being equally maximal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Max
+// Max returns the maximum value of OtherSlice. In the case of multiple items being equally maximal,
+// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Max
 func (rcv OtherSlice) Max() (result Other, err error) {
 	l := len(rcv)
 	if l == 0 {
@@ -28,7 +29,8 @@ func (rcv OtherSlice) Max() (result Other, err error) {
 	return
 }
 
-// Min returns the minimum value of OtherSlice. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Min
+// Min returns the minimum value of OtherSlice. In the case of multiple items being equally minimal,
+// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Min
 func (rcv OtherSlice) Min() (result Other, err error) {
 	l := len(rcv)
 	if l == 0 {
@@ -44,13 +46,13 @@ func (rcv OtherSlice) Min() (result Other, err error) {
 	return
 }
 
-// Average sums OtherSlice over all elements and divides by len(OtherSlice). See: http://clipperhouse.github.io/gen/#Average
-func (rcv OtherSlice) Average() (Other, error) {
+// Mean sums OtherSlice over all elements and divides by len(OtherSlice). See: http://clipperhouse.github.io/gen/#Mean
+func (rcv OtherSlice) Mean() (Other, error) {
 	var result Other
 
 	l := len(rcv)
 	if l == 0 {
-		return result, errors.New("cannot determine Average of zero-length OtherSlice")
+		return result, errors.New("cannot determine Mean of zero-length OtherSlice")
 	}
 	for _, v := range rcv {
 		result += v

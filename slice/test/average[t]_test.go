@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-func TestAverageOther(t *testing.T) {
+func TestMeanOther(t *testing.T) {
 	things := ThingSlice{
 		{"First", 60},
 		{"Second", -10},
@@ -13,21 +13,21 @@ func TestAverageOther(t *testing.T) {
 		return x.Number
 	}
 
-	average1, err := things.AverageOther(number)
+	mean1, err := things.MeanOther(number)
 
 	if err != nil {
-		t.Errorf("Average should succeed")
+		t.Errorf("Mean should succeed")
 	}
 
 	expected1 := Other(50)
 
-	if average1 != expected1 {
-		t.Errorf("Average should be %v, got %v", expected1, average1)
+	if mean1 != expected1 {
+		t.Errorf("Mean should be %v, got %v", expected1, mean1)
 	}
 
-	average2, err := ThingSlice{}.AverageOther(number)
+	mean2, err := ThingSlice{}.MeanOther(number)
 
-	if err == nil || average2 != 0 {
-		t.Errorf("Average should fail on empty slice")
+	if err == nil || mean2 != 0 {
+		t.Errorf("Mean should fail on empty slice")
 	}
 }

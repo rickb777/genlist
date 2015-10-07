@@ -2,13 +2,13 @@ package slice
 
 import "github.com/clipperhouse/typewriter"
 
-var exists = &typewriter.Template{
-	Name: "Exists",
+var contains = &typewriter.Template{
+	Name: "COntains",
 	Text: `
 // Exists verifies that one or more elements of {{.SliceName}} return true for the passed func.
-func (slice {{.SliceName}}) Exists(fn func({{.Type}}) bool) bool {
+func (slice {{.SliceName}}) Contains(value {{.Type}}) bool {
 	for _, v := range slice {
-		if fn(v) {
+		if v == value {
 			return true
 		}
 	}

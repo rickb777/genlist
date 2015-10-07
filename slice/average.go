@@ -2,16 +2,16 @@ package slice
 
 import "github.com/clipperhouse/typewriter"
 
-var average = &typewriter.Template{
-	Name: "Average",
+var mean = &typewriter.Template{
+	Name: "Mean",
 	Text: `
-// Average sums {{.SliceName}} over all elements and divides by len({{.SliceName}}). See: http://clipperhouse.github.io/gen/#Average
-func (rcv {{.SliceName}}) Average() ({{.Type}}, error) {
+// Mean sums {{.SliceName}} over all elements and divides by len({{.SliceName}}). See: http://clipperhouse.github.io/gen/#Mean
+func (rcv {{.SliceName}}) Mean() ({{.Type}}, error) {
 	var result {{.Type}}
 
 	l := len(rcv)
 	if l == 0 {
-		return result, errors.New("cannot determine Average of zero-length {{.SliceName}}")
+		return result, errors.New("cannot determine Mean of zero-length {{.SliceName}}")
 	}
 	for _, v := range rcv {
 		result += v
@@ -23,14 +23,14 @@ func (rcv {{.SliceName}}) Average() ({{.Type}}, error) {
 	TypeConstraint: typewriter.Constraint{Numeric: true},
 }
 
-var averageT = &typewriter.Template{
-	Name: "Average",
+var meanT = &typewriter.Template{
+	Name: "Mean",
 	Text: `
-// Average{{.TypeParameter.LongName}} sums {{.TypeParameter}} over all elements and divides by len({{.SliceName}}). See: http://clipperhouse.github.io/gen/#Average
-func (rcv {{.SliceName}}) Average{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}, err error) {
+// Mean{{.TypeParameter.LongName}} sums {{.TypeParameter}} over all elements and divides by len({{.SliceName}}). See: http://clipperhouse.github.io/gen/#Mean
+func (rcv {{.SliceName}}) Mean{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}, err error) {
 	l := len(rcv)
 	if l == 0 {
-		err = errors.New("cannot determine Average[{{.TypeParameter}}] of zero-length {{.SliceName}}")
+		err = errors.New("cannot determine Mean[{{.TypeParameter}}] of zero-length {{.SliceName}}")
 		return
 	}
 	for _, v := range rcv {
