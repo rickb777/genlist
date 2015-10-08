@@ -5,7 +5,51 @@ import (
 	"reflect"
 )
 
-func TestPartition(t *testing.T) {
+func TestPartitionOther(t *testing.T) {
+	things := OtherSlice{60, -20, -10, 100}
+
+	m1, o1 := things.Partition(func(x Other) bool {
+		return x > 0
+	})
+
+	expected1 := OtherSlice{60, 100}
+
+	others1 := OtherSlice{-20, -10}
+
+	if !reflect.DeepEqual(m1, expected1) {
+		t.Errorf("Partition should result in %v, got %v", expected1, m1)
+	}
+
+	if !reflect.DeepEqual(o1, others1) {
+		t.Errorf("Partition should result in %v, got %v", others1, o1)
+	}
+
+	m2, o2 := things.Partition(func(x Other) bool {
+		return x == 1
+	})
+
+	if len(m2) != 0 {
+		t.Errorf("Partition should result in empty slice, got %v", m2)
+	}
+
+	if !reflect.DeepEqual(o2, things) {
+		t.Errorf("Partition should result in %v, got %v", things, o2)
+	}
+
+	m3, o3 := OtherSlice{}.Partition(func(x Other) bool {
+		return true
+	})
+
+	if len(m3) != 0 {
+		t.Errorf("Partition should result in empty slice, got %v", m3)
+	}
+
+	if len(o3) != 0 {
+		t.Errorf("Partition should result in empty slice, got %v", o3)
+	}
+}
+
+func TestPartitionThing(t *testing.T) {
 	things := ThingSlice{
 		{"First", 0},
 		{"Second", 0},

@@ -160,6 +160,7 @@ Outer:
 `,
 }
 
+// TODO aggregate, diff
 // TODO PadTo, TakeWhile, DropWhile, Drop, HeadOption, LastOption,
 // TODO IndexOf, IndexWhere, LastIndexOf, LastIndexWhere
 // TODO MkString, Equals, StartsWith, EndsWith, IteratorChan
