@@ -37,13 +37,13 @@ func TestMaxNotOrdered(t *testing.T) {
 	})
 
 	if err1 != nil {
-		t.Errorf("MaxBy Number should succeed")
+		t.Errorf("Max Number should succeed")
 	}
 
 	expected1 := Thing{"Third", 100}
 
 	if max1 != expected1 {
-		t.Errorf("MaxBy Number should return %v, got %v", expected1, max1)
+		t.Errorf("Max Number should return %v, got %v", expected1, max1)
 	}
 
 	_, err2 := ThingSlice{}.Max(func(a, b Thing) bool {
@@ -51,6 +51,6 @@ func TestMaxNotOrdered(t *testing.T) {
 	})
 
 	if err2 == nil {
-		t.Errorf("MaxBy Number should fail on empty slice")
+		t.Errorf("Max Number should fail on empty slice")
 	}
 }

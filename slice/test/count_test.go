@@ -2,7 +2,29 @@ package main
 
 import "testing"
 
-func TestCount(t *testing.T) {
+func TestCountOther(t *testing.T) {
+	things := OtherSlice{50, 100, 9, 7, 100, 99}
+
+	count1 := things.Count(7)
+
+	if count1 != 1 {
+		t.Errorf("Count should find one 7")
+	}
+
+	count2 := things.Count(3)
+
+	if count2 != 0 {
+		t.Errorf("Count should no items for 3")
+	}
+
+	count3 := OtherSlice{}.Count(9)
+
+	if count3 != 0 {
+		t.Errorf("Count should find no items in an empty slice")
+	}
+}
+
+func TestCountThing(t *testing.T) {
 	things := ThingSlice{
 		{"First", 60},
 		{"Second", 20},
