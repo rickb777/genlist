@@ -1,4 +1,5 @@
 #!/bin/bash -e
+cd $(dirname $0)
 rm -f *_slice.go
 go get
 go run setup.go

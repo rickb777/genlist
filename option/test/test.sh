@@ -1,4 +1,5 @@
 #!/bin/bash -e
+cd $(dirname $0)
 rm -f *_option.go
 go get
 go run setup.go
