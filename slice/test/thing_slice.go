@@ -19,8 +19,15 @@ type ThingSlice []Thing
 
 // Len returns the number of items in the slice.
 // There is no Size() method; use Len() instead.
+// This is one of the three methods in the standard sort.Interface.
 func (rcv ThingSlice) Len() int {
 	return len(rcv)
+}
+
+// Swap exchanges two elements, which is neceessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
+func (rcv ThingSlice) Swap(i, j int) {
+	rcv[i], rcv[j] = rcv[j], rcv[i]
 }
 
 // IsEmpty tests whether ThingSlice is empty.
@@ -103,7 +110,7 @@ func (rcv ThingSlice) Shuffle() ThingSlice {
 	copy(result, rcv)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-		result[r], result[i] = result[i], result[r]
+		result.Swap(i, r)
 	}
 	return result
 }
@@ -118,11 +125,13 @@ func (rcv ThingSlice) CountBy(predicate func(Thing) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of ThingSlice containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
+// MinBy returns an element of ThingSlice containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Returns error if no elements.
 func (rcv ThingSlice) MinBy(less func(Thing, Thing) bool) (result Thing, err error) {
 	l := len(rcv)
 	if l == 0 {
-		err = errors.New("cannot determine the Min of an empty slice")
+		err = errors.New("Cannot determine the MinBy of an empty slice.")
 		return
 	}
 	m := 0
@@ -137,11 +146,11 @@ func (rcv ThingSlice) MinBy(less func(Thing, Thing) bool) (result Thing, err err
 
 // MaxBy returns an element of ThingSlice containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
+// element is returned. Returns error if no elements.
 func (rcv ThingSlice) MaxBy(less func(Thing, Thing) bool) (result Thing, err error) {
 	l := len(rcv)
 	if l == 0 {
-		err = errors.New("cannot determine the MaxBy of an empty slice")
+		err = errors.New("Cannot determine the MaxBy of an empty slice.")
 		return
 	}
 	m := 0
@@ -166,6 +175,42 @@ Outer:
 		result = append(result, v)
 	}
 	return result
+}
+
+// Min returns an element of ThingSlice containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
+func (rcv ThingSlice) Min(less func(Thing, Thing) bool) (result Thing, err error) {
+	l := len(rcv)
+	if l == 0 {
+		err = errors.New("Cannot determine the Min of an empty slice.")
+		return
+	}
+	m := 0
+	for i := 1; i < l; i++ {
+		if less(rcv[i], rcv[m]) {
+			m = i
+		}
+	}
+	result = rcv[m]
+	return
+}
+
+// Max returns an element of ThingSlice containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
+func (rcv ThingSlice) Max(less func(Thing, Thing) bool) (result Thing, err error) {
+	l := len(rcv)
+	if l == 0 {
+		err = errors.New("Cannot determine the Max of an empty slice.")
+		return
+	}
+	m := 0
+	for i := 1; i < l; i++ {
+		if rcv[i] != rcv[m] && !less(rcv[i], rcv[m]) {
+			m = i
+		}
+	}
+	result = rcv[m]
+	return
 }
 
 // Contains verifies that a given value is contained in ThingSlice.
@@ -326,8 +371,8 @@ func (rcv ThingSlice) IsSortedWith(less func(Thing, Thing) bool) bool {
 	return true
 }
 
-// SortByDesc returns a new, descending-ordered ThingSlice, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
-func (rcv ThingSlice) SortByDesc(less func(Thing, Thing) bool) ThingSlice {
+// SortWithDesc returns a new, descending-ordered ThingSlice, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+func (rcv ThingSlice) SortWithDesc(less func(Thing, Thing) bool) ThingSlice {
 	greater := func(a, b Thing) bool {
 		return less(b, a)
 	}
@@ -335,13 +380,14 @@ func (rcv ThingSlice) SortByDesc(less func(Thing, Thing) bool) ThingSlice {
 }
 
 // IsSortedDesc reports whether an instance of ThingSlice is sorted in descending order, using the pass func to define ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
-func (rcv ThingSlice) IsSortedByDesc(less func(Thing, Thing) bool) bool {
+func (rcv ThingSlice) IsSortedWithDesc(less func(Thing, Thing) bool) bool {
 	greater := func(a, b Thing) bool {
 		return less(b, a)
 	}
 	return rcv.IsSortedWith(greater)
 }
 
+//-------------------------------------------------------------------------------------------------
 // Sort implementation based on http://golang.org/pkg/sort/#Sort, see top of this file
 
 func swapThingSlice(rcv ThingSlice, a, b int) {

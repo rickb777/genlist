@@ -2,7 +2,7 @@ package slice
 
 import "github.com/clipperhouse/typewriter"
 
-var sortBy = &typewriter.Template{
+var sortWith = &typewriter.Template{
 	Name: "SortWith",
 	Text: `
 // SortWith returns a new ordered {{.SliceName}}, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
@@ -31,8 +31,8 @@ func (rcv {{.SliceName}}) IsSortedWith(less func({{.Type}}, {{.Type}}) bool) boo
 	return true
 }
 
-// SortByDesc returns a new, descending-ordered {{.SliceName}}, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
-func (rcv {{.SliceName}}) SortByDesc(less func({{.Type}}, {{.Type}}) bool) {{.SliceName}} {
+// SortWithDesc returns a new, descending-ordered {{.SliceName}}, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+func (rcv {{.SliceName}}) SortWithDesc(less func({{.Type}}, {{.Type}}) bool) {{.SliceName}} {
 	greater := func(a, b {{.Type}}) bool {
 		return less(b, a)
 	}
@@ -40,7 +40,7 @@ func (rcv {{.SliceName}}) SortByDesc(less func({{.Type}}, {{.Type}}) bool) {{.Sl
 }
 
 // IsSortedDesc reports whether an instance of {{.SliceName}} is sorted in descending order, using the pass func to define ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
-func (rcv {{.SliceName}}) IsSortedByDesc(less func({{.Type}}, {{.Type}}) bool) bool {
+func (rcv {{.SliceName}}) IsSortedWithDesc(less func({{.Type}}, {{.Type}}) bool) bool {
 	greater := func(a, b {{.Type}}) bool {
 		return less(b, a)
 	}

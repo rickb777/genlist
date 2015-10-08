@@ -55,19 +55,19 @@ func TestSortBy(t *testing.T) {
 		t.Errorf("things should not be sorted by name")
 	}
 
-	sort2 := things.SortByDesc(name)
+	sort2 := things.SortWithDesc(name)
 
 	sorted2 := ThingSlice{anotherThird, third, second, fourth, first}
 
 	if !reflect.DeepEqual(sort2, sorted2) {
-		t.Errorf("SortByDesc name should be %v, got %v", sorted2, sort2)
+		t.Errorf("SortWithDesc name should be %v, got %v", sorted2, sort2)
 	}
 
-	if !sort2.IsSortedByDesc(name) {
-		t.Errorf("IsSortedByDesc name should be true %v", sort2)
+	if !sort2.IsSortedWithDesc(name) {
+		t.Errorf("IsSortedWithDesc name should be true %v", sort2)
 	}
 
-	if things.IsSortedByDesc(name) {
+	if things.IsSortedWithDesc(name) {
 		t.Errorf("things should not be sorted desc by name")
 	}
 

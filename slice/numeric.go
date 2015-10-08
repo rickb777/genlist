@@ -2,7 +2,7 @@ package slice
 
 import "github.com/clipperhouse/typewriter"
 
-var numeric = &typewriter.Template{
+var numeric = typewriter.Template{
 	Name: "Numeric",
 	Text: `
 // Sum sums {{.Type}} elements in {{.SliceName}}. See: http://clipperhouse.github.io/gen/#Sum

@@ -15,8 +15,15 @@ type OtherSlice []Other
 
 // Len returns the number of items in the slice.
 // There is no Size() method; use Len() instead.
+// This is one of the three methods in the standard sort.Interface.
 func (rcv OtherSlice) Len() int {
 	return len(rcv)
+}
+
+// Swap exchanges two elements, which is neceessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
+func (rcv OtherSlice) Swap(i, j int) {
+	rcv[i], rcv[j] = rcv[j], rcv[i]
 }
 
 // IsEmpty tests whether OtherSlice is empty.
@@ -99,7 +106,7 @@ func (rcv OtherSlice) Shuffle() OtherSlice {
 	copy(result, rcv)
 	for i := 0; i < numItems; i++ {
 		r := i + rand.Intn(numItems-i)
-		result[r], result[i] = result[i], result[r]
+		result.Swap(i, r)
 	}
 	return result
 }
@@ -114,11 +121,13 @@ func (rcv OtherSlice) CountBy(predicate func(Other) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of OtherSlice containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
+// MinBy returns an element of OtherSlice containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Returns error if no elements.
 func (rcv OtherSlice) MinBy(less func(Other, Other) bool) (result Other, err error) {
 	l := len(rcv)
 	if l == 0 {
-		err = errors.New("cannot determine the Min of an empty slice")
+		err = errors.New("Cannot determine the MinBy of an empty slice.")
 		return
 	}
 	m := 0
@@ -133,11 +142,11 @@ func (rcv OtherSlice) MinBy(less func(Other, Other) bool) (result Other, err err
 
 // MaxBy returns an element of OtherSlice containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
+// element is returned. Returns error if no elements.
 func (rcv OtherSlice) MaxBy(less func(Other, Other) bool) (result Other, err error) {
 	l := len(rcv)
 	if l == 0 {
-		err = errors.New("cannot determine the MaxBy of an empty slice")
+		err = errors.New("Cannot determine the MaxBy of an empty slice.")
 		return
 	}
 	m := 0
@@ -164,12 +173,17 @@ Outer:
 	return result
 }
 
+// Less determines whether one specified element is less than another specified element.
+// This is one of the three methods in the standard sort.Interface.
+func (rcv OtherSlice) Less(i, j int) bool {
+	return rcv[i] < rcv[j]
+}
+
 // Min returns the minimum value of OtherSlice. In the case of multiple items being equally minimal,
 // the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Min
 func (rcv OtherSlice) Min() (result Other, err error) {
-	l := len(rcv)
-	if l == 0 {
-		err = errors.New("cannot determine the Min of an empty slice")
+	if len(rcv) == 0 {
+		err = errors.New("Cannot determine the Min of an empty slice.")
 		return
 	}
 	result = rcv[0]
@@ -184,9 +198,8 @@ func (rcv OtherSlice) Min() (result Other, err error) {
 // Max returns the maximum value of OtherSlice. In the case of multiple items being equally maximal,
 // the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Max
 func (rcv OtherSlice) Max() (result Other, err error) {
-	l := len(rcv)
-	if l == 0 {
-		err = errors.New("cannot determine the Max of an empty slice")
+	if len(rcv) == 0 {
+		err = errors.New("Cannot determine the Max of an empty slice.")
 		return
 	}
 	result = rcv[0]
@@ -196,6 +209,32 @@ func (rcv OtherSlice) Max() (result Other, err error) {
 		}
 	}
 	return
+}
+
+// Sort returns a new ordered OtherSlice.
+func (rcv OtherSlice) Sort() OtherSlice {
+	result := make(OtherSlice, len(rcv))
+	copy(result, rcv)
+	sort.Sort(result)
+	return result
+}
+
+// IsSorted reports whether OtherSlice is sorted.
+func (rcv OtherSlice) IsSorted() bool {
+	return sort.IsSorted(rcv)
+}
+
+// SortDesc returns a new reverse-ordered OtherSlice.
+func (rcv OtherSlice) SortDesc() OtherSlice {
+	result := make(OtherSlice, len(rcv))
+	copy(result, rcv)
+	sort.Sort(sort.Reverse(result))
+	return result
+}
+
+// IsSortedDesc reports whether OtherSlice is reverse-sorted.
+func (rcv OtherSlice) IsSortedDesc() bool {
+	return sort.IsSorted(sort.Reverse(rcv))
 }
 
 // Sum sums Other elements in OtherSlice. See: http://clipperhouse.github.io/gen/#Sum
@@ -221,36 +260,34 @@ func (rcv OtherSlice) Mean() (Other, error) {
 	return result, nil
 }
 
-// Sort returns a new ordered OtherSlice. See: http://clipperhouse.github.io/gen/#Sort
-func (rcv OtherSlice) Sort() OtherSlice {
-	result := make(OtherSlice, len(rcv))
-	copy(result, rcv)
-	sort.Sort(result)
+// Contains verifies that a given value is contained in OtherSlice.
+func (slice OtherSlice) Contains(value Other) bool {
+	for _, v := range slice {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
+// Count gives the number elements of OtherSlice that match a certain value.
+func (rcv OtherSlice) Count(value Other) (result int) {
+	for _, v := range rcv {
+		if v == value {
+			result++
+		}
+	}
+	return
+}
+
+// Distinct returns a new OtherSlice whose elements are unique. See: http://clipperhouse.github.io/gen/#Distinct
+func (rcv OtherSlice) Distinct() (result OtherSlice) {
+	appended := make(map[Other]bool)
+	for _, v := range rcv {
+		if !appended[v] {
+			result = append(result, v)
+			appended[v] = true
+		}
+	}
 	return result
-}
-
-// IsSorted reports whether OtherSlice is sorted. See: http://clipperhouse.github.io/gen/#Sort
-func (rcv OtherSlice) IsSorted() bool {
-	return sort.IsSorted(rcv)
-}
-
-// SortDesc returns a new reverse-ordered OtherSlice. See: http://clipperhouse.github.io/gen/#Sort
-func (rcv OtherSlice) SortDesc() OtherSlice {
-	result := make(OtherSlice, len(rcv))
-	copy(result, rcv)
-	sort.Sort(sort.Reverse(result))
-	return result
-}
-
-// IsSortedDesc reports whether OtherSlice is reverse-sorted. See: http://clipperhouse.github.io/gen/#Sort
-func (rcv OtherSlice) IsSortedDesc() bool {
-	return sort.IsSorted(sort.Reverse(rcv))
-}
-
-func (rcv OtherSlice) Less(i, j int) bool {
-	return rcv[i] < rcv[j]
-}
-
-func (rcv OtherSlice) Swap(i, j int) {
-	rcv[i], rcv[j] = rcv[j], rcv[i]
 }

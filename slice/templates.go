@@ -15,18 +15,12 @@ type model struct {
 
 var templates = typewriter.TemplateSlice{
 	aggregateT,
-	comparable,
-	numeric,
 	numericT,
-	ordered,
 	orderedT,
 	first,
-	comparableT,
+	groupByT,
 	mapToT,
-
-	sort,
-	sortBy,
+	sortWith,
 
 	sortImplementation,
-	sortInterface,
 }

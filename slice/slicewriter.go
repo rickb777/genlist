@@ -2,7 +2,6 @@ package slice
 
 import (
 	"io"
-	"regexp"
 	"strings"
 	"text/template"
 
@@ -49,6 +48,7 @@ func (sw *SliceWriter) writeTemplate(w io.Writer, typ typewriter.Type, v typewri
 		TagValue:      v,
 	}
 
+	//	fmt.Printf("tmpl.Execute %s %s\n", typ.Name, v.Name)
 	if err := tmpl.Execute(w, m); err != nil {
 		return err
 	}
@@ -66,6 +66,21 @@ func (sw *SliceWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.T
 	return sw.writeTemplate(w, typ, v, tmpl)
 }
 
+func (sw *SliceWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type, t typewriter.Template) (bool, error) {
+	//	fmt.Printf("writeTemplateIfPossible %s\n", t.Name)
+	if t.TypeConstraint.TryType(typ) == nil {
+		v := typewriter.TagValue{}
+		v.Name = t.Name
+		tmpl, err := t.Parse()
+		if err != nil {
+			return false, err
+		}
+		err = sw.writeTemplate(w, typ, v, tmpl)
+		return err == nil, err
+	}
+	return false, nil
+}
+
 func (sw *SliceWriter) Write(w io.Writer, typ typewriter.Type) error {
 	tag, found := typ.FindTag(sw)
 
@@ -73,6 +88,7 @@ func (sw *SliceWriter) Write(w io.Writer, typ typewriter.Type) error {
 		return nil
 	}
 
+	//	fmt.Printf("\nWrite %s %+v\n", typ.Name, tag)
 	if includeSortImplementation(tag.Values) {
 		s := `// Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
 // Copyright 2009 The Go Authors. All rights reserved.
@@ -99,23 +115,23 @@ func (sw *SliceWriter) Write(w io.Writer, typ typewriter.Type) error {
 		return err
 	}
 
+	included := make(map[string]bool)
+
+	doneOrdered, err := sw.writeTemplateIfPossible(w, typ, ordered)
+	if doneOrdered {
+		included[ordered.Name] = true
+	} else {
+		included[notOrdered.Name], err = sw.writeTemplateIfPossible(w, typ, notOrdered)
+	}
+	included[numeric.Name], err = sw.writeTemplateIfPossible(w, typ, numeric)
+	included[comparable.Name], err = sw.writeTemplateIfPossible(w, typ, comparable)
+
 	for _, v := range tag.Values {
 		err = sw.writeOne(w, typ, v)
 		if err != nil {
 			return err
 		}
-	}
-
-	if includeSortInterface(tag.Values) {
-		tmpl, err := sortInterface.Parse()
-
-		if err != nil {
-			return err
-		}
-
-		if err := tmpl.Execute(w, m); err != nil {
-			return err
-		}
+		included[v.Name] = true
 	}
 
 	if includeSortImplementation(tag.Values) {
@@ -136,16 +152,6 @@ func (sw *SliceWriter) Write(w io.Writer, typ typewriter.Type) error {
 func includeSortImplementation(values []typewriter.TagValue) bool {
 	for _, v := range values {
 		if strings.HasPrefix(v.Name, "SortWith") {
-			return true
-		}
-	}
-	return false
-}
-
-func includeSortInterface(values []typewriter.TagValue) bool {
-	reg := regexp.MustCompile(`^Sort(Desc)?$`)
-	for _, v := range values {
-		if reg.MatchString(v.Name) {
 			return true
 		}
 	}

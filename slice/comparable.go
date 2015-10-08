@@ -2,7 +2,7 @@ package slice
 
 import "github.com/clipperhouse/typewriter"
 
-var comparable = &typewriter.Template{
+var comparable = typewriter.Template{
 	Name: "Comparable",
 	Text: `
 // Contains verifies that a given value is contained in {{.SliceName}}.

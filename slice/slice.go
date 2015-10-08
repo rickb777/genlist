@@ -9,8 +9,15 @@ type {{.SliceName}} []{{.Type}}
 
 // Len returns the number of items in the slice.
 // There is no Size() method; use Len() instead.
+// This is one of the three methods in the standard sort.Interface.
 func (rcv {{.SliceName}}) Len() int {
 	return len(rcv)
+}
+
+// Swap exchanges two elements, which is neceessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
+func (rcv {{.SliceName}}) Swap(i, j int) {
+	rcv[i], rcv[j] = rcv[j], rcv[i]
 }
 
 // IsEmpty tests whether {{.SliceName}} is empty.
@@ -93,7 +100,7 @@ func (rcv {{.SliceName}}) Shuffle() {{.SliceName}} {
     copy(result, rcv)
     for i := 0; i < numItems; i++ {
         r := i + rand.Intn(numItems-i)
-        result[r], result[i] = result[i], result[r]
+        result.Swap(i, r)
     }
     return result
 }
@@ -108,11 +115,13 @@ func (rcv {{.SliceName}}) CountBy(predicate func({{.Type}}) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of {{.SliceName}} containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
+// MinBy returns an element of {{.SliceName}} containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Returns error if no elements.
 func (rcv {{.SliceName}}) MinBy(less func({{.Type}}, {{.Type}}) bool) (result {{.Type}}, err error) {
 	l := len(rcv)
 	if l == 0 {
-		err = errors.New("cannot determine the Min of an empty slice")
+		err = errors.New("Cannot determine the MinBy of an empty slice.")
 		return
 	}
 	m := 0
@@ -127,11 +136,11 @@ func (rcv {{.SliceName}}) MinBy(less func({{.Type}}, {{.Type}}) bool) (result {{
 
 // MaxBy returns an element of {{.SliceName}} containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
+// element is returned. Returns error if no elements.
 func (rcv {{.SliceName}}) MaxBy(less func({{.Type}}, {{.Type}}) bool) (result {{.Type}}, err error) {
 	l := len(rcv)
 	if l == 0 {
-		err = errors.New("cannot determine the MaxBy of an empty slice")
+		err = errors.New("Cannot determine the MaxBy of an empty slice.")
 		return
 	}
 	m := 0

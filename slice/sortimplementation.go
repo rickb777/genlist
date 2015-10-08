@@ -5,6 +5,8 @@ import "github.com/clipperhouse/typewriter"
 var sortImplementation = &typewriter.Template{
 	Name: "sortImplementation",
 	Text: `
+
+//-------------------------------------------------------------------------------------------------
 // Sort implementation based on http://golang.org/pkg/sort/#Sort, see top of this file
 
 func swap{{.SliceName}}(rcv {{.SliceName}}, a, b int) {
