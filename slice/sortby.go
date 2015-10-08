@@ -3,10 +3,10 @@ package slice
 import "github.com/clipperhouse/typewriter"
 
 var sortBy = &typewriter.Template{
-	Name: "SortBy",
+	Name: "SortWith",
 	Text: `
-// SortBy returns a new ordered {{.SliceName}}, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
-func (rcv {{.SliceName}}) SortBy(less func({{.Type}}, {{.Type}}) bool) {{.SliceName}} {
+// SortWith returns a new ordered {{.SliceName}}, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+func (rcv {{.SliceName}}) SortWith(less func({{.Type}}, {{.Type}}) bool) {{.SliceName}} {
 	result := make({{.SliceName}}, len(rcv))
 	copy(result, rcv)
 	// Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
@@ -20,8 +20,8 @@ func (rcv {{.SliceName}}) SortBy(less func({{.Type}}, {{.Type}}) bool) {{.SliceN
 	return result
 }
 
-// IsSortedBy reports whether an instance of {{.SliceName}} is sorted, using the pass func to define ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
-func (rcv {{.SliceName}}) IsSortedBy(less func({{.Type}}, {{.Type}}) bool) bool {
+// IsSortedWith reports whether an instance of {{.SliceName}} is sorted, using the pass func to define ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+func (rcv {{.SliceName}}) IsSortedWith(less func({{.Type}}, {{.Type}}) bool) bool {
 	n := len(rcv)
 	for i := n - 1; i > 0; i-- {
 		if less(rcv[i], rcv[i-1]) {
@@ -36,7 +36,7 @@ func (rcv {{.SliceName}}) SortByDesc(less func({{.Type}}, {{.Type}}) bool) {{.Sl
 	greater := func(a, b {{.Type}}) bool {
 		return less(b, a)
 	}
-	return rcv.SortBy(greater)
+	return rcv.SortWith(greater)
 }
 
 // IsSortedDesc reports whether an instance of {{.SliceName}} is sorted in descending order, using the pass func to define ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
@@ -44,6 +44,6 @@ func (rcv {{.SliceName}}) IsSortedByDesc(less func({{.Type}}, {{.Type}}) bool) b
 	greater := func(a, b {{.Type}}) bool {
 		return less(b, a)
 	}
-	return rcv.IsSortedBy(greater)
+	return rcv.IsSortedWith(greater)
 }
 `}

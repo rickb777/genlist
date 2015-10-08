@@ -39,19 +39,19 @@ func TestSortBy(t *testing.T) {
 		return a.Name < b.Name
 	}
 
-	sort1 := things.SortBy(name)
+	sort1 := things.SortWith(name)
 
 	sorted1 := ThingSlice{first, fourth, second, third, anotherThird}
 
 	if !reflect.DeepEqual(sort1, ThingSlice{first, fourth, second, third, anotherThird}) {
-		t.Errorf("SortBy name should be %v, got %v", sorted1, sort1)
+		t.Errorf("SortWith name should be %v, got %v", sorted1, sort1)
 	}
 
-	if !sort1.IsSortedBy(name) {
-		t.Errorf("IsSortedBy name should be true")
+	if !sort1.IsSortedWith(name) {
+		t.Errorf("IsSortedWith name should be true")
 	}
 
-	if things.IsSortedBy(name) {
+	if things.IsSortedWith(name) {
 		t.Errorf("things should not be sorted by name")
 	}
 
@@ -72,7 +72,7 @@ func TestSortBy(t *testing.T) {
 	}
 
 	// intended to hit threshold to invoke quicksort (7)
-	sort3 := lotsOfThings.SortBy(name)
+	sort3 := lotsOfThings.SortWith(name)
 
 	sorted3 := ThingSlice{eighth, fifth, first, fourth, second, seventh, sixth, third}
 
@@ -89,7 +89,7 @@ func TestSortBy(t *testing.T) {
 	evenMore = append(evenMore, lotsOfThings...)
 	evenMore = append(evenMore, lotsOfThings...)
 
-	sort4 := evenMore.SortBy(name)
+	sort4 := evenMore.SortWith(name)
 
 	sorted4 := ThingSlice{eighth, eighth, eighth, eighth, eighth, eighth}
 	sorted4 = append(sorted4, appendMany(fifth, 6)...)

@@ -1,4 +1,4 @@
-package slice
+package option
 
 import (
 	"bytes"
@@ -44,7 +44,7 @@ func TestWrite(t *testing.T) {
 	for _, typ := range pkg.Types {
 		var b bytes.Buffer
 
-		sw := NewSliceWriter()
+		sw := NewOptionWriter()
 
 		b.WriteString(fmt.Sprintf("package %s\n\n", pkg.Name()))
 		sw.Write(&b, typ)

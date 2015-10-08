@@ -135,7 +135,7 @@ func (sw *SliceWriter) Write(w io.Writer, typ typewriter.Type) error {
 
 func includeSortImplementation(values []typewriter.TagValue) bool {
 	for _, v := range values {
-		if strings.HasPrefix(v.Name, "SortBy") {
+		if strings.HasPrefix(v.Name, "SortWith") {
 			return true
 		}
 	}

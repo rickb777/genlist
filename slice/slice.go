@@ -159,3 +159,9 @@ Outer:
 }
 `,
 }
+
+// TODO PadTo, TakeWhile, DropWhile, Drop, HeadOption, LastOption,
+// TODO IndexOf, IndexWhere, LastIndexOf, LastIndexWhere
+// TODO MkString, Equals, StartsWith, EndsWith, IteratorChan
+// TODO FlatMap, Fold, FoldLeft, FoldRight
+// TODO Find replaces First
