@@ -88,6 +88,49 @@ func (slice OtherSlice) Partition(p func(Other) bool) (matching OtherSlice, othe
 	return
 }
 
+// Take returns a new OtherSlice containing the leading n elements of the source slice.
+// If n is greater than the size of the slice, the whole slice is returned.
+func (slice OtherSlice) Take(n int) OtherSlice {
+	if n > len(slice) {
+		return slice
+	} else {
+		return slice[0:n]
+	}
+}
+
+// Drop returns a new OtherSlice without the leading n elements of the source slice.
+// If n is greater than the size of the slice, the whole slice is returned.
+func (slice OtherSlice) Drop(n int) OtherSlice {
+	l := len(slice)
+	if n > l {
+		return slice[l:]
+	} else {
+		return slice[n:]
+	}
+}
+
+// TakeLast returns a new OtherSlice containing the trailing n elements of the source slice.
+// If n is greater than the size of the slice, the whole slice is returned.
+func (slice OtherSlice) TakeLast(n int) OtherSlice {
+	l := len(slice)
+	if n > l {
+		return slice
+	} else {
+		return slice[l-n:]
+	}
+}
+
+// DropLast returns a new OtherSlice without the trailing n elements of the source slice.
+// If n is greater than the size of the slice, the whole slice is returned.
+func (slice OtherSlice) DropLast(n int) OtherSlice {
+	l := len(slice)
+	if n > l {
+		return slice[l:]
+	} else {
+		return slice[0 : l-n]
+	}
+}
+
 // TakeWhile returns a new OtherSlice containing the leading elements of the source slice. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.

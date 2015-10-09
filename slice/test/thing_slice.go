@@ -92,6 +92,49 @@ func (slice ThingSlice) Partition(p func(Thing) bool) (matching ThingSlice, othe
 	return
 }
 
+// Take returns a new ThingSlice containing the leading n elements of the source slice.
+// If n is greater than the size of the slice, the whole slice is returned.
+func (slice ThingSlice) Take(n int) ThingSlice {
+	if n > len(slice) {
+		return slice
+	} else {
+		return slice[0:n]
+	}
+}
+
+// Drop returns a new ThingSlice without the leading n elements of the source slice.
+// If n is greater than the size of the slice, the whole slice is returned.
+func (slice ThingSlice) Drop(n int) ThingSlice {
+	l := len(slice)
+	if n > l {
+		return slice[l:]
+	} else {
+		return slice[n:]
+	}
+}
+
+// TakeLast returns a new ThingSlice containing the trailing n elements of the source slice.
+// If n is greater than the size of the slice, the whole slice is returned.
+func (slice ThingSlice) TakeLast(n int) ThingSlice {
+	l := len(slice)
+	if n > l {
+		return slice
+	} else {
+		return slice[l-n:]
+	}
+}
+
+// DropLast returns a new ThingSlice without the trailing n elements of the source slice.
+// If n is greater than the size of the slice, the whole slice is returned.
+func (slice ThingSlice) DropLast(n int) ThingSlice {
+	l := len(slice)
+	if n > l {
+		return slice[l:]
+	} else {
+		return slice[0 : l-n]
+	}
+}
+
 // TakeWhile returns a new ThingSlice containing the leading elements of the source slice. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
