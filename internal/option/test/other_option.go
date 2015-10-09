@@ -157,3 +157,29 @@ func (x noOther) Foreach(fn func(Other)) {
 func (x noOther) Filter(predicate func(Other) bool) (result OptionalOther) {
 	return x
 }
+
+// Contains verifies that a given value is contained in OptionalOther.
+func (v SomeOther) Contains(value Other) bool {
+	if Other(v) == value {
+		return true
+	}
+	return false
+}
+
+// Count gives the number elements of OptionalOther that match a certain value.
+func (v SomeOther) Count(value Other) (result int) {
+	if Other(v) == value {
+		result++
+	}
+	return
+}
+
+// Contains verifies that a given value is contained in OptionalOther.
+func (v noOther) Contains(value Other) bool {
+	return false
+}
+
+// Count gives the number elements of OptionalOther that match a certain value.
+func (v noOther) Count(value Other) int {
+	return 0
+}

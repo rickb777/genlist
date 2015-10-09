@@ -9,11 +9,11 @@ type FooSeq interface {
 	Len() int
 	IsEmpty() bool
 	NonEmpty() bool
-	Find(fn func(Foo) bool) OptionalFoo
+	//Find(fn func(Foo) bool) OptionalFoo
 	Exists(fn func(Foo) bool) bool
 	Forall(fn func(Foo) bool) bool
 	Foreach(fn func(Foo))
-	Filter(fn func(Foo) bool) (result FooSeq)
+	//Filter(fn func(Foo) bool) (result FooSeq)
 	ToList() FooList
 }
 

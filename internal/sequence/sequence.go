@@ -9,11 +9,11 @@ type {{.SequenceName}} interface {
 	Len() int
 	IsEmpty() bool
 	NonEmpty() bool
-	Find(fn func({{.Type}}) bool) Optional{{.Type}}
+	//Find(fn func({{.Type}}) bool) Optional{{.Type}}
 	Exists(fn func({{.Type}}) bool) bool
 	Forall(fn func({{.Type}}) bool) bool
 	Foreach(fn func({{.Type}}))
-	Filter(fn func({{.Type}}) bool) (result {{.SequenceName}})
+	//Filter(fn func({{.Type}}) bool) (result {{.SequenceName}})
 	ToList() {{.Type}}List
 }
 

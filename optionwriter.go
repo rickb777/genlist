@@ -4,6 +4,7 @@ import (
 	"io"
 	"github.com/rickb777/genlist/internal/option"
 	"github.com/clipperhouse/typewriter"
+"text/template"
 )
 
 func init() {
@@ -55,22 +56,13 @@ func (sw *OptionWriter) Write(w io.Writer, typ typewriter.Type) error {
 		return err
 	}
 
+	_, err = sw.writeTemplateIfPossible(w, typ, option.Comparable)
+	if err != nil {
+		return err
+	}
+
 	for _, v := range tag.Values {
-		var tp typewriter.Type
-
-		if len(v.TypeParameters) > 0 {
-			tp = v.TypeParameters[0]
-		}
-
-		m := option.Model{
-			Type:          typ,
-			OptionName:     OptionName(typ),
-			TypeParameter: tp,
-			TagValue:      v,
-		}
-
-		tmpl, err := option.Templates.ByTagValue(typ, v)
-
+		err = sw.writeOne(w, typ, v)
 		if err != nil {
 			return err
 		}
@@ -82,3 +74,51 @@ func (sw *OptionWriter) Write(w io.Writer, typ typewriter.Type) error {
 
 	return nil
 }
+
+func (sw *OptionWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type, t typewriter.Template) (bool, error) {
+	//	fmt.Printf("writeTemplateIfPossible %s\n", t.Name)
+	if t.TypeConstraint.TryType(typ) == nil {
+		v := typewriter.TagValue{}
+		v.Name = t.Name
+		tmpl, err := t.Parse()
+		if err != nil {
+			return false, err
+		}
+		err = sw.writeTemplate(w, typ, v, tmpl)
+		return err == nil, err
+	}
+	return false, nil
+}
+
+func (sw *OptionWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.TagValue) error {
+	tmpl, err := option.Templates.ByTagValue(typ, v)
+
+	if err != nil {
+		return err
+	}
+
+	return sw.writeTemplate(w, typ, v, tmpl)
+}
+
+func (sw *OptionWriter) writeTemplate(w io.Writer, typ typewriter.Type, v typewriter.TagValue, tmpl *template.Template) error {
+	var tp typewriter.Type
+
+	if len(v.TypeParameters) > 0 {
+		tp = v.TypeParameters[0]
+	}
+
+	m := option.Model{
+		Type:          typ,
+		OptionName:    OptionName(typ),
+		TypeParameter: tp,
+		TagValue:      v,
+	}
+
+	//	fmt.Printf("tmpl.Execute %s %s\n", typ.Name, v.Name)
+	if err := tmpl.Execute(w, m); err != nil {
+		return err
+	}
+
+	return nil
+}
+
