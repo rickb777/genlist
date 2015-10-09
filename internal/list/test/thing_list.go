@@ -15,6 +15,9 @@ import (
 // license that can be found at http://golang.org/LICENSE.
 
 // ThingList is a slice of type Thing. Use it where you would use []Thing.
+// List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
+// See e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
+
 type ThingList []Thing
 
 // Len returns the number of items in the list.
@@ -246,6 +249,11 @@ Outer:
 		result = append(result, v)
 	}
 	return result
+}
+
+// ToList simply returns the list in this case, but is part of the Seq interface.
+func (list ThingList) ToList() ThingList {
+	return list
 }
 
 // Min returns an element of ThingList containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy

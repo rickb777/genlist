@@ -41,6 +41,10 @@ func TestSomeOther(t *testing.T) {
 		t.Errorf("Filter should be 60")
 	}
 
+	if someThing.Find(func(Other) bool { return true }).Get() != 60 {
+		t.Errorf("Find should be 60")
+	}
+
 	if someThing.Filter(func(Other) bool { return false }).NonEmpty() {
 		t.Errorf("Filter should be empty")
 	}
@@ -85,6 +89,10 @@ func TestNoOther(t *testing.T) {
 
 	if noThing.Filter(func(Other) bool { return true }).NonEmpty() {
 		t.Errorf("Filter should be empty")
+	}
+
+	if noThing.Find(func(Other) bool { return true }).NonEmpty() {
+		t.Errorf("Find should be empty")
 	}
 
 	x := Other(0)

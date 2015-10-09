@@ -5,6 +5,9 @@ import "github.com/clipperhouse/typewriter"
 var List = &typewriter.Template{
 	Name: "List",
 	Text: `// {{.ListName}} is a slice of type {{.Type}}. Use it where you would use []{{.Type}}.
+// List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
+// See e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
+
 type {{.ListName}} []{{.Type}}
 
 // Len returns the number of items in the list.
@@ -236,6 +239,11 @@ Outer:
 		result = append(result, v)
 	}
 	return result
+}
+
+// ToList simply returns the list in this case, but is part of the Seq interface.
+func (list {{.ListName}}) ToList() {{.ListName}} {
+	return list
 }
 `,
 }

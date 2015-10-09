@@ -2,8 +2,8 @@ package list
 
 import "github.com/clipperhouse/typewriter"
 
-var Options = &typewriter.Template{
-	Name: "Options",
+var Option = &typewriter.Template{
+	Name: "Option",
 	Text: `
 // First returns the first element that returns true for the passed func. Returns error if no elements return true. See: http://clipperhouse.github.io/gen/#First
 func (list {{.ListName}}) Find(fn func({{.Type}}) bool) Option{{.Type}} {

@@ -5,13 +5,17 @@
 package main
 
 // OptionalOther is an optional of type Other. Use it where you want to be explicit about the presence	or absence of data.
+// Optional values follow a similar pattern to Scala Options.
+// See e.g. http://www.scala-lang.org/api/2.11.7/index.html#scala.Option
+
 type OptionalOther interface {
-	Len() int
-	IsEmpty() bool
-	NonEmpty() bool
 	Get() Other
 	GetOrElse(d func() Other) Other
 	OrElse(alternative func() OptionalOther) OptionalOther
+	Len() int
+	IsEmpty() bool
+	NonEmpty() bool
+	Find(fn func(Other) bool) OptionalOther
 	Exists(fn func(Other) bool) bool
 	Forall(fn func(Other) bool) bool
 	Foreach(fn func(Other))
@@ -24,21 +28,6 @@ type SomeOther Other
 
 // cross-check
 var _ OptionalOther = new(SomeOther)
-
-// Len returns 1
-func (x SomeOther) Len() int {
-	return 1
-}
-
-// IsEmpty returns false.
-func (x SomeOther) IsEmpty() bool {
-	return false
-}
-
-// NonEmpty returns true.
-func (x SomeOther) NonEmpty() bool {
-	return true
-}
 
 // Get returns the contained element if present. Otherwise it panics.
 func (x SomeOther) Get() Other {
@@ -55,14 +44,37 @@ func (x SomeOther) OrElse(alternative func() OptionalOther) OptionalOther {
 	return x
 }
 
+// Len returns 1
+func (x SomeOther) Len() int {
+	return 1
+}
+
+// IsEmpty returns false.
+func (x SomeOther) IsEmpty() bool {
+	return false
+}
+
+// NonEmpty returns true.
+func (x SomeOther) NonEmpty() bool {
+	return true
+}
+
+// Find returns the contained value if it matches the predicate.
+func (x SomeOther) Find(predicate func(Other) bool) OptionalOther {
+	if predicate(Other(x)) {
+		return x
+	}
+	return NoOther()
+}
+
 // Exists verifies that one or more elements of SomeOther return true for the passed predicate.
 func (x SomeOther) Exists(predicate func(Other) bool) bool {
 	return predicate(Other(x))
 }
 
 // Forall verifies that all elements of OptionalOther return true for the passed predicate.
-func (x SomeOther) Forall(fn func(Other) bool) bool {
-	return fn(Other(x))
+func (x SomeOther) Forall(predicate func(Other) bool) bool {
+	return predicate(Other(x))
 }
 
 // Foreach iterates over OptionalOther and executes the passed function against each element.
@@ -71,7 +83,7 @@ func (x SomeOther) Foreach(fn func(Other)) {
 }
 
 // Filter returns a OptionalOther whose elements return true for a predicate.
-func (x SomeOther) Filter(predicate func(Other) bool) (result OptionalOther) {
+func (x SomeOther) Filter(predicate func(Other) bool) OptionalOther {
 	if predicate(Other(x)) {
 		return x
 	}
@@ -89,21 +101,6 @@ func NoOther() OptionalOther {
 	return noOther{}
 }
 
-// Len returns 0
-func (x noOther) Len() int {
-	return 0
-}
-
-// IsEmpty returns true.
-func (x noOther) IsEmpty() bool {
-	return true
-}
-
-// NonEmpty returns false.
-func (x noOther) NonEmpty() bool {
-	return false
-}
-
 // Get returns the contained element if present. Otherwise it panics.
 func (x noOther) Get() Other {
 	panic("Absent option - this indicates a promgramming error.")
@@ -119,14 +116,34 @@ func (x noOther) OrElse(alternative func() OptionalOther) OptionalOther {
 	return alternative()
 }
 
+// Len returns 0
+func (x noOther) Len() int {
+	return 0
+}
+
+// IsEmpty returns true.
+func (x noOther) IsEmpty() bool {
+	return true
+}
+
+// NonEmpty returns false.
+func (x noOther) NonEmpty() bool {
+	return false
+}
+
+// Find can never succeed so returns NoOther.
+func (x noOther) Find(predicate func(Other) bool) OptionalOther {
+	return x
+}
+
 // Exists can never succeed so returns false.
-func (x noOther) Exists(fn func(Other) bool) bool {
+func (x noOther) Exists(predicate func(Other) bool) bool {
 	return false
 }
 
 // Forall verifies that all elements of OptionalOther return true for the passed predicate, which
 // is always true.
-func (x noOther) Forall(fn func(Other) bool) bool {
+func (x noOther) Forall(predicate func(Other) bool) bool {
 	return true
 }
 

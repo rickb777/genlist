@@ -53,7 +53,7 @@ func TestListWrite(t *testing.T) {
 		src := b.String()
 
 		fset := token.NewFileSet()
-		if _, err := parser.ParseFile(fset, "testwrite.go", src, 0); err != nil {
+		if _, err := parser.ParseFile(fset, "testwritelist.go", src, 0); err != nil {
 			t.Error(err)
 		}
 	}
