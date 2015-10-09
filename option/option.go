@@ -102,7 +102,7 @@ func (x No{{.Type}}) NonEmpty() bool {
 
 // Get returns the contained element if present. Otherwise it panics.
 func (x No{{.Type}}) Get() {{.Type}} {
-	panic("Absent option")
+	panic("Absent option - this indicates a promgramming error.")
 }
 
 // GetOrElse returns the contained element if present. Otherwise it returns a default.
