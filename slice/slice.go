@@ -82,6 +82,34 @@ func (slice {{.SliceName}}) Partition(p func({{.Type}}) bool) (matching {{.Slice
 	return
 }
 
+// TakeWhile returns a new {{.SliceName}} containing the leading elements of the source slice. Whilst the
+// predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
+// elemense are excluded.
+func (slice {{.SliceName}}) TakeWhile(p func({{.Type}}) bool) (result {{.SliceName}}) {
+	for _, v := range slice {
+		if p(v) {
+			result = append(result, v)
+		} else {
+			return
+		}
+	}
+	return
+}
+
+// DropWhile returns a new {{.SliceName}} containing the trailing elements of the source slice. Whilst the
+// predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
+// elemense are added.
+func (slice {{.SliceName}}) DropWhile(p func({{.Type}}) bool) (result {{.SliceName}}) {
+	adding := false
+	for _, v := range slice {
+		if !p(v) || adding {
+			adding = true
+			result = append(result, v)
+		}
+	}
+	return
+}
+
 // Reverse returns a copy of {{.SliceName}} with all elements in the reverse order.
 func (rcv {{.SliceName}}) Reverse() {{.SliceName}} {
     numItems := len(rcv)
