@@ -2,9 +2,10 @@ package list
 
 import "github.com/rickb777/typewriter"
 
-var SortWith = &typewriter.Template{
+var sortWith = &typewriter.Template{
 	Name: "SortWith",
 	Text: `
+
 
 //-----------------------------------------------------------------------------
 // Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
@@ -13,7 +14,8 @@ var SortWith = &typewriter.Template{
 // license that can be found at http://golang.org/LICENSE.
 //-----------------------------------------------------------------------------
 
-// SortWith returns a new ordered {{.Type}}List, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+
+// SortWith returns a new ordered {{.Type}}List, determined by a func defining ‘less’.
 func (list {{.Type}}List) SortWith(less func({{.Type}}, {{.Type}}) bool) {{.Type}}List {
 	result := make({{.Type}}List, len(list))
 	copy(result, list)
@@ -28,7 +30,7 @@ func (list {{.Type}}List) SortWith(less func({{.Type}}, {{.Type}}) bool) {{.Type
 	return result
 }
 
-// IsSortedWith reports whether an instance of {{.Type}}List is sorted, using the pass func to define ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+// IsSortedWith reports whether an instance of {{.Type}}List is sorted, using the pass func to define ‘less’.
 func (list {{.Type}}List) IsSortedWith(less func({{.Type}}, {{.Type}}) bool) bool {
 	n := len(list)
 	for i := n - 1; i > 0; i-- {
@@ -39,7 +41,7 @@ func (list {{.Type}}List) IsSortedWith(less func({{.Type}}, {{.Type}}) bool) boo
 	return true
 }
 
-// SortWithDesc returns a new, descending-ordered {{.Type}}List, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+// SortWithDesc returns a new, descending-ordered {{.Type}}List, determined by a func defining ‘less’.
 func (list {{.Type}}List) SortWithDesc(less func({{.Type}}, {{.Type}}) bool) {{.Type}}List {
 	greater := func(a, b {{.Type}}) bool {
 		return less(b, a)
@@ -47,7 +49,7 @@ func (list {{.Type}}List) SortWithDesc(less func({{.Type}}, {{.Type}}) bool) {{.
 	return list.SortWith(greater)
 }
 
-// IsSortedDesc reports whether an instance of {{.Type}}List is sorted in descending order, using the pass func to define ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+// IsSortedDesc reports whether an instance of {{.Type}}List is sorted in descending order, using the pass func to define ‘less’.
 func (list {{.Type}}List) IsSortedWithDesc(less func({{.Type}}, {{.Type}}) bool) bool {
 	greater := func(a, b {{.Type}}) bool {
 		return less(b, a)

@@ -36,11 +36,47 @@ func (sw *SequenceWriter) Write(w io.Writer, typ typewriter.Type) error {
 	}
 
 	// start with the option template
-	tmpl, err := sequence.Templates.ByTag(typ, tag)
+	tmpl, err := sequence.Sequence.Parse()
 
 	if err != nil {
 		return err
 	}
 
-	return writeBasicTemplate(w, tmpl, typ)
+	if err := writeBasicTemplate(w, tmpl, typ); err != nil {
+		return err
+	}
+
+	for _, v := range tag.Values {
+		err = sw.writeOne(w, typ, v)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (sw *SequenceWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type, t typewriter.Template) (bool, error) {
+	//	fmt.Printf("writeTemplateIfPossible %s\n", t.Name)
+	if t.TypeConstraint.TryType(typ) == nil {
+		v := typewriter.TagValue{}
+		v.Name = t.Name
+		tmpl, err := t.Parse()
+		if err != nil {
+			return false, err
+		}
+		err = writeTaggedTemplate(w, tmpl, typ, v)
+		return err == nil, err
+	}
+	return false, nil
+}
+
+func (sw *SequenceWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.TagValue) error {
+	tmpl, err := sequence.Templates.ByTagValue(typ, v)
+
+	if err != nil {
+		return err
+	}
+
+	return writeTaggedTemplate(w, tmpl, typ, v)
 }

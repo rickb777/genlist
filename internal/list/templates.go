@@ -5,11 +5,7 @@ import (
 )
 
 var Templates = typewriter.TemplateSlice{
-	AggregateT,
-	NumericT,
-	OrderedT,
-	GroupByT,
-	MapToT,
-	SortWith,
-	Option,
+	withT,
+	sortWith,
+	option,
 }

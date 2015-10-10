@@ -320,7 +320,23 @@ func (list ThingList) Max(less func(Thing, Thing) bool) (result Thing, err error
 	return
 }
 
-// GroupByOther groups elements into a map keyed by Other. See: http://clipperhouse.github.io/gen/#GroupBy
+// MapToOther transforms a list of Other from ThingList.
+func (list ThingList) MapToOther(fn func(Thing) Other) (result OtherList) {
+	for _, v := range list {
+		result = append(result, fn(v))
+	}
+	return
+}
+
+// AggregateOther iterates over ThingList, operating on each element while maintaining ‘state’.
+func (list ThingList) AggregateOther(fn func(Other, Thing) Other) (result Other) {
+	for _, v := range list {
+		result = fn(result, v)
+	}
+	return
+}
+
+// GroupByOther groups elements into a map keyed by Other.
 func (list ThingList) GroupByOther(fn func(Thing) Other) map[Other]ThingList {
 	result := make(map[Other]ThingList)
 	for _, v := range list {
@@ -328,46 +344,6 @@ func (list ThingList) GroupByOther(fn func(Thing) Other) map[Other]ThingList {
 		result[key] = append(result[key], v)
 	}
 	return result
-}
-
-// MinOther selects the least value of Other in ThingList.
-// Returns error on ThingList with no elements. See: http://clipperhouse.github.io/gen/#MinCustom
-func (list ThingList) MinOther(fn func(Thing) Other) (result Other, err error) {
-	l := len(list)
-	if l == 0 {
-		err = errors.New("cannot determine Min of zero-length ThingList")
-		return
-	}
-	result = fn(list[0])
-	if l > 1 {
-		for _, v := range list[1:] {
-			f := fn(v)
-			if f < result {
-				result = f
-			}
-		}
-	}
-	return
-}
-
-// MaxOther selects the largest value of Other in ThingList.
-// Returns error on ThingList with no elements. See: http://clipperhouse.github.io/gen/#MaxCustom
-func (list ThingList) MaxOther(fn func(Thing) Other) (result Other, err error) {
-	l := len(list)
-	if l == 0 {
-		err = errors.New("cannot determine Max of zero-length ThingList")
-		return
-	}
-	result = fn(list[0])
-	if l > 1 {
-		for _, v := range list[1:] {
-			f := fn(v)
-			if f > result {
-				result = f
-			}
-		}
-	}
-	return
 }
 
 // SumOther sums Thing over elements in ThingList. See: http://clipperhouse.github.io/gen/#Sum
@@ -392,18 +368,42 @@ func (list ThingList) MeanOther(fn func(Thing) Other) (result Other, err error) 
 	return
 }
 
-// AggregateOther iterates over ThingList, operating on each element while maintaining ‘state’. See: http://clipperhouse.github.io/gen/#Aggregate
-func (list ThingList) AggregateOther(fn func(Other, Thing) Other) (result Other) {
-	for _, v := range list {
-		result = fn(result, v)
+// MinOther selects the least value of Other in ThingList.
+// Returns error on ThingList with no elements.
+func (list ThingList) MinOther(fn func(Thing) Other) (result Other, err error) {
+	l := len(list)
+	if l == 0 {
+		err = errors.New("cannot determine Min of zero-length ThingList")
+		return
+	}
+	result = fn(list[0])
+	if l > 1 {
+		for _, v := range list[1:] {
+			f := fn(v)
+			if f < result {
+				result = f
+			}
+		}
 	}
 	return
 }
 
-// MapToOther transforms a list of Other from ThingList.
-func (list ThingList) MapToOther(fn func(Thing) Other) (result OtherList) {
-	for _, v := range list {
-		result = append(result, fn(v))
+// MaxOther selects the largest value of Other in ThingList.
+// Returns error on ThingList with no elements.
+func (list ThingList) MaxOther(fn func(Thing) Other) (result Other, err error) {
+	l := len(list)
+	if l == 0 {
+		err = errors.New("cannot determine Max of zero-length ThingList")
+		return
+	}
+	result = fn(list[0])
+	if l > 1 {
+		for _, v := range list[1:] {
+			f := fn(v)
+			if f > result {
+				result = f
+			}
+		}
 	}
 	return
 }
@@ -415,7 +415,7 @@ func (list ThingList) MapToOther(fn func(Thing) Other) (result OtherList) {
 // license that can be found at http://golang.org/LICENSE.
 //-----------------------------------------------------------------------------
 
-// SortWith returns a new ordered ThingList, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+// SortWith returns a new ordered ThingList, determined by a func defining ‘less’.
 func (list ThingList) SortWith(less func(Thing, Thing) bool) ThingList {
 	result := make(ThingList, len(list))
 	copy(result, list)
@@ -430,7 +430,7 @@ func (list ThingList) SortWith(less func(Thing, Thing) bool) ThingList {
 	return result
 }
 
-// IsSortedWith reports whether an instance of ThingList is sorted, using the pass func to define ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+// IsSortedWith reports whether an instance of ThingList is sorted, using the pass func to define ‘less’.
 func (list ThingList) IsSortedWith(less func(Thing, Thing) bool) bool {
 	n := len(list)
 	for i := n - 1; i > 0; i-- {
@@ -441,7 +441,7 @@ func (list ThingList) IsSortedWith(less func(Thing, Thing) bool) bool {
 	return true
 }
 
-// SortWithDesc returns a new, descending-ordered ThingList, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+// SortWithDesc returns a new, descending-ordered ThingList, determined by a func defining ‘less’.
 func (list ThingList) SortWithDesc(less func(Thing, Thing) bool) ThingList {
 	greater := func(a, b Thing) bool {
 		return less(b, a)
@@ -449,7 +449,7 @@ func (list ThingList) SortWithDesc(less func(Thing, Thing) bool) ThingList {
 	return list.SortWith(greater)
 }
 
-// IsSortedDesc reports whether an instance of ThingList is sorted in descending order, using the pass func to define ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
+// IsSortedDesc reports whether an instance of ThingList is sorted in descending order, using the pass func to define ‘less’.
 func (list ThingList) IsSortedWithDesc(less func(Thing, Thing) bool) bool {
 	greater := func(a, b Thing) bool {
 		return less(b, a)

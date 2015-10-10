@@ -2,7 +2,7 @@ package list
 
 import "github.com/rickb777/typewriter"
 
-var Option = &typewriter.Template{
+var option = &typewriter.Template{
 	Name: "Option",
 	Text: `
 // First returns the first element that returns true for the passed func. Returns error if no elements return true. See: http://clipperhouse.github.io/gen/#First
