@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	_ "github.com/rickb777/genlist"
-	"github.com/clipperhouse/typewriter"
+	"github.com/rickb777/typewriter"
 )
 
 func main() {

@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/rickb777/genlist/internal/option"
-	"github.com/clipperhouse/typewriter"
+	"github.com/rickb777/typewriter"
 )
 
 var pkg *typewriter.Package

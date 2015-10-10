@@ -1,6 +1,6 @@
 package list
 
-import "github.com/clipperhouse/typewriter"
+import "github.com/rickb777/typewriter"
 
 var MapToT = &typewriter.Template{
 	Name: "MapTo",

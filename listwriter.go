@@ -6,7 +6,7 @@ import (
 	"text/template"
 
 	"github.com/rickb777/genlist/internal/list"
-	"github.com/clipperhouse/typewriter"
+	"github.com/rickb777/typewriter"
 )
 
 func init() {

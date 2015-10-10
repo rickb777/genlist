@@ -3,7 +3,7 @@ package genlist
 import (
 	"io"
 	"github.com/rickb777/genlist/internal/option"
-	"github.com/clipperhouse/typewriter"
+	"github.com/rickb777/typewriter"
 "text/template"
 )
 

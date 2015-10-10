@@ -1,6 +1,6 @@
 package sequence
 
-import "github.com/clipperhouse/typewriter"
+import "github.com/rickb777/typewriter"
 
 var Comparable = typewriter.Template{
 	Name: "Comparable",

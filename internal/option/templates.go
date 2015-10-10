@@ -1,7 +1,7 @@
 package option
 
 import (
-	"github.com/clipperhouse/typewriter"
+	"github.com/rickb777/typewriter"
 )
 
 // a convenience for passing values into templates; in MVC it'd be called a view model
