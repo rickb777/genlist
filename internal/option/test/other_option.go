@@ -4,7 +4,9 @@
 
 package main
 
-// OptionalOther is an optional of type Other. Use it where you want to be explicit about the presence	or absence of data.
+// OptionalOther is an optional of type Other. Use it where you want to be explicit about
+// the presence or absence of data.
+//
 // Optional values follow a similar pattern to Scala Options.
 // See e.g. http://www.scala-lang.org/api/2.11.7/index.html#scala.Option
 

@@ -5,8 +5,8 @@ import "github.com/rickb777/typewriter"
 var MapToT = &typewriter.Template{
 	Name: "MapTo",
 	Text: `
-// MapTo{{.TypeParameter.LongName}} transforms a list of {{.TypeParameter}} from {{.ListName}}.
-func (list {{.ListName}}) MapTo{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}List) {
+// MapTo{{.TypeParameter.LongName}} transforms a list of {{.TypeParameter}} from {{.Type}}List.
+func (list {{.Type}}List) MapTo{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}List) {
 	for _, v := range list {
 		result = append(result, fn(v))
 	}

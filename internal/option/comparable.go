@@ -5,7 +5,7 @@ import "github.com/rickb777/typewriter"
 var Comparable = typewriter.Template{
 	Name: "Comparable",
 	Text: `
-// Contains verifies that a given value is contained in {{.OptionName}}.
+// Contains verifies that a given value is contained in Optional{{.Type}}.
 func (v Some{{.Type}}) Contains(value {{.Type}}) bool {
 	if {{.Type}}(v) == value {
 		return true
@@ -13,7 +13,7 @@ func (v Some{{.Type}}) Contains(value {{.Type}}) bool {
 	return false
 }
 
-// Count gives the number elements of {{.OptionName}} that match a certain value.
+// Count gives the number elements of Optional{{.Type}} that match a certain value.
 func (v Some{{.Type}}) Count(value {{.Type}}) (result int) {
 	if {{.Type}}(v) == value {
 		result++
@@ -21,12 +21,12 @@ func (v Some{{.Type}}) Count(value {{.Type}}) (result int) {
 	return
 }
 
-// Contains verifies that a given value is contained in {{.OptionName}}.
+// Contains verifies that a given value is contained in Optional{{.Type}}.
 func (v no{{.Type}}) Contains(value {{.Type}}) bool {
 	return false
 }
 
-// Count gives the number elements of {{.OptionName}} that match a certain value.
+// Count gives the number elements of Optional{{.Type}} that match a certain value.
 func (v no{{.Type}}) Count(value {{.Type}}) int {
 	return 0
 }

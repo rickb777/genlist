@@ -16,10 +16,6 @@ func init() {
 	}
 }
 
-func ListName(typ typewriter.Type) string {
-	return typ.Name + "List"
-}
-
 type ListWriter struct{}
 
 func NewListWriter() *ListWriter {
@@ -62,7 +58,6 @@ func (sw *ListWriter) Write(w io.Writer, typ typewriter.Type) error {
 
 	m := list.Model{
 		Type:      typ,
-		ListName: ListName(typ),
 	}
 
 	if err := tmpl.Execute(w, m); err != nil {
@@ -118,7 +113,7 @@ func (sw *ListWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type, 
 		if err != nil {
 			return false, err
 		}
-		err = sw.writeTemplate(w, typ, v, tmpl)
+		err = writeTemplate(w, typ, v, tmpl)
 		return err == nil, err
 	}
 	return false, nil
@@ -131,10 +126,10 @@ func (sw *ListWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.Ta
 		return err
 	}
 
-	return sw.writeTemplate(w, typ, v, tmpl)
+	return writeTemplate(w, typ, v, tmpl)
 }
 
-func (sw *ListWriter) writeTemplate(w io.Writer, typ typewriter.Type, v typewriter.TagValue, tmpl *template.Template) error {
+func writeTemplate(w io.Writer, typ typewriter.Type, v typewriter.TagValue, tmpl *template.Template) error {
 	var tp typewriter.Type
 
 	if len(v.TypeParameters) > 0 {
@@ -143,17 +138,12 @@ func (sw *ListWriter) writeTemplate(w io.Writer, typ typewriter.Type, v typewrit
 
 	m := list.Model{
 		Type:          typ,
-		ListName:     ListName(typ),
 		TypeParameter: tp,
 		TagValue:      v,
 	}
 
 	//	fmt.Printf("tmpl.Execute %s %s\n", typ.Name, v.Name)
-	if err := tmpl.Execute(w, m); err != nil {
-		return err
-	}
-
-	return nil
+	return tmpl.Execute(w, m)
 }
 
 func includeSortImplementation(values []typewriter.TagValue) bool {

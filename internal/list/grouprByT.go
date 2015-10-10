@@ -6,8 +6,8 @@ var GroupByT = &typewriter.Template{
 	Name: "GroupBy",
 	Text: `
 // GroupBy{{.TypeParameter.LongName}} groups elements into a map keyed by {{.TypeParameter}}. See: http://clipperhouse.github.io/gen/#GroupBy
-func (list {{.ListName}}) GroupBy{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) map[{{.TypeParameter}}]{{.ListName}} {
-	result := make(map[{{.TypeParameter}}]{{.ListName}})
+func (list {{.Type}}List) GroupBy{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) map[{{.TypeParameter}}]{{.Type}}List {
+	result := make(map[{{.TypeParameter}}]{{.Type}}List)
 	for _, v := range list {
 		key := fn(v)
 		result[key] = append(result[key], v)

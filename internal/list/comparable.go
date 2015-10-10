@@ -5,8 +5,8 @@ import "github.com/rickb777/typewriter"
 var Comparable = typewriter.Template{
 	Name: "Comparable",
 	Text: `
-// Contains verifies that a given value is contained in {{.ListName}}.
-func (list {{.ListName}}) Contains(value {{.Type}}) bool {
+// Contains verifies that a given value is contained in {{.Type}}List.
+func (list {{.Type}}List) Contains(value {{.Type}}) bool {
 	for _, v := range list {
 		if v == value {
 			return true
@@ -15,8 +15,8 @@ func (list {{.ListName}}) Contains(value {{.Type}}) bool {
 	return false
 }
 
-// Count gives the number elements of {{.ListName}} that match a certain value.
-func (list {{.ListName}}) Count(value {{.Type}}) (result int) {
+// Count gives the number elements of {{.Type}}List that match a certain value.
+func (list {{.Type}}List) Count(value {{.Type}}) (result int) {
 	for _, v := range list {
 		if v == value {
 			result++
@@ -25,8 +25,8 @@ func (list {{.ListName}}) Count(value {{.Type}}) (result int) {
 	return
 }
 
-// Distinct returns a new {{.ListName}} whose elements are unique. See: http://clipperhouse.github.io/gen/#Distinct
-func (list {{.ListName}}) Distinct() (result {{.ListName}}) {
+// Distinct returns a new {{.Type}}List whose elements are unique. See: http://clipperhouse.github.io/gen/#Distinct
+func (list {{.Type}}List) Distinct() (result {{.Type}}List) {
 	appended := make(map[{{.Type}}]bool)
 	for _, v := range list {
 		if !appended[v] {

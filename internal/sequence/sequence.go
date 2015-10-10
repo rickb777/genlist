@@ -4,8 +4,8 @@ import "github.com/rickb777/typewriter"
 
 var Sequence = &typewriter.Template{
 	Name: "Seq",
-	Text: `// {{.SequenceName}} is an interface for sequences of type {{.Type}}.
-type {{.SequenceName}} interface {
+	Text: `// {{.Type}}Seq is an interface for sequences of type {{.Type}}.
+type {{.Type}}Seq interface {
 	Len() int
 	IsEmpty() bool
 	NonEmpty() bool
@@ -13,7 +13,7 @@ type {{.SequenceName}} interface {
 	Exists(fn func({{.Type}}) bool) bool
 	Forall(fn func({{.Type}}) bool) bool
 	Foreach(fn func({{.Type}}))
-	//Filter(fn func({{.Type}}) bool) (result {{.SequenceName}})
+	//Filter(fn func({{.Type}}) bool) (result {{.Type}}Seq)
 	ToList() {{.Type}}List
 }
 

@@ -4,37 +4,37 @@ import "github.com/rickb777/typewriter"
 
 var List = &typewriter.Template{
 	Name: "List",
-	Text: `// {{.ListName}} is a slice of type {{.Type}}. Use it where you would use []{{.Type}}.
+	Text: `// {{.Type}}List is a slice of type {{.Type}}. Use it where you would use []{{.Type}}.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // See e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 
-type {{.ListName}} []{{.Type}}
+type {{.Type}}List []{{.Type}}
 
 // Len returns the number of items in the list.
 // There is no Size() method; use Len() instead.
 // This is one of the three methods in the standard sort.Interface.
-func (list {{.ListName}}) Len() int {
+func (list {{.Type}}List) Len() int {
 	return len(list)
 }
 
 // Swap exchanges two elements, which is neceessary during sorting etc.
 // This is one of the three methods in the standard sort.Interface.
-func (list {{.ListName}}) Swap(i, j int) {
+func (list {{.Type}}List) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
 
-// IsEmpty tests whether {{.ListName}} is empty.
-func (list {{.ListName}}) IsEmpty() bool {
+// IsEmpty tests whether {{.Type}}List is empty.
+func (list {{.Type}}List) IsEmpty() bool {
 	return len(list) == 0
 }
 
-// NonEmpty tests whether {{.ListName}} is empty.
-func (list {{.ListName}}) NonEmpty() bool {
+// NonEmpty tests whether {{.Type}}List is empty.
+func (list {{.Type}}List) NonEmpty() bool {
 	return len(list) > 0
 }
 
-// Exists verifies that one or more elements of {{.ListName}} return true for the passed func.
-func (list {{.ListName}}) Exists(fn func({{.Type}}) bool) bool {
+// Exists verifies that one or more elements of {{.Type}}List return true for the passed func.
+func (list {{.Type}}List) Exists(fn func({{.Type}}) bool) bool {
 	for _, v := range list {
 		if fn(v) {
 			return true
@@ -43,8 +43,8 @@ func (list {{.ListName}}) Exists(fn func({{.Type}}) bool) bool {
 	return false
 }
 
-// Forall verifies that all elements of {{.ListName}} return true for the passed func.
-func (list {{.ListName}}) Forall(fn func({{.Type}}) bool) bool {
+// Forall verifies that all elements of {{.Type}}List return true for the passed func.
+func (list {{.Type}}List) Forall(fn func({{.Type}}) bool) bool {
 	for _, v := range list {
 		if !fn(v) {
 			return false
@@ -53,15 +53,15 @@ func (list {{.ListName}}) Forall(fn func({{.Type}}) bool) bool {
 	return true
 }
 
-// Foreach iterates over {{.ListName}} and executes the passed func against each element.
-func (list {{.ListName}}) Foreach(fn func({{.Type}})) {
+// Foreach iterates over {{.Type}}List and executes the passed func against each element.
+func (list {{.Type}}List) Foreach(fn func({{.Type}})) {
 	for _, v := range list {
 		fn(v)
 	}
 }
 
-// Filter returns a new {{.ListName}} whose elements return true for func.
-func (list {{.ListName}}) Filter(fn func({{.Type}}) bool) (result {{.ListName}}) {
+// Filter returns a new {{.Type}}List whose elements return true for func.
+func (list {{.Type}}List) Filter(fn func({{.Type}}) bool) (result {{.Type}}List) {
 	for _, v := range list {
 		if fn(v) {
 			result = append(result, v)
@@ -70,11 +70,11 @@ func (list {{.ListName}}) Filter(fn func({{.Type}}) bool) (result {{.ListName}})
 	return result
 }
 
-// Partition returns two new {{.ListName}}s whose elements return true or false for the predicate, p.
+// Partition returns two new {{.Type}}Lists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list {{.ListName}}) Partition(p func({{.Type}}) bool) (matching {{.ListName}}, others {{.ListName}}) {
+func (list {{.Type}}List) Partition(p func({{.Type}}) bool) (matching {{.Type}}List, others {{.Type}}List) {
 	for _, v := range list {
 		if p(v) {
 			matching = append(matching, v)
@@ -85,9 +85,9 @@ func (list {{.ListName}}) Partition(p func({{.Type}}) bool) (matching {{.ListNam
 	return
 }
 
-// Take returns a new {{.ListName}} containing the leading n elements of the source list.
+// Take returns a new {{.Type}}List containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
-func (list {{.ListName}}) Take(n int) {{.ListName}} {
+func (list {{.Type}}List) Take(n int) {{.Type}}List {
 	if n > len(list) {
 		return list
 	} else {
@@ -95,9 +95,9 @@ func (list {{.ListName}}) Take(n int) {{.ListName}} {
 	}
 }
 
-// Drop returns a new {{.ListName}} without the leading n elements of the source list.
+// Drop returns a new {{.Type}}List without the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
-func (list {{.ListName}}) Drop(n int) {{.ListName}} {
+func (list {{.Type}}List) Drop(n int) {{.Type}}List {
 	l := len(list)
 	if n > l {
 		return list[l:]
@@ -106,9 +106,9 @@ func (list {{.ListName}}) Drop(n int) {{.ListName}} {
 	}
 }
 
-// TakeLast returns a new {{.ListName}} containing the trailing n elements of the source list.
+// TakeLast returns a new {{.Type}}List containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
-func (list {{.ListName}}) TakeLast(n int) {{.ListName}} {
+func (list {{.Type}}List) TakeLast(n int) {{.Type}}List {
 	l := len(list)
 	if n > l {
 		return list
@@ -117,9 +117,9 @@ func (list {{.ListName}}) TakeLast(n int) {{.ListName}} {
 	}
 }
 
-// DropLast returns a new {{.ListName}} without the trailing n elements of the source list.
+// DropLast returns a new {{.Type}}List without the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
-func (list {{.ListName}}) DropLast(n int) {{.ListName}} {
+func (list {{.Type}}List) DropLast(n int) {{.Type}}List {
 	l := len(list)
 	if n > l {
 		return list[l:]
@@ -128,10 +128,10 @@ func (list {{.ListName}}) DropLast(n int) {{.ListName}} {
 	}
 }
 
-// TakeWhile returns a new {{.ListName}} containing the leading elements of the source list. Whilst the
+// TakeWhile returns a new {{.Type}}List containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
-func (list {{.ListName}}) TakeWhile(p func({{.Type}}) bool) (result {{.ListName}}) {
+func (list {{.Type}}List) TakeWhile(p func({{.Type}}) bool) (result {{.Type}}List) {
 	for _, v := range list {
 		if p(v) {
 			result = append(result, v)
@@ -142,10 +142,10 @@ func (list {{.ListName}}) TakeWhile(p func({{.Type}}) bool) (result {{.ListName}
 	return
 }
 
-// DropWhile returns a new {{.ListName}} containing the trailing elements of the source list. Whilst the
+// DropWhile returns a new {{.Type}}List containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
-func (list {{.ListName}}) DropWhile(p func({{.Type}}) bool) (result {{.ListName}}) {
+func (list {{.Type}}List) DropWhile(p func({{.Type}}) bool) (result {{.Type}}List) {
 	adding := false
 	for _, v := range list {
 		if !p(v) || adding {
@@ -156,10 +156,10 @@ func (list {{.ListName}}) DropWhile(p func({{.Type}}) bool) (result {{.ListName}
 	return
 }
 
-// Reverse returns a copy of {{.ListName}} with all elements in the reverse order.
-func (list {{.ListName}}) Reverse() {{.ListName}} {
+// Reverse returns a copy of {{.Type}}List with all elements in the reverse order.
+func (list {{.Type}}List) Reverse() {{.Type}}List {
     numItems := len(list)
-    result := make({{.ListName}}, numItems)
+    result := make({{.Type}}List, numItems)
     last := numItems - 1
     for i, v := range list {
 		result[last - i] = v
@@ -167,10 +167,10 @@ func (list {{.ListName}}) Reverse() {{.ListName}} {
     return result
 }
 
-// Shuffle returns a shuffled copy of {{.ListName}}, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
-func (list {{.ListName}}) Shuffle() {{.ListName}} {
+// Shuffle returns a shuffled copy of {{.Type}}List, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+func (list {{.Type}}List) Shuffle() {{.Type}}List {
     numItems := len(list)
-    result := make({{.ListName}}, numItems)
+    result := make({{.Type}}List, numItems)
     copy(result, list)
     for i := 0; i < numItems; i++ {
         r := i + rand.Intn(numItems-i)
@@ -179,8 +179,8 @@ func (list {{.ListName}}) Shuffle() {{.ListName}} {
     return result
 }
 
-// CountBy gives the number elements of {{.ListName}} that return true for the passed predicate.
-func (list {{.ListName}}) CountBy(predicate func({{.Type}}) bool) (result int) {
+// CountBy gives the number elements of {{.Type}}List that return true for the passed predicate.
+func (list {{.Type}}List) CountBy(predicate func({{.Type}}) bool) (result int) {
 	for _, v := range list {
 		if predicate(v) {
 			result++
@@ -189,10 +189,10 @@ func (list {{.ListName}}) CountBy(predicate func({{.Type}}) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of {{.ListName}} containing the minimum value, when compared to other elements
+// MinBy returns an element of {{.Type}}List containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Returns error if no elements.
-func (list {{.ListName}}) MinBy(less func({{.Type}}, {{.Type}}) bool) (result {{.Type}}, err error) {
+func (list {{.Type}}List) MinBy(less func({{.Type}}, {{.Type}}) bool) (result {{.Type}}, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("Cannot determine the MinBy of an empty list.")
@@ -208,10 +208,10 @@ func (list {{.ListName}}) MinBy(less func({{.Type}}, {{.Type}}) bool) (result {{
 	return
 }
 
-// MaxBy returns an element of {{.ListName}} containing the maximum value, when compared to other elements
+// MaxBy returns an element of {{.Type}}List containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
 // element is returned. Returns error if no elements.
-func (list {{.ListName}}) MaxBy(less func({{.Type}}, {{.Type}}) bool) (result {{.Type}}, err error) {
+func (list {{.Type}}List) MaxBy(less func({{.Type}}, {{.Type}}) bool) (result {{.Type}}, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("Cannot determine the MaxBy of an empty list.")
@@ -227,8 +227,8 @@ func (list {{.ListName}}) MaxBy(less func({{.Type}}, {{.Type}}) bool) (result {{
 	return
 }
 
-// DistinctBy returns a new {{.ListName}} whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
-func (list {{.ListName}}) DistinctBy(equal func({{.Type}}, {{.Type}}) bool) (result {{.ListName}}) {
+// DistinctBy returns a new {{.Type}}List whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
+func (list {{.Type}}List) DistinctBy(equal func({{.Type}}, {{.Type}}) bool) (result {{.Type}}List) {
 Outer:
 	for _, v := range list {
 		for _, r := range result {
@@ -242,7 +242,7 @@ Outer:
 }
 
 // ToList simply returns the list in this case, but is part of the Seq interface.
-func (list {{.ListName}}) ToList() {{.ListName}} {
+func (list {{.Type}}List) ToList() {{.Type}}List {
 	return list
 }
 `,

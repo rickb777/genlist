@@ -13,10 +13,6 @@ func init() {
 	}
 }
 
-func SequenceName(typ typewriter.Type) string {
-	return typ.Name + "Seq"
-}
-
 type SequenceWriter struct{}
 
 func NewSequenceWriter() *SequenceWriter {
@@ -48,37 +44,7 @@ func (sw *SequenceWriter) Write(w io.Writer, typ typewriter.Type) error {
 
 	m := sequence.Model{
 		Type:      typ,
-		SequenceName: SequenceName(typ),
 	}
 
-	if err := tmpl.Execute(w, m); err != nil {
-		return err
-	}
-
-//	for _, v := range tag.Values {
-//		var tp typewriter.Type
-//
-//		if len(v.TypeParameters) > 0 {
-//			tp = v.TypeParameters[0]
-//		}
-//
-//		m := sequence.Model{
-//			Type:          typ,
-//			SequenceName:  SequenceName(typ),
-//			TypeParameter: tp,
-//			TagValue:      v,
-//		}
-//
-//		tmpl, err := sequence.Templates.ByTagValue(typ, v)
-//
-//		if err != nil {
-//			return err
-//		}
-//
-//		if err := tmpl.Execute(w, m); err != nil {
-//			return err
-//		}
-//	}
-
-	return nil
+	return tmpl.Execute(w, m)
 }
