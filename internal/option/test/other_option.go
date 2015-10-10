@@ -92,6 +92,22 @@ func (x SomeOther) Filter(predicate func(Other) bool) OptionalOther {
 	return NoOther()
 }
 
+// Contains verifies that a given value is contained in OptionalOther.
+func (v SomeOther) Contains(value Other) bool {
+	if Other(v) == value {
+		return true
+	}
+	return false
+}
+
+// Count gives the number elements of OptionalOther that match a certain value.
+func (v SomeOther) Count(value Other) (result int) {
+	if Other(v) == value {
+		result++
+	}
+	return
+}
+
 //-----------------------------------------------------------------------------
 
 type noOther struct{}
@@ -158,22 +174,6 @@ func (x noOther) Foreach(fn func(Other)) {
 // Filter returns a OptionalOther whose elements return true for a predicate.
 func (x noOther) Filter(predicate func(Other) bool) (result OptionalOther) {
 	return x
-}
-
-// Contains verifies that a given value is contained in OptionalOther.
-func (v SomeOther) Contains(value Other) bool {
-	if Other(v) == value {
-		return true
-	}
-	return false
-}
-
-// Count gives the number elements of OptionalOther that match a certain value.
-func (v SomeOther) Count(value Other) (result int) {
-	if Other(v) == value {
-		result++
-	}
-	return
 }
 
 // Contains verifies that a given value is contained in OptionalOther.

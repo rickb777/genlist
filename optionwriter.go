@@ -36,18 +36,13 @@ func (sw *OptionWriter) Write(w io.Writer, typ typewriter.Type) error {
 	}
 
 	// start with the option template
-	tmpl, err := option.Templates.ByTag(typ, tag)
+	tmpl, err := option.Option.Parse()
 
 	if err != nil {
 		return err
 	}
 
 	if err := writeBasicTemplate(w, tmpl, typ); err != nil {
-		return err
-	}
-
-	_, err = sw.writeTemplateIfPossible(w, typ, option.Comparable)
-	if err != nil {
 		return err
 	}
 

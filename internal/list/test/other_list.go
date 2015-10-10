@@ -12,8 +12,9 @@ import (
 
 // OtherList is a slice of type Other. Use it where you would use []Other.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
-// See e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
-
+// Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
+// When a list needs mutating, use normal Go slice operations, e.g. *append()*.
+// For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type OtherList []Other
 
 // Len returns the number of items in the list.
@@ -66,29 +67,32 @@ func (list OtherList) Foreach(fn func(Other)) {
 	}
 }
 
-// Filter returns a new OtherList whose elements return true for func.
-func (list OtherList) Filter(fn func(Other) bool) (result OtherList) {
-	for _, v := range list {
-		if fn(v) {
-			result = append(result, v)
-		}
+// Reverse returns a copy of OtherList with all elements in the reverse order.
+func (list OtherList) Reverse() OtherList {
+	numItems := len(list)
+	result := make(OtherList, numItems)
+	last := numItems - 1
+	for i, v := range list {
+		result[last-i] = v
 	}
 	return result
 }
 
-// Partition returns two new OtherLists whose elements return true or false for the predicate, p.
-// The first result consists of all elements that satisfy the predicate and the second result consists of
-// all elements that don't. The relative order of the elements in the results is the same as in the
-// original list.
-func (list OtherList) Partition(p func(Other) bool) (matching OtherList, others OtherList) {
-	for _, v := range list {
-		if p(v) {
-			matching = append(matching, v)
-		} else {
-			others = append(others, v)
-		}
+// Shuffle returns a shuffled copy of OtherList, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+func (list OtherList) Shuffle() OtherList {
+	numItems := len(list)
+	result := make(OtherList, numItems)
+	copy(result, list)
+	for i := 0; i < numItems; i++ {
+		r := i + rand.Intn(numItems-i)
+		result.Swap(i, r)
 	}
-	return
+	return result
+}
+
+// ToList simply returns the list in this case, but is part of the Seq interface.
+func (list OtherList) ToList() OtherList {
+	return list
 }
 
 // Take returns a new OtherList containing the leading n elements of the source list.
@@ -162,27 +166,29 @@ func (list OtherList) DropWhile(p func(Other) bool) (result OtherList) {
 	return
 }
 
-// Reverse returns a copy of OtherList with all elements in the reverse order.
-func (list OtherList) Reverse() OtherList {
-	numItems := len(list)
-	result := make(OtherList, numItems)
-	last := numItems - 1
-	for i, v := range list {
-		result[last-i] = v
+// Filter returns a new OtherList whose elements return true for func.
+func (list OtherList) Filter(fn func(Other) bool) (result OtherList) {
+	for _, v := range list {
+		if fn(v) {
+			result = append(result, v)
+		}
 	}
 	return result
 }
 
-// Shuffle returns a shuffled copy of OtherList, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
-func (list OtherList) Shuffle() OtherList {
-	numItems := len(list)
-	result := make(OtherList, numItems)
-	copy(result, list)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
-		result.Swap(i, r)
+// Partition returns two new OtherLists whose elements return true or false for the predicate, p.
+// The first result consists of all elements that satisfy the predicate and the second result consists of
+// all elements that don't. The relative order of the elements in the results is the same as in the
+// original list.
+func (list OtherList) Partition(p func(Other) bool) (matching OtherList, others OtherList) {
+	for _, v := range list {
+		if p(v) {
+			matching = append(matching, v)
+		} else {
+			others = append(others, v)
+		}
 	}
-	return result
+	return
 }
 
 // CountBy gives the number elements of OtherList that return true for the passed predicate.
@@ -247,9 +253,59 @@ Outer:
 	return result
 }
 
-// ToList simply returns the list in this case, but is part of the Seq interface.
-func (list OtherList) ToList() OtherList {
-	return list
+// Contains verifies that a given value is contained in OtherList.
+func (list OtherList) Contains(value Other) bool {
+	for _, v := range list {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
+// Count gives the number elements of OtherList that match a certain value.
+func (list OtherList) Count(value Other) (result int) {
+	for _, v := range list {
+		if v == value {
+			result++
+		}
+	}
+	return
+}
+
+// Distinct returns a new OtherList whose elements are unique. See: http://clipperhouse.github.io/gen/#Distinct
+func (list OtherList) Distinct() (result OtherList) {
+	appended := make(map[Other]bool)
+	for _, v := range list {
+		if !appended[v] {
+			result = append(result, v)
+			appended[v] = true
+		}
+	}
+	return result
+}
+
+// Sum sums Other elements in OtherList. See: http://clipperhouse.github.io/gen/#Sum
+func (list OtherList) Sum() (result Other) {
+	for _, v := range list {
+		result += v
+	}
+	return
+}
+
+// Mean sums OtherList over all elements and divides by len(OtherList). See: http://clipperhouse.github.io/gen/#Mean
+func (list OtherList) Mean() (Other, error) {
+	var result Other
+
+	l := len(list)
+	if l == 0 {
+		return result, errors.New("cannot determine Mean of zero-length OtherList")
+	}
+	for _, v := range list {
+		result += v
+	}
+	result = result / Other(l)
+	return result, nil
 }
 
 // Less determines whether one specified element is less than another specified element.
@@ -314,59 +370,4 @@ func (list OtherList) SortDesc() OtherList {
 // IsSortedDesc reports whether OtherList is reverse-sorted.
 func (list OtherList) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
-}
-
-// Sum sums Other elements in OtherList. See: http://clipperhouse.github.io/gen/#Sum
-func (list OtherList) Sum() (result Other) {
-	for _, v := range list {
-		result += v
-	}
-	return
-}
-
-// Mean sums OtherList over all elements and divides by len(OtherList). See: http://clipperhouse.github.io/gen/#Mean
-func (list OtherList) Mean() (Other, error) {
-	var result Other
-
-	l := len(list)
-	if l == 0 {
-		return result, errors.New("cannot determine Mean of zero-length OtherList")
-	}
-	for _, v := range list {
-		result += v
-	}
-	result = result / Other(l)
-	return result, nil
-}
-
-// Contains verifies that a given value is contained in OtherList.
-func (list OtherList) Contains(value Other) bool {
-	for _, v := range list {
-		if v == value {
-			return true
-		}
-	}
-	return false
-}
-
-// Count gives the number elements of OtherList that match a certain value.
-func (list OtherList) Count(value Other) (result int) {
-	for _, v := range list {
-		if v == value {
-			result++
-		}
-	}
-	return
-}
-
-// Distinct returns a new OtherList whose elements are unique. See: http://clipperhouse.github.io/gen/#Distinct
-func (list OtherList) Distinct() (result OtherList) {
-	appended := make(map[Other]bool)
-	for _, v := range list {
-		if !appended[v] {
-			result = append(result, v)
-			appended[v] = true
-		}
-	}
-	return result
 }

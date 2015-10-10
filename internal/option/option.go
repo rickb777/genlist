@@ -2,7 +2,7 @@ package option
 
 import "github.com/rickb777/typewriter"
 
-var option = &typewriter.Template{
+var Option = &typewriter.Template{
 	Name: "Option",
 	Text: `// Optional{{.Type}} is an optional of type {{.Type}}. Use it where you want to be explicit about
 // the presence or absence of data.

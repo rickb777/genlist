@@ -69,4 +69,16 @@ func (x no{{.Type}}) Filter(predicate func({{.Type}}) bool) (result Optional{{.T
 	return x
 }
 
+{{if .Type.Comparable}}
+// Contains verifies that a given value is contained in Optional{{.Type}}.
+func (v no{{.Type}}) Contains(value {{.Type}}) bool {
+	return false
+}
+
+// Count gives the number elements of Optional{{.Type}} that match a certain value.
+func (v no{{.Type}}) Count(value {{.Type}}) int {
+	return 0
+}
+
+{{end}}
 `

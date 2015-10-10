@@ -92,6 +92,22 @@ func (x SomeFoo) Filter(predicate func(Foo) bool) OptionalFoo {
 	return NoFoo()
 }
 
+// Contains verifies that a given value is contained in OptionalFoo.
+func (v SomeFoo) Contains(value Foo) bool {
+	if Foo(v) == value {
+		return true
+	}
+	return false
+}
+
+// Count gives the number elements of OptionalFoo that match a certain value.
+func (v SomeFoo) Count(value Foo) (result int) {
+	if Foo(v) == value {
+		result++
+	}
+	return
+}
+
 //-----------------------------------------------------------------------------
 
 type noFoo struct{}
@@ -158,22 +174,6 @@ func (x noFoo) Foreach(fn func(Foo)) {
 // Filter returns a OptionalFoo whose elements return true for a predicate.
 func (x noFoo) Filter(predicate func(Foo) bool) (result OptionalFoo) {
 	return x
-}
-
-// Contains verifies that a given value is contained in OptionalFoo.
-func (v SomeFoo) Contains(value Foo) bool {
-	if Foo(v) == value {
-		return true
-	}
-	return false
-}
-
-// Count gives the number elements of OptionalFoo that match a certain value.
-func (v SomeFoo) Count(value Foo) (result int) {
-	if Foo(v) == value {
-		result++
-	}
-	return
 }
 
 // Contains verifies that a given value is contained in OptionalFoo.

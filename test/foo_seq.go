@@ -35,3 +35,14 @@ func (list FooList) HeadOption() OptionalFoo {
 		return noFoo{}
 	}
 }
+
+// Distinct returns a new FooList whose elements are unique.
+func (v SomeFoo) Distinct() (result FooList) {
+	result = append(result, Foo(v))
+	return result
+}
+
+// Distinct returns a new FooList whose elements are unique.
+func (v noFoo) Distinct() FooList {
+	return FooList{}
+}

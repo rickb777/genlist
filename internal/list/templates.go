@@ -11,8 +11,5 @@ var Templates = typewriter.TemplateSlice{
 	GroupByT,
 	MapToT,
 	SortWith,
-
 	Option,
-
-	SortImplementation,
 }

@@ -5,6 +5,14 @@ import "github.com/rickb777/typewriter"
 var SortWith = &typewriter.Template{
 	Name: "SortWith",
 	Text: `
+
+//-----------------------------------------------------------------------------
+// Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
+// Copyright 2009 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found at http://golang.org/LICENSE.
+//-----------------------------------------------------------------------------
+
 // SortWith returns a new ordered {{.Type}}List, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
 func (list {{.Type}}List) SortWith(less func({{.Type}}, {{.Type}}) bool) {{.Type}}List {
 	result := make({{.Type}}List, len(list))
@@ -46,4 +54,5 @@ func (list {{.Type}}List) IsSortedWithDesc(less func({{.Type}}, {{.Type}}) bool)
 	}
 	return list.IsSortedWith(greater)
 }
-`}
+` + sortImplementation,
+}

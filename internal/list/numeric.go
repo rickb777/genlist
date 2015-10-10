@@ -1,10 +1,8 @@
 package list
 
-import "github.com/rickb777/typewriter"
+const numericFunctions = `
+{{if .Type.Numeric}}
 
-var Numeric = typewriter.Template{
-	Name: "Numeric",
-	Text: `
 // Sum sums {{.Type}} elements in {{.Type}}List. See: http://clipperhouse.github.io/gen/#Sum
 func (list {{.Type}}List) Sum() (result {{.Type}}) {
 	for _, v := range list {
@@ -27,6 +25,5 @@ func (list {{.Type}}List) Mean() ({{.Type}}, error) {
 	result = result / {{.Type}}(l)
 	return result, nil
 }
-`,
-	TypeConstraint: typewriter.Constraint{Numeric: true},
-}
+{{end}}
+`

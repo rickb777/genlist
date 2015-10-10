@@ -9,15 +9,11 @@ import (
 	"math/rand"
 )
 
-// Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
-// Copyright 2009 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found at http://golang.org/LICENSE.
-
 // ThingList is a slice of type Thing. Use it where you would use []Thing.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
-// See e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
-
+// Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
+// When a list needs mutating, use normal Go slice operations, e.g. *append()*.
+// For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type ThingList []Thing
 
 // Len returns the number of items in the list.
@@ -70,29 +66,32 @@ func (list ThingList) Foreach(fn func(Thing)) {
 	}
 }
 
-// Filter returns a new ThingList whose elements return true for func.
-func (list ThingList) Filter(fn func(Thing) bool) (result ThingList) {
-	for _, v := range list {
-		if fn(v) {
-			result = append(result, v)
-		}
+// Reverse returns a copy of ThingList with all elements in the reverse order.
+func (list ThingList) Reverse() ThingList {
+	numItems := len(list)
+	result := make(ThingList, numItems)
+	last := numItems - 1
+	for i, v := range list {
+		result[last-i] = v
 	}
 	return result
 }
 
-// Partition returns two new ThingLists whose elements return true or false for the predicate, p.
-// The first result consists of all elements that satisfy the predicate and the second result consists of
-// all elements that don't. The relative order of the elements in the results is the same as in the
-// original list.
-func (list ThingList) Partition(p func(Thing) bool) (matching ThingList, others ThingList) {
-	for _, v := range list {
-		if p(v) {
-			matching = append(matching, v)
-		} else {
-			others = append(others, v)
-		}
+// Shuffle returns a shuffled copy of ThingList, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+func (list ThingList) Shuffle() ThingList {
+	numItems := len(list)
+	result := make(ThingList, numItems)
+	copy(result, list)
+	for i := 0; i < numItems; i++ {
+		r := i + rand.Intn(numItems-i)
+		result.Swap(i, r)
 	}
-	return
+	return result
+}
+
+// ToList simply returns the list in this case, but is part of the Seq interface.
+func (list ThingList) ToList() ThingList {
+	return list
 }
 
 // Take returns a new ThingList containing the leading n elements of the source list.
@@ -166,27 +165,29 @@ func (list ThingList) DropWhile(p func(Thing) bool) (result ThingList) {
 	return
 }
 
-// Reverse returns a copy of ThingList with all elements in the reverse order.
-func (list ThingList) Reverse() ThingList {
-	numItems := len(list)
-	result := make(ThingList, numItems)
-	last := numItems - 1
-	for i, v := range list {
-		result[last-i] = v
+// Filter returns a new ThingList whose elements return true for func.
+func (list ThingList) Filter(fn func(Thing) bool) (result ThingList) {
+	for _, v := range list {
+		if fn(v) {
+			result = append(result, v)
+		}
 	}
 	return result
 }
 
-// Shuffle returns a shuffled copy of ThingList, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
-func (list ThingList) Shuffle() ThingList {
-	numItems := len(list)
-	result := make(ThingList, numItems)
-	copy(result, list)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
-		result.Swap(i, r)
+// Partition returns two new ThingLists whose elements return true or false for the predicate, p.
+// The first result consists of all elements that satisfy the predicate and the second result consists of
+// all elements that don't. The relative order of the elements in the results is the same as in the
+// original list.
+func (list ThingList) Partition(p func(Thing) bool) (matching ThingList, others ThingList) {
+	for _, v := range list {
+		if p(v) {
+			matching = append(matching, v)
+		} else {
+			others = append(others, v)
+		}
 	}
-	return result
+	return
 }
 
 // CountBy gives the number elements of ThingList that return true for the passed predicate.
@@ -251,9 +252,36 @@ Outer:
 	return result
 }
 
-// ToList simply returns the list in this case, but is part of the Seq interface.
-func (list ThingList) ToList() ThingList {
-	return list
+// Contains verifies that a given value is contained in ThingList.
+func (list ThingList) Contains(value Thing) bool {
+	for _, v := range list {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
+// Count gives the number elements of ThingList that match a certain value.
+func (list ThingList) Count(value Thing) (result int) {
+	for _, v := range list {
+		if v == value {
+			result++
+		}
+	}
+	return
+}
+
+// Distinct returns a new ThingList whose elements are unique. See: http://clipperhouse.github.io/gen/#Distinct
+func (list ThingList) Distinct() (result ThingList) {
+	appended := make(map[Thing]bool)
+	for _, v := range list {
+		if !appended[v] {
+			result = append(result, v)
+			appended[v] = true
+		}
+	}
+	return result
 }
 
 // Min returns an element of ThingList containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
@@ -290,38 +318,6 @@ func (list ThingList) Max(less func(Thing, Thing) bool) (result Thing, err error
 	}
 	result = list[m]
 	return
-}
-
-// Contains verifies that a given value is contained in ThingList.
-func (list ThingList) Contains(value Thing) bool {
-	for _, v := range list {
-		if v == value {
-			return true
-		}
-	}
-	return false
-}
-
-// Count gives the number elements of ThingList that match a certain value.
-func (list ThingList) Count(value Thing) (result int) {
-	for _, v := range list {
-		if v == value {
-			result++
-		}
-	}
-	return
-}
-
-// Distinct returns a new ThingList whose elements are unique. See: http://clipperhouse.github.io/gen/#Distinct
-func (list ThingList) Distinct() (result ThingList) {
-	appended := make(map[Thing]bool)
-	for _, v := range list {
-		if !appended[v] {
-			result = append(result, v)
-			appended[v] = true
-		}
-	}
-	return result
 }
 
 // GroupByOther groups elements into a map keyed by Other. See: http://clipperhouse.github.io/gen/#GroupBy
@@ -411,6 +407,13 @@ func (list ThingList) MapToOther(fn func(Thing) Other) (result OtherList) {
 	}
 	return
 }
+
+//-----------------------------------------------------------------------------
+// Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
+// Copyright 2009 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found at http://golang.org/LICENSE.
+//-----------------------------------------------------------------------------
 
 // SortWith returns a new ordered ThingList, determined by a func defining ‘less’. See: http://clipperhouse.github.io/gen/#SortBy
 func (list ThingList) SortWith(less func(Thing, Thing) bool) ThingList {

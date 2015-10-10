@@ -1,10 +1,8 @@
 package list
 
-import "github.com/rickb777/typewriter"
+const comparableFunctions = `
+{{if .Type.Comparable}}
 
-var Comparable = typewriter.Template{
-	Name: "Comparable",
-	Text: `
 // Contains verifies that a given value is contained in {{.Type}}List.
 func (list {{.Type}}List) Contains(value {{.Type}}) bool {
 	for _, v := range list {
@@ -36,6 +34,6 @@ func (list {{.Type}}List) Distinct() (result {{.Type}}List) {
 	}
 	return result
 }
-`,
-	TypeConstraint: typewriter.Constraint{Comparable: true},
-}
+
+{{end}}
+`

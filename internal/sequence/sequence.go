@@ -36,5 +36,18 @@ func (list {{.Type}}List) HeadOption() Optional{{.Type}} {
 	}
 }
 
+{{if .Type.Comparable}}
+// Distinct returns a new {{.Type}}List whose elements are unique.
+func (v Some{{.Type}}) Distinct() (result {{.Type}}List) {
+	result = append(result, {{.Type}}(v))
+	return result
+}
+
+// Distinct returns a new {{.Type}}List whose elements are unique.
+func (v no{{.Type}}) Distinct() {{.Type}}List {
+	return {{.Type}}List{}
+}
+{{end}}
+
 `,
 }

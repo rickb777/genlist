@@ -1,10 +1,8 @@
 package list
 
-import "github.com/rickb777/typewriter"
+const orderedFunctions = `
+{{if .Type.Ordered}}
 
-var Ordered = typewriter.Template{
-	Name: "Ordered",
-	Text: `
 // Less determines whether one specified element is less than another specified element.
 // This is one of the three methods in the standard sort.Interface.
 func (list {{.Type}}List) Less(i, j int) bool {
@@ -69,15 +67,8 @@ func (list {{.Type}}List) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
 }
 
-`,
-	TypeConstraint: typewriter.Constraint{Ordered: true},
-}
+{{else}}
 
-
-// This is included when 'ordered' does not match its constraint.
-var NotOrdered = typewriter.Template{
-	Name: "NotOrdered",
-	Text: `
 // Min returns an element of {{.Type}}List containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
 func (list {{.Type}}List) Min(less func({{.Type}}, {{.Type}}) bool) (result {{.Type}}, err error) {
 	l := len(list)
@@ -114,6 +105,5 @@ func (list {{.Type}}List) Max(less func({{.Type}}, {{.Type}}) bool) (result {{.T
 	return
 }
 
-
-`,
-}
+{{end}}
+`

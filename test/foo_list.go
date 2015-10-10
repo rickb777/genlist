@@ -12,8 +12,9 @@ import (
 
 // FooList is a slice of type Foo. Use it where you would use []Foo.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
-// See e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
-
+// Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
+// When a list needs mutating, use normal Go slice operations, e.g. *append()*.
+// For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type FooList []Foo
 
 // Len returns the number of items in the list.
@@ -66,29 +67,32 @@ func (list FooList) Foreach(fn func(Foo)) {
 	}
 }
 
-// Filter returns a new FooList whose elements return true for func.
-func (list FooList) Filter(fn func(Foo) bool) (result FooList) {
-	for _, v := range list {
-		if fn(v) {
-			result = append(result, v)
-		}
+// Reverse returns a copy of FooList with all elements in the reverse order.
+func (list FooList) Reverse() FooList {
+	numItems := len(list)
+	result := make(FooList, numItems)
+	last := numItems - 1
+	for i, v := range list {
+		result[last-i] = v
 	}
 	return result
 }
 
-// Partition returns two new FooLists whose elements return true or false for the predicate, p.
-// The first result consists of all elements that satisfy the predicate and the second result consists of
-// all elements that don't. The relative order of the elements in the results is the same as in the
-// original list.
-func (list FooList) Partition(p func(Foo) bool) (matching FooList, others FooList) {
-	for _, v := range list {
-		if p(v) {
-			matching = append(matching, v)
-		} else {
-			others = append(others, v)
-		}
+// Shuffle returns a shuffled copy of FooList, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+func (list FooList) Shuffle() FooList {
+	numItems := len(list)
+	result := make(FooList, numItems)
+	copy(result, list)
+	for i := 0; i < numItems; i++ {
+		r := i + rand.Intn(numItems-i)
+		result.Swap(i, r)
 	}
-	return
+	return result
+}
+
+// ToList simply returns the list in this case, but is part of the Seq interface.
+func (list FooList) ToList() FooList {
+	return list
 }
 
 // Take returns a new FooList containing the leading n elements of the source list.
@@ -162,27 +166,29 @@ func (list FooList) DropWhile(p func(Foo) bool) (result FooList) {
 	return
 }
 
-// Reverse returns a copy of FooList with all elements in the reverse order.
-func (list FooList) Reverse() FooList {
-	numItems := len(list)
-	result := make(FooList, numItems)
-	last := numItems - 1
-	for i, v := range list {
-		result[last-i] = v
+// Filter returns a new FooList whose elements return true for func.
+func (list FooList) Filter(fn func(Foo) bool) (result FooList) {
+	for _, v := range list {
+		if fn(v) {
+			result = append(result, v)
+		}
 	}
 	return result
 }
 
-// Shuffle returns a shuffled copy of FooList, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
-func (list FooList) Shuffle() FooList {
-	numItems := len(list)
-	result := make(FooList, numItems)
-	copy(result, list)
-	for i := 0; i < numItems; i++ {
-		r := i + rand.Intn(numItems-i)
-		result.Swap(i, r)
+// Partition returns two new FooLists whose elements return true or false for the predicate, p.
+// The first result consists of all elements that satisfy the predicate and the second result consists of
+// all elements that don't. The relative order of the elements in the results is the same as in the
+// original list.
+func (list FooList) Partition(p func(Foo) bool) (matching FooList, others FooList) {
+	for _, v := range list {
+		if p(v) {
+			matching = append(matching, v)
+		} else {
+			others = append(others, v)
+		}
 	}
-	return result
+	return
 }
 
 // CountBy gives the number elements of FooList that return true for the passed predicate.
@@ -247,9 +253,59 @@ Outer:
 	return result
 }
 
-// ToList simply returns the list in this case, but is part of the Seq interface.
-func (list FooList) ToList() FooList {
-	return list
+// Contains verifies that a given value is contained in FooList.
+func (list FooList) Contains(value Foo) bool {
+	for _, v := range list {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
+// Count gives the number elements of FooList that match a certain value.
+func (list FooList) Count(value Foo) (result int) {
+	for _, v := range list {
+		if v == value {
+			result++
+		}
+	}
+	return
+}
+
+// Distinct returns a new FooList whose elements are unique. See: http://clipperhouse.github.io/gen/#Distinct
+func (list FooList) Distinct() (result FooList) {
+	appended := make(map[Foo]bool)
+	for _, v := range list {
+		if !appended[v] {
+			result = append(result, v)
+			appended[v] = true
+		}
+	}
+	return result
+}
+
+// Sum sums Foo elements in FooList. See: http://clipperhouse.github.io/gen/#Sum
+func (list FooList) Sum() (result Foo) {
+	for _, v := range list {
+		result += v
+	}
+	return
+}
+
+// Mean sums FooList over all elements and divides by len(FooList). See: http://clipperhouse.github.io/gen/#Mean
+func (list FooList) Mean() (Foo, error) {
+	var result Foo
+
+	l := len(list)
+	if l == 0 {
+		return result, errors.New("cannot determine Mean of zero-length FooList")
+	}
+	for _, v := range list {
+		result += v
+	}
+	result = result / Foo(l)
+	return result, nil
 }
 
 // Less determines whether one specified element is less than another specified element.
@@ -314,59 +370,4 @@ func (list FooList) SortDesc() FooList {
 // IsSortedDesc reports whether FooList is reverse-sorted.
 func (list FooList) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
-}
-
-// Sum sums Foo elements in FooList. See: http://clipperhouse.github.io/gen/#Sum
-func (list FooList) Sum() (result Foo) {
-	for _, v := range list {
-		result += v
-	}
-	return
-}
-
-// Mean sums FooList over all elements and divides by len(FooList). See: http://clipperhouse.github.io/gen/#Mean
-func (list FooList) Mean() (Foo, error) {
-	var result Foo
-
-	l := len(list)
-	if l == 0 {
-		return result, errors.New("cannot determine Mean of zero-length FooList")
-	}
-	for _, v := range list {
-		result += v
-	}
-	result = result / Foo(l)
-	return result, nil
-}
-
-// Contains verifies that a given value is contained in FooList.
-func (list FooList) Contains(value Foo) bool {
-	for _, v := range list {
-		if v == value {
-			return true
-		}
-	}
-	return false
-}
-
-// Count gives the number elements of FooList that match a certain value.
-func (list FooList) Count(value Foo) (result int) {
-	for _, v := range list {
-		if v == value {
-			result++
-		}
-	}
-	return
-}
-
-// Distinct returns a new FooList whose elements are unique. See: http://clipperhouse.github.io/gen/#Distinct
-func (list FooList) Distinct() (result FooList) {
-	appended := make(map[Foo]bool)
-	for _, v := range list {
-		if !appended[v] {
-			result = append(result, v)
-			appended[v] = true
-		}
-	}
-	return result
 }

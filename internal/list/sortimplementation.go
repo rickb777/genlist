@@ -1,10 +1,6 @@
 package list
 
-import "github.com/rickb777/typewriter"
-
-var SortImplementation = &typewriter.Template{
-	Name: "sortImplementation",
-	Text: `
+const sortImplementation = `
 
 //-------------------------------------------------------------------------------------------------
 // Sort implementation based on http://golang.org/pkg/sort/#Sort, see top of this file
@@ -179,4 +175,4 @@ func quickSort{{.Type}}List(list {{.Type}}List, less func({{.Type}}, {{.Type}}) 
 		insertionSort{{.Type}}List(list, less, a, b)
 	}
 }
-`}
+`

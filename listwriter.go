@@ -2,7 +2,6 @@ package genlist
 
 import (
 	"io"
-	"strings"
 	"github.com/rickb777/genlist/internal/list"
 	"github.com/rickb777/typewriter"
 )
@@ -36,17 +35,6 @@ func (sw *ListWriter) Write(w io.Writer, typ typewriter.Type) error {
 		return nil
 	}
 
-	//	fmt.Printf("\nWrite %s %+v\n", typ.Name, tag)
-	if includeSortImplementation(tag.Values) {
-		s := `// Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
-// Copyright 2009 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found at http://golang.org/LICENSE.
-
-`
-		w.Write([]byte(s))
-	}
-
 	// start with the list template
 	tmpl, err := list.List.Parse()
 
@@ -58,39 +46,9 @@ func (sw *ListWriter) Write(w io.Writer, typ typewriter.Type) error {
 		return err
 	}
 
-	doneOrdered, err := sw.writeTemplateIfPossible(w, typ, list.Ordered)
-	if !doneOrdered {
-		_, err = sw.writeTemplateIfPossible(w, typ, list.NotOrdered)
-	}
-	if err != nil {
-		return err
-	}
-
-	_, err = sw.writeTemplateIfPossible(w, typ, list.Numeric)
-	if err != nil {
-		return err
-	}
-
-	_, err = sw.writeTemplateIfPossible(w, typ, list.Comparable)
-	if err != nil {
-		return err
-	}
-
 	for _, v := range tag.Values {
 		err = sw.writeOne(w, typ, v)
 		if err != nil {
-			return err
-		}
-	}
-
-	if includeSortImplementation(tag.Values) {
-		tmpl, err := list.SortImplementation.Parse()
-
-		if err != nil {
-			return err
-		}
-
-		if err := writeBasicTemplate(w, tmpl, typ); err != nil {
 			return err
 		}
 	}
@@ -121,13 +79,4 @@ func (sw *ListWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.Ta
 	}
 
 	return writeTaggedTemplate(w, tmpl, typ, v)
-}
-
-func includeSortImplementation(values []typewriter.TagValue) bool {
-	for _, v := range values {
-		if strings.HasPrefix(v.Name, "SortWith") {
-			return true
-		}
-	}
-	return false
 }
