@@ -1,6 +1,7 @@
 package list
 
 const takeDropFunctions = `
+
 // Take returns a new {{.Type}}List containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
 func (list {{.Type}}List) Take(n int) {{.Type}}List {

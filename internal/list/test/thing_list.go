@@ -408,6 +408,64 @@ func (list ThingList) MaxOther(fn func(Thing) Other) (result Other, err error) {
 	return
 }
 
+// AggregateColour iterates over ThingList, operating on each element while maintaining ‘state’.
+func (list ThingList) AggregateColour(fn func(Colour, Thing) Colour) (result Colour) {
+	for _, v := range list {
+		result = fn(result, v)
+	}
+	return
+}
+
+// GroupByColour groups elements into a map keyed by Colour.
+func (list ThingList) GroupByColour(fn func(Thing) Colour) map[Colour]ThingList {
+	result := make(map[Colour]ThingList)
+	for _, v := range list {
+		key := fn(v)
+		result[key] = append(result[key], v)
+	}
+	return result
+}
+
+// MinColour selects the least value of Colour in ThingList.
+// Returns error on ThingList with no elements.
+func (list ThingList) MinColour(fn func(Thing) Colour) (result Colour, err error) {
+	l := len(list)
+	if l == 0 {
+		err = errors.New("cannot determine Min of zero-length ThingList")
+		return
+	}
+	result = fn(list[0])
+	if l > 1 {
+		for _, v := range list[1:] {
+			f := fn(v)
+			if f < result {
+				result = f
+			}
+		}
+	}
+	return
+}
+
+// MaxColour selects the largest value of Colour in ThingList.
+// Returns error on ThingList with no elements.
+func (list ThingList) MaxColour(fn func(Thing) Colour) (result Colour, err error) {
+	l := len(list)
+	if l == 0 {
+		err = errors.New("cannot determine Max of zero-length ThingList")
+		return
+	}
+	result = fn(list[0])
+	if l > 1 {
+		for _, v := range list[1:] {
+			f := fn(v)
+			if f > result {
+				result = f
+			}
+		}
+	}
+	return
+}
+
 //-----------------------------------------------------------------------------
 // Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
 // Copyright 2009 The Go Authors. All rights reserved.

@@ -34,6 +34,5 @@ func (list {{.Type}}List) Distinct() (result {{.Type}}List) {
 	}
 	return result
 }
-
 {{end}}
 `

@@ -10,13 +10,6 @@ var withT = &typewriter.Template{
 }
 
 const generalParamFunctions = `
-// MapTo{{.TypeParameter.LongName}} transforms a list of {{.TypeParameter}} from {{.Type}}List.
-func (list {{.Type}}List) MapTo{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}List) {
-	for _, v := range list {
-		result = append(result, fn(v))
-	}
-	return
-}
 
 // Aggregate{{.TypeParameter.LongName}} iterates over {{.Type}}List, operating on each element while maintaining ‘state’.
 func (list {{.Type}}List) Aggregate{{.TypeParameter.LongName}}(fn func({{.TypeParameter}}, {{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
@@ -43,6 +36,8 @@ func (list {{.Type}}List) GroupBy{{.TypeParameter.LongName}}(fn func({{.Type}}) 
 `
 
 const numericParamFunctions = `
+{{if .TypeParameter.Numeric}}
+
 // Sum{{.TypeParameter.LongName}} sums {{.Type}} over elements in {{.Type}}List. See: http://clipperhouse.github.io/gen/#Sum
 func (list {{.Type}}List) Sum{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
 	for _, v := range list {
@@ -64,6 +59,7 @@ func (list {{.Type}}List) Mean{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.
 	result = result / {{.TypeParameter}}(l)
 	return
 }
+{{end}}
 `
 
 const orderedParamFunctions = `

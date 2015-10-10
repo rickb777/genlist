@@ -6,6 +6,7 @@ import (
 
 var Templates = typewriter.TemplateSlice{
 	withT,
+	listT,
 	sortWith,
 	option,
 }

@@ -1,6 +1,7 @@
 package list
 
 const predicatedFunctions = `
+
 // Filter returns a new {{.Type}}List whose elements return true for func.
 func (list {{.Type}}List) Filter(fn func({{.Type}}) bool) (result {{.Type}}List) {
 	for _, v := range list {

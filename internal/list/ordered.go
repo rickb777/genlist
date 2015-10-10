@@ -104,6 +104,5 @@ func (list {{.Type}}List) Max(less func({{.Type}}, {{.Type}}) bool) (result {{.T
 	result = list[m]
 	return
 }
-
 {{end}}
 `
