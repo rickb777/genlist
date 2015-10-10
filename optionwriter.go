@@ -42,11 +42,7 @@ func (sw *OptionWriter) Write(w io.Writer, typ typewriter.Type) error {
 		return err
 	}
 
-	m := option.Model{
-		Type:      typ,
-	}
-
-	if err := tmpl.Execute(w, m); err != nil {
+	if err := writeBasicTemplate(w, tmpl, typ); err != nil {
 		return err
 	}
 
@@ -58,10 +54,6 @@ func (sw *OptionWriter) Write(w io.Writer, typ typewriter.Type) error {
 	for _, v := range tag.Values {
 		err = sw.writeOne(w, typ, v)
 		if err != nil {
-			return err
-		}
-
-		if err := tmpl.Execute(w, m); err != nil {
 			return err
 		}
 	}
@@ -78,7 +70,7 @@ func (sw *OptionWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type
 		if err != nil {
 			return false, err
 		}
-		err = writeTemplate(w, typ, v, tmpl)
+		err = writeTaggedTemplate(w, tmpl, typ, v)
 		return err == nil, err
 	}
 	return false, nil
@@ -91,5 +83,5 @@ func (sw *OptionWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.
 		return err
 	}
 
-	return writeTemplate(w, typ, v, tmpl)
+	return writeTaggedTemplate(w, tmpl, typ, v)
 }

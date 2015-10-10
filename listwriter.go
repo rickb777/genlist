@@ -3,8 +3,6 @@ package genlist
 import (
 	"io"
 	"strings"
-	"text/template"
-
 	"github.com/rickb777/genlist/internal/list"
 	"github.com/rickb777/typewriter"
 )
@@ -56,11 +54,7 @@ func (sw *ListWriter) Write(w io.Writer, typ typewriter.Type) error {
 		return err
 	}
 
-	m := list.Model{
-		Type:      typ,
-	}
-
-	if err := tmpl.Execute(w, m); err != nil {
+	if err := writeBasicTemplate(w, tmpl, typ); err != nil {
 		return err
 	}
 
@@ -96,7 +90,7 @@ func (sw *ListWriter) Write(w io.Writer, typ typewriter.Type) error {
 			return err
 		}
 
-		if err := tmpl.Execute(w, m); err != nil {
+		if err := writeBasicTemplate(w, tmpl, typ); err != nil {
 			return err
 		}
 	}
@@ -113,7 +107,7 @@ func (sw *ListWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type, 
 		if err != nil {
 			return false, err
 		}
-		err = writeTemplate(w, typ, v, tmpl)
+		err = writeTaggedTemplate(w, tmpl, typ, v)
 		return err == nil, err
 	}
 	return false, nil
@@ -126,24 +120,7 @@ func (sw *ListWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.Ta
 		return err
 	}
 
-	return writeTemplate(w, typ, v, tmpl)
-}
-
-func writeTemplate(w io.Writer, typ typewriter.Type, v typewriter.TagValue, tmpl *template.Template) error {
-	var tp typewriter.Type
-
-	if len(v.TypeParameters) > 0 {
-		tp = v.TypeParameters[0]
-	}
-
-	m := list.Model{
-		Type:          typ,
-		TypeParameter: tp,
-		TagValue:      v,
-	}
-
-	//	fmt.Printf("tmpl.Execute %s %s\n", typ.Name, v.Name)
-	return tmpl.Execute(w, m)
+	return writeTaggedTemplate(w, tmpl, typ, v)
 }
 
 func includeSortImplementation(values []typewriter.TagValue) bool {

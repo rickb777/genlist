@@ -42,9 +42,5 @@ func (sw *SequenceWriter) Write(w io.Writer, typ typewriter.Type) error {
 		return err
 	}
 
-	m := sequence.Model{
-		Type:      typ,
-	}
-
-	return tmpl.Execute(w, m)
+	return writeBasicTemplate(w, tmpl, typ)
 }
