@@ -185,3 +185,14 @@ func (v noOther) Contains(value Other) bool {
 func (v noOther) Count(value Other) int {
 	return 0
 }
+
+// MapToFoo transforms OptionalOther to OptionalFoo.
+func (v SomeOther) MapToFoo(fn func(Other) Foo) OptionalFoo {
+	u := fn(Other(v))
+	return SomeFoo(u)
+}
+
+// MapToFoo transforms OptionalOther to OptionalFoo.
+func (v noOther) MapToFoo(fn func(Other) Foo) OptionalFoo {
+	return noFoo{}
+}

@@ -11,7 +11,7 @@ var listT = &typewriter.Template{
 
 const listParamFunctions = `
 
-// MapTo{{.TypeParameter.LongName}} transforms a list of {{.TypeParameter}} from {{.Type}}List.
+// MapTo{{.TypeParameter.LongName}} transforms {{.Type}}List to {{.TypeParameter}}List.
 func (list {{.Type}}List) MapTo{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}List) {
 	for _, v := range list {
 		result = append(result, fn(v))

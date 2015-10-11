@@ -5,4 +5,5 @@ import (
 )
 
 var Templates = typewriter.TemplateSlice{
+	withT,
 }

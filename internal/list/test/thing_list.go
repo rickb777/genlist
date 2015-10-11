@@ -320,7 +320,7 @@ func (list ThingList) Max(less func(Thing, Thing) bool) (result Thing, err error
 	return
 }
 
-// MapToOther transforms a list of Other from ThingList.
+// MapToOther transforms ThingList to OtherList.
 func (list ThingList) MapToOther(fn func(Thing) Other) (result OtherList) {
 	for _, v := range list {
 		result = append(result, fn(v))
