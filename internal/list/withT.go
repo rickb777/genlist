@@ -1,15 +1,6 @@
 package list
 
-import "github.com/rickb777/typewriter"
-
-var WithT = &typewriter.Template{
-	Name: "With",
-	Text: generalParamFunctions + comparableParamFunctions + numericParamFunctions + orderedParamFunctions,
-	// exactly one type parameter is required, but no constraints on that type
-	TypeParameterConstraints: []typewriter.Constraint{{}},
-}
-
-const generalParamFunctions = `
+const WithParamFunctions = `
 
 // Aggregate{{.TypeParameter.LongName}} iterates over {{.Type}}List, operating on each element while maintaining ‘state’.
 func (list {{.Type}}List) Aggregate{{.TypeParameter.LongName}}(fn func({{.TypeParameter}}, {{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
@@ -18,9 +9,7 @@ func (list {{.Type}}List) Aggregate{{.TypeParameter.LongName}}(fn func({{.TypePa
 	}
 	return
 }
-`
 
-const comparableParamFunctions = `
 {{if .TypeParameter.Comparable}}
 
 // GroupBy{{.TypeParameter.LongName}} groups elements into a map keyed by {{.TypeParameter}}.
@@ -33,9 +22,7 @@ func (list {{.Type}}List) GroupBy{{.TypeParameter.LongName}}(fn func({{.Type}}) 
 	return result
 }
 {{end}}
-`
 
-const numericParamFunctions = `
 {{if .TypeParameter.Numeric}}
 
 // Sum{{.TypeParameter.LongName}} sums {{.Type}} over elements in {{.Type}}List. See: http://clipperhouse.github.io/gen/#Sum
@@ -60,9 +47,7 @@ func (list {{.Type}}List) Mean{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.
 	return
 }
 {{end}}
-`
 
-const orderedParamFunctions = `
 {{if .TypeParameter.Ordered}}
 
 // Min{{.TypeParameter.LongName}} selects the least value of {{.TypeParameter}} in {{.Type}}List.

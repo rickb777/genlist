@@ -1,15 +1,6 @@
 package list
 
-import "github.com/rickb777/typewriter"
-
-var ListT = &typewriter.Template{
-	Name: "List",
-	Text: listParamFunctions,
-	// exactly one type parameter is required, but no constraints on that type
-	TypeParameterConstraints: []typewriter.Constraint{{}},
-}
-
-const listParamFunctions = `
+const ListMapToParamFunctions = `
 
 // MapTo{{.TypeParameter.LongName}} transforms {{.Type}}List to {{.TypeParameter}}List.
 func (list {{.Type}}List) MapTo{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}List) {

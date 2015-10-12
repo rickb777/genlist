@@ -11,8 +11,8 @@ var coreListTemplate = &typewriter.Template{
 }
 
 var otherListTemplates = typewriter.TemplateSlice{
-	list.WithT,
-	list.ListT,
+	withT,
+	mapToT,
 	sortWith,
 	list.Option,
 }
@@ -21,4 +21,18 @@ var otherListTemplates = typewriter.TemplateSlice{
 var sortWith = &typewriter.Template{
 	Name: "SortWith",
 	Text: list.SortWith,
+}
+
+var mapToT = &typewriter.Template{
+	Name: "List",
+	Text: list.ListMapToParamFunctions,
+	// exactly one type parameter is required, but no constraints on that type
+	TypeParameterConstraints: []typewriter.Constraint{{}},
+}
+
+var withT = &typewriter.Template{
+	Name: "With",
+	Text: list.WithParamFunctions,
+	// exactly one type parameter is required, but no constraints on that type
+	TypeParameterConstraints: []typewriter.Constraint{{}},
 }

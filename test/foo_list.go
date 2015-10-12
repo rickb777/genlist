@@ -30,6 +30,40 @@ func (list FooList) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
 
+// These methods require Foo be ordered.
+
+// Less determines whether one specified element is less than another specified element.
+// This is one of the three methods in the standard sort.Interface.
+func (list FooList) Less(i, j int) bool {
+	return list[i] < list[j]
+}
+
+// Sort returns a new ordered FooList.
+func (list FooList) Sort() FooList {
+	result := make(FooList, len(list))
+	copy(result, list)
+	sort.Sort(result)
+	return result
+}
+
+// IsSorted reports whether FooList is sorted.
+func (list FooList) IsSorted() bool {
+	return sort.IsSorted(list)
+}
+
+// SortDesc returns a new reverse-ordered FooList.
+func (list FooList) SortDesc() FooList {
+	result := make(FooList, len(list))
+	copy(result, list)
+	sort.Sort(sort.Reverse(result))
+	return result
+}
+
+// IsSortedDesc reports whether FooList is reverse-sorted.
+func (list FooList) IsSortedDesc() bool {
+	return sort.IsSorted(sort.Reverse(list))
+}
+
 // IsEmpty tests whether FooList is empty.
 func (list FooList) IsEmpty() bool {
 	return len(list) == 0
@@ -253,6 +287,8 @@ Outer:
 	return result
 }
 
+// These methods require Foo be comarable.
+
 // Contains verifies that a given value is contained in FooList.
 func (list FooList) Contains(value Foo) bool {
 	for _, v := range list {
@@ -285,6 +321,8 @@ func (list FooList) Distinct() (result FooList) {
 	return result
 }
 
+// These methods require Foo be numeric.
+
 // Sum sums Foo elements in FooList. See: http://clipperhouse.github.io/gen/#Sum
 func (list FooList) Sum() (result Foo) {
 	for _, v := range list {
@@ -308,11 +346,7 @@ func (list FooList) Mean() (Foo, error) {
 	return result, nil
 }
 
-// Less determines whether one specified element is less than another specified element.
-// This is one of the three methods in the standard sort.Interface.
-func (list FooList) Less(i, j int) bool {
-	return list[i] < list[j]
-}
+// These methods require Foo be ordered.
 
 // Min returns the minimum value of FooList. In the case of multiple items being equally minimal,
 // the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Min
@@ -344,30 +378,4 @@ func (list FooList) Max() (result Foo, err error) {
 		}
 	}
 	return
-}
-
-// Sort returns a new ordered FooList.
-func (list FooList) Sort() FooList {
-	result := make(FooList, len(list))
-	copy(result, list)
-	sort.Sort(result)
-	return result
-}
-
-// IsSorted reports whether FooList is sorted.
-func (list FooList) IsSorted() bool {
-	return sort.IsSorted(list)
-}
-
-// SortDesc returns a new reverse-ordered FooList.
-func (list FooList) SortDesc() FooList {
-	result := make(FooList, len(list))
-	copy(result, list)
-	sort.Sort(sort.Reverse(result))
-	return result
-}
-
-// IsSortedDesc reports whether FooList is reverse-sorted.
-func (list FooList) IsSortedDesc() bool {
-	return sort.IsSorted(sort.Reverse(list))
 }

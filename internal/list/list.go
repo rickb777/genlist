@@ -8,18 +8,7 @@ var List = `
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type {{.Type}}List []{{.Type}}
 
-// Len returns the number of items in the list.
-// There is no Size() method; use Len() instead.
-// This is one of the three methods in the standard sort.Interface.
-func (list {{.Type}}List) Len() int {
-	return len(list)
-}
-
-// Swap exchanges two elements, which is neceessary during sorting etc.
-// This is one of the three methods in the standard sort.Interface.
-func (list {{.Type}}List) Swap(i, j int) {
-	list[i], list[j] = list[j], list[i]
-}
+` + sortable + `
 
 // IsEmpty tests whether {{.Type}}List is empty.
 func (list {{.Type}}List) IsEmpty() bool {

@@ -30,6 +30,40 @@ func (list OtherList) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
 
+// These methods require Other be ordered.
+
+// Less determines whether one specified element is less than another specified element.
+// This is one of the three methods in the standard sort.Interface.
+func (list OtherList) Less(i, j int) bool {
+	return list[i] < list[j]
+}
+
+// Sort returns a new ordered OtherList.
+func (list OtherList) Sort() OtherList {
+	result := make(OtherList, len(list))
+	copy(result, list)
+	sort.Sort(result)
+	return result
+}
+
+// IsSorted reports whether OtherList is sorted.
+func (list OtherList) IsSorted() bool {
+	return sort.IsSorted(list)
+}
+
+// SortDesc returns a new reverse-ordered OtherList.
+func (list OtherList) SortDesc() OtherList {
+	result := make(OtherList, len(list))
+	copy(result, list)
+	sort.Sort(sort.Reverse(result))
+	return result
+}
+
+// IsSortedDesc reports whether OtherList is reverse-sorted.
+func (list OtherList) IsSortedDesc() bool {
+	return sort.IsSorted(sort.Reverse(list))
+}
+
 // IsEmpty tests whether OtherList is empty.
 func (list OtherList) IsEmpty() bool {
 	return len(list) == 0
@@ -253,6 +287,8 @@ Outer:
 	return result
 }
 
+// These methods require Other be comarable.
+
 // Contains verifies that a given value is contained in OtherList.
 func (list OtherList) Contains(value Other) bool {
 	for _, v := range list {
@@ -285,6 +321,8 @@ func (list OtherList) Distinct() (result OtherList) {
 	return result
 }
 
+// These methods require Other be numeric.
+
 // Sum sums Other elements in OtherList. See: http://clipperhouse.github.io/gen/#Sum
 func (list OtherList) Sum() (result Other) {
 	for _, v := range list {
@@ -308,11 +346,7 @@ func (list OtherList) Mean() (Other, error) {
 	return result, nil
 }
 
-// Less determines whether one specified element is less than another specified element.
-// This is one of the three methods in the standard sort.Interface.
-func (list OtherList) Less(i, j int) bool {
-	return list[i] < list[j]
-}
+// These methods require Other be ordered.
 
 // Min returns the minimum value of OtherList. In the case of multiple items being equally minimal,
 // the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Min
@@ -344,30 +378,4 @@ func (list OtherList) Max() (result Other, err error) {
 		}
 	}
 	return
-}
-
-// Sort returns a new ordered OtherList.
-func (list OtherList) Sort() OtherList {
-	result := make(OtherList, len(list))
-	copy(result, list)
-	sort.Sort(result)
-	return result
-}
-
-// IsSorted reports whether OtherList is sorted.
-func (list OtherList) IsSorted() bool {
-	return sort.IsSorted(list)
-}
-
-// SortDesc returns a new reverse-ordered OtherList.
-func (list OtherList) SortDesc() OtherList {
-	result := make(OtherList, len(list))
-	copy(result, list)
-	sort.Sort(sort.Reverse(result))
-	return result
-}
-
-// IsSortedDesc reports whether OtherList is reverse-sorted.
-func (list OtherList) IsSortedDesc() bool {
-	return sort.IsSorted(sort.Reverse(list))
 }

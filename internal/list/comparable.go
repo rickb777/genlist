@@ -2,6 +2,7 @@ package list
 
 const comparableFunctions = `
 {{if .Type.Comparable}}
+// These methods require {{.Type}} be comarable.
 
 // Contains verifies that a given value is contained in {{.Type}}List.
 func (list {{.Type}}List) Contains(value {{.Type}}) bool {

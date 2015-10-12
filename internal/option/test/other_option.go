@@ -92,6 +92,8 @@ func (x SomeOther) Filter(predicate func(Other) bool) OptionalOther {
 	return NoOther()
 }
 
+// These methods require Other be comparable.
+
 // Contains verifies that a given value is contained in OptionalOther.
 func (v SomeOther) Contains(value Other) bool {
 	if Other(v) == value {

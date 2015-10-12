@@ -92,6 +92,8 @@ func (x SomeFoo) Filter(predicate func(Foo) bool) OptionalFoo {
 	return NoFoo()
 }
 
+// These methods require Foo be comparable.
+
 // Contains verifies that a given value is contained in OptionalFoo.
 func (v SomeFoo) Contains(value Foo) bool {
 	if Foo(v) == value {

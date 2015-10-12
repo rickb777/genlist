@@ -252,6 +252,8 @@ Outer:
 	return result
 }
 
+// These methods require Thing be comarable.
+
 // Contains verifies that a given value is contained in ThingList.
 func (list ThingList) Contains(value Thing) bool {
 	for _, v := range list {

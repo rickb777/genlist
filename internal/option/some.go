@@ -70,6 +70,8 @@ func (x Some{{.Type}}) Filter(predicate func({{.Type}}) bool) Optional{{.Type}} 
 }
 
 {{if .Type.Comparable}}
+// These methods require {{.Type}} be comparable.
+
 // Contains verifies that a given value is contained in Optional{{.Type}}.
 func (v Some{{.Type}}) Contains(value {{.Type}}) bool {
 	if {{.Type}}(v) == value {

@@ -2,6 +2,7 @@ package list
 
 const numericFunctions = `
 {{if .Type.Numeric}}
+// These methods require {{.Type}} be numeric.
 
 // Sum sums {{.Type}} elements in {{.Type}}List. See: http://clipperhouse.github.io/gen/#Sum
 func (list {{.Type}}List) Sum() (result {{.Type}}) {
