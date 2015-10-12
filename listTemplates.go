@@ -5,7 +5,12 @@ import (
 "github.com/rickb777/genlist/internal/list"
 )
 
-var listTemplates = typewriter.TemplateSlice{
+var coreListTemplate = &typewriter.Template{
+	Name: "List",
+	Text: list.List,
+}
+
+var otherListTemplates = typewriter.TemplateSlice{
 	list.WithT,
 	list.ListT,
 	sortWith,

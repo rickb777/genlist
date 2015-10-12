@@ -2,7 +2,6 @@ package genlist
 
 import (
 	"io"
-	"github.com/rickb777/genlist/internal/list"
 	"github.com/rickb777/typewriter"
 )
 
@@ -36,7 +35,7 @@ func (sw *ListWriter) Write(w io.Writer, typ typewriter.Type) error {
 	}
 
 	// start with the list template
-	tmpl, err := list.List.Parse()
+	tmpl, err := coreListTemplate.Parse()
 
 	if err != nil {
 		return err
@@ -72,7 +71,7 @@ func (sw *ListWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type, 
 }
 
 func (sw *ListWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.TagValue) error {
-	tmpl, err := listTemplates.ByTagValue(typ, v)
+	tmpl, err := otherListTemplates.ByTagValue(typ, v)
 
 	if err != nil {
 		return err

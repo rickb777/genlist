@@ -1,10 +1,7 @@
 package list
 
-import "github.com/rickb777/typewriter"
-
-var List = &typewriter.Template{
-	Name: "List",
-	Text: `// {{.Type}}List is a slice of type {{.Type}}. Use it where you would use []{{.Type}}.
+var List = `
+// {{.Type}}List is a slice of type {{.Type}}. Use it where you would use []{{.Type}}.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
@@ -88,8 +85,8 @@ func (list {{.Type}}List) Shuffle() {{.Type}}List {
 func (list {{.Type}}List) ToList() {{.Type}}List {
 	return list
 }
-` + takeDropFunctions + predicatedFunctions + comparableFunctions + numericFunctions + orderedFunctions,
-}
+` + takeDropFunctions + predicatedFunctions + comparableFunctions + numericFunctions + orderedFunctions
+
 
 // TODO aggregate, diff
 // TODO PadTo, HeadOption, LastOption,
