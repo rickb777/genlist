@@ -1,11 +1,6 @@
 package list
 
-import "github.com/rickb777/typewriter"
-
-var sortWith = &typewriter.Template{
-	Name: "SortWith",
-	Text: `
-
+var SortWith = `
 
 //-----------------------------------------------------------------------------
 // Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
@@ -56,5 +51,4 @@ func (list {{.Type}}List) IsSortedWithDesc(less func({{.Type}}, {{.Type}}) bool)
 	}
 	return list.IsSortedWith(greater)
 }
-` + sortImplementation,
-}
+` + sortImplementation

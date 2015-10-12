@@ -72,7 +72,7 @@ func (sw *OptionWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type
 }
 
 func (sw *OptionWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.TagValue) error {
-	tmpl, err := option.Templates.ByTagValue(typ, v)
+	tmpl, err := optionTemplates.ByTagValue(typ, v)
 
 	if err != nil {
 		return err

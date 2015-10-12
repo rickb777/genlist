@@ -2,7 +2,7 @@ package list
 
 import "github.com/rickb777/typewriter"
 
-var listT = &typewriter.Template{
+var ListT = &typewriter.Template{
 	Name: "List",
 	Text: listParamFunctions,
 	// exactly one type parameter is required, but no constraints on that type

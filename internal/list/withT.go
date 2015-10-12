@@ -2,7 +2,7 @@ package list
 
 import "github.com/rickb777/typewriter"
 
-var withT = &typewriter.Template{
+var WithT = &typewriter.Template{
 	Name: "With",
 	Text: generalParamFunctions + comparableParamFunctions + numericParamFunctions + orderedParamFunctions,
 	// exactly one type parameter is required, but no constraints on that type

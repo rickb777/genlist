@@ -2,7 +2,7 @@ package option
 
 import "github.com/rickb777/typewriter"
 
-var withT = &typewriter.Template{
+var WithT = &typewriter.Template{
 	Name: "With",
 	Text: generalParamFunctions,
 	// exactly one type parameter is required, but no constraints on that type

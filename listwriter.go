@@ -72,7 +72,7 @@ func (sw *ListWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type, 
 }
 
 func (sw *ListWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.TagValue) error {
-	tmpl, err := list.Templates.ByTagValue(typ, v)
+	tmpl, err := listTemplates.ByTagValue(typ, v)
 
 	if err != nil {
 		return err
