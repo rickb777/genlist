@@ -6,10 +6,10 @@ import (
 )
 
 func TestSort(t *testing.T) {
-	others := OtherList{50, 100, 9, 7, 100, 99}
+	others := Num1List{50, 100, 9, 7, 100, 99}
 
 	sort1 := others.Sort()
-	s1 := OtherList{7, 9, 50, 99, 100, 100}
+	s1 := Num1List{7, 9, 50, 99, 100, 100}
 
 	if !reflect.DeepEqual(sort1, s1) {
 		t.Errorf("Sort should result in %v, got %v", s1, sort1)
@@ -20,7 +20,7 @@ func TestSort(t *testing.T) {
 	}
 
 	sort2 := others.SortDesc()
-	s2 := OtherList{100, 100, 99, 50, 9, 7}
+	s2 := Num1List{100, 100, 99, 50, 9, 7}
 
 	if !reflect.DeepEqual(sort2, s2) {
 		t.Errorf("SortDesc should result in %v, got %v", s2, sort2)

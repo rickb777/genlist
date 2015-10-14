@@ -37,7 +37,7 @@ func TestSomeOther(t *testing.T) {
 		t.Errorf("Forall should be true")
 	}
 
-	if someThing.Filter(func(Other) bool { return true }).Get() != 60 {
+	if someThing.Filter(func(Other) bool { return true }).(OptionalOther).Get() != 60 {
 		t.Errorf("Filter should be 60")
 	}
 

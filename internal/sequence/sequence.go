@@ -1,53 +1,50 @@
 package sequence
 
-import "github.com/rickb777/typewriter"
-
-var Sequence = &typewriter.Template{
-	Name: "Seq",
-	Text: `// {{.Type}}Seq is an interface for sequences of type {{.Type}}.
-type {{.Type}}Seq interface {
+const Sequence = `
+// Sequence: Has {{.Has}}
+{{if .Has.Sequence}}
+// {{.TName}}Seq is an interface for sequences of type {{.PName}}, including lists and options (where present).
+type {{.TName}}Seq interface {
+	// Len gets the size/length of the sequence.
 	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
 	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
-	//Find(fn func({{.Type}}) bool) Optional{{.Type}}
-	Exists(fn func({{.Type}}) bool) bool
-	Forall(fn func({{.Type}}) bool) bool
-	Foreach(fn func({{.Type}}))
-	//Filter(fn func({{.Type}}) bool) (result {{.Type}}Seq)
-	ToList() {{.Type}}List
-}
 
-// ToList converts an option to a list of zero or one item
-func (x Some{{.Type}}) ToList() {{.Type}}List {
-	return {{.Type}}List{ {{.Type}}(x) }
-}
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predictate supplied.
+	Exists(predicate func({{.PName}}) bool) bool
 
-// ToList converts an option to a list of zero or one item
-func (x no{{.Type}}) ToList() {{.Type}}List {
-	return {{.Type}}List{}
-}
+	// Forall returns true if every element in the sequence matches the predictate supplied.
+	Forall(predicate func({{.PName}}) bool) bool
 
-// HeadOption converts an option to a list of zero or one item
-func (list {{.Type}}List) HeadOption() Optional{{.Type}} {
-	if len(list) == 0 {
-		return Some{{.Type}}(list[0])
-	} else {
-		return no{{.Type}}{}
-	}
-}
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func({{.PName}}))
 
-{{if .Type.Comparable}}
-// Distinct returns a new {{.Type}}List whose elements are unique.
-func (v Some{{.Type}}) Distinct() (result {{.Type}}List) {
-	result = append(result, {{.Type}}(v))
-	return result
-}
+	// Filter returns a new {{.TName}}Seq whose elements return true for func.
+	Filter(predicate func({{.PName}}) bool) (result {{.TName}}Seq)
 
-// Distinct returns a new {{.Type}}List whose elements are unique.
-func (v no{{.Type}}) Distinct() {{.Type}}List {
-	return {{.Type}}List{}
-}
+{{if .Has.Option}}
+	// Find searches for the first value that matches a given predicate. It may or may not find one.
+	Find(predicate func({{.PName}}) bool) Optional{{.TName}}
 {{end}}
 
-`,
+{{if .Has.List}}
+	// Converts the sequence to a list. For lists, this is a no-op.
+	ToList() {{.TName}}List
+{{end}}
+
+{{if .Type.Comparable}}
+	// Contains tests whether a given value is present in the sequence.
+	Contains(value {{.PName}}) bool
+
+	// Count counts the number of times a given value occurs in the sequence.
+	Count(value {{.PName}}) int
+{{end}}
 }
+
+{{end}}
+`

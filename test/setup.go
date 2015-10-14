@@ -14,8 +14,7 @@ import (
 func main() {
 	// don't let bad test or gen files get us stuck
 	filter := func(f os.FileInfo) bool {
-		return !strings.HasSuffix(f.Name(), "_seq.go") &&
-		!strings.HasSuffix(f.Name(), "_list.go") &&
+		return !strings.HasSuffix(f.Name(), "_list.go") &&
 		!strings.HasSuffix(f.Name(), "_option.go") &&
 		!strings.HasSuffix(f.Name(), "_test.go")
 	}

@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestSum(t *testing.T) {
-	others := OtherList{50, 100, 9, 7, 100, 99}
+	others := Num1List{50, 100, 9, 7, 100, 99}
 
 	sum := others.Sum()
 

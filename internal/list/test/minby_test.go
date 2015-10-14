@@ -2,10 +2,10 @@ package main
 
 import "testing"
 
-func TestMinByOther(t *testing.T) {
-	things := OtherList{50, 100, -20, 7, 100, 99}
+func TestMinByNum(t *testing.T) {
+	things := Num1List{50, 100, -20, 7, 100, 99}
 
-	min1, err1 := things.MinBy(func(a, b Other) bool {
+	min1, err1 := things.MinBy(func(a, b Num1) bool {
 		return a < b
 	})
 
@@ -17,7 +17,7 @@ func TestMinByOther(t *testing.T) {
 		t.Errorf("MinBy Number should return %v, got %v", -20, min1)
 	}
 
-	_, err2 := OtherList{}.MinBy(func(a, b Other) bool {
+	_, err2 := Num1List{}.MinBy(func(a, b Num1) bool {
 		return true
 	})
 

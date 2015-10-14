@@ -2,8 +2,8 @@ package main
 
 import "testing"
 
-func TestLenOther(t *testing.T) {
-	things := OtherList{60, -20, 100}
+func TestLenNum(t *testing.T) {
+	things := Num1List{60, -20, 100}
 
 	if things.Len() != 3 {
 		t.Errorf("Size should be 3")
@@ -17,7 +17,7 @@ func TestLenOther(t *testing.T) {
 		t.Errorf("NonEmpty should be true")
 	}
 
-	noThings := OtherList{}
+	noThings := Num1List{}
 
 	if noThings.Len() != 0 {
 		t.Errorf("Size should be 0")

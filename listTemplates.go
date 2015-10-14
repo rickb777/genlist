@@ -2,7 +2,7 @@ package genlist
 
 import (
 	"github.com/rickb777/typewriter"
-"github.com/rickb777/genlist/internal/list"
+	"github.com/rickb777/genlist/internal/list"
 )
 
 var coreListTemplate = &typewriter.Template{
@@ -11,26 +11,26 @@ var coreListTemplate = &typewriter.Template{
 }
 
 var otherListTemplates = typewriter.TemplateSlice{
-	withT,
-	mapToT,
-	sortWith,
-	list.Option,
+	listSortWith,
+	listMapToT,
+	listWithT,
+//	list.OptionForList,
+	coreOptionTemplate,
 }
 
-
-var sortWith = &typewriter.Template{
+var listSortWith = &typewriter.Template{
 	Name: "SortWith",
 	Text: list.SortWith,
 }
 
-var mapToT = &typewriter.Template{
-	Name: "List",
+var listMapToT = &typewriter.Template{
+	Name: "MapTo",
 	Text: list.ListMapToParamFunctions,
 	// exactly one type parameter is required, but no constraints on that type
 	TypeParameterConstraints: []typewriter.Constraint{{}},
 }
 
-var withT = &typewriter.Template{
+var listWithT = &typewriter.Template{
 	Name: "With",
 	Text: list.WithParamFunctions,
 	// exactly one type parameter is required, but no constraints on that type

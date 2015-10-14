@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestMean(t *testing.T) {
-	others := OtherList{50, 100, 9, 7, 100, 99}
+	others := Num1List{50, 100, 9, 7, 100, 99}
 
 	mean1, err := others.Mean()
 
@@ -11,13 +11,13 @@ func TestMean(t *testing.T) {
 		t.Errorf("Mean should succeed")
 	}
 
-	avg1 := Other(60)
+	avg1 := Num1(60)
 
 	if mean1 != avg1 {
 		t.Errorf("Mean should be %v, got %v", avg1, mean1)
 	}
 
-	mean2, err := OtherList{}.Mean()
+	mean2, err := Num1List{}.Mean()
 
 	if err == nil || mean2 != 0 {
 		t.Errorf("Mean should fail on empty list")

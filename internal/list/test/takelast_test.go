@@ -5,12 +5,12 @@ import (
 	"testing"
 )
 
-func TestTakeLastOther(t *testing.T) {
-	things := OtherList{1, 3, 13, 17, 5, 6, 17, 8, 9}
+func TestTakeLastNum(t *testing.T) {
+	things := Num1List{1, 3, 13, 17, 5, 6, 17, 8, 9}
 
 	where1 := things.TakeLast(4)
 
-	expected1 := OtherList{6, 17, 8, 9}
+	expected1 := Num1List{6, 17, 8, 9}
 
 	if !reflect.DeepEqual(where1, expected1) {
 		t.Errorf("TakeLast should result in %v, got %v", expected1, where1)
@@ -28,7 +28,7 @@ func TestTakeLastOther(t *testing.T) {
 		t.Errorf("TakeLast should result in %v, got %v", things, where3)
 	}
 
-	where4 := OtherList{}.TakeLast(100)
+	where4 := Num1List{}.TakeLast(100)
 
 	if len(where4) != 0 {
 		t.Errorf("TakeLast should result in empty list, got %v", where4)

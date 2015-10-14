@@ -5,20 +5,20 @@ import (
 	"testing"
 )
 
-func TestTakeWhileOther(t *testing.T) {
-	things := OtherList{1, 3, 17, 5, 6, 17, 8, 9}
+func TestTakeWhileNum(t *testing.T) {
+	things := Num1List{1, 3, 17, 5, 6, 17, 8, 9}
 
-	where1 := things.TakeWhile(func(x Other) bool {
+	where1 := things.TakeWhile(func(x Num1) bool {
 		return x % 2 == 1
 	})
 
-	expected1 := OtherList{1, 3, 17, 5}
+	expected1 := Num1List{1, 3, 17, 5}
 
 	if !reflect.DeepEqual(where1, expected1) {
 		t.Errorf("TakeWhile should result in %v, got %v", expected1, where1)
 	}
 
-	where2 := things.TakeWhile(func(x Other) bool {
+	where2 := things.TakeWhile(func(x Num1) bool {
 		return x == 0
 	})
 
@@ -26,7 +26,7 @@ func TestTakeWhileOther(t *testing.T) {
 		t.Errorf("TakeWhile should result in empty list, got %v", where2)
 	}
 
-	where3 := things.TakeWhile(func(x Other) bool {
+	where3 := things.TakeWhile(func(x Num1) bool {
 		return true
 	})
 
@@ -34,7 +34,7 @@ func TestTakeWhileOther(t *testing.T) {
 		t.Errorf("TakeWhile should result in %v, got %v", things, where3)
 	}
 
-	where4 := OtherList{}.TakeWhile(func(x Other) bool {
+	where4 := Num1List{}.TakeWhile(func(x Num1) bool {
 		return true
 	})
 

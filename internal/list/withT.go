@@ -2,8 +2,8 @@ package list
 
 const WithParamFunctions = `
 
-// Aggregate{{.TypeParameter.LongName}} iterates over {{.Type}}List, operating on each element while maintaining ‘state’.
-func (list {{.Type}}List) Aggregate{{.TypeParameter.LongName}}(fn func({{.TypeParameter}}, {{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
+// Aggregate{{.TypeParameter.LongName}} iterates over {{.TName}}List, operating on each element while maintaining ‘state’.
+func (list {{.TName}}List) Aggregate{{.TypeParameter.LongName}}(fn func({{.TypeParameter}}, {{.PName}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
 	for _, v := range list {
 		result = fn(result, v)
 	}
@@ -11,10 +11,11 @@ func (list {{.Type}}List) Aggregate{{.TypeParameter.LongName}}(fn func({{.TypePa
 }
 
 {{if .TypeParameter.Comparable}}
+// This methods require {{.PName}} be comparable.
 
 // GroupBy{{.TypeParameter.LongName}} groups elements into a map keyed by {{.TypeParameter}}.
-func (list {{.Type}}List) GroupBy{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) map[{{.TypeParameter}}]{{.Type}}List {
-	result := make(map[{{.TypeParameter}}]{{.Type}}List)
+func (list {{.TName}}List) GroupBy{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) map[{{.TypeParameter}}]{{.TName}}List {
+	result := make(map[{{.TypeParameter}}]{{.TName}}List)
 	for _, v := range list {
 		key := fn(v)
 		result[key] = append(result[key], v)
@@ -24,20 +25,21 @@ func (list {{.Type}}List) GroupBy{{.TypeParameter.LongName}}(fn func({{.Type}}) 
 {{end}}
 
 {{if .TypeParameter.Numeric}}
+// These methods require {{.PName}} be numeric.
 
-// Sum{{.TypeParameter.LongName}} sums {{.Type}} over elements in {{.Type}}List. See: http://clipperhouse.github.io/gen/#Sum
-func (list {{.Type}}List) Sum{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
+// Sum{{.TypeParameter.LongName}} sums {{.PName}} over elements in {{.TName}}List. See: http://clipperhouse.github.io/gen/#Sum
+func (list {{.TName}}List) Sum{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
 	for _, v := range list {
 		result += fn(v)
 	}
 	return
 }
 
-// Mean{{.TypeParameter.LongName}} sums {{.TypeParameter}} over all elements and divides by len({{.Type}}List). See: http://clipperhouse.github.io/gen/#Mean
-func (list {{.Type}}List) Mean{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}, err error) {
+// Mean{{.TypeParameter.LongName}} sums {{.TypeParameter}} over all elements and divides by len({{.TName}}List). See: http://clipperhouse.github.io/gen/#Mean
+func (list {{.TName}}List) Mean{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.TypeParameter}}, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Mean[{{.TypeParameter}}] of zero-length {{.Type}}List")
+		err = errors.New("cannot determine Mean[{{.TypeParameter}}] of zero-length {{.TName}}List")
 		return
 	}
 	for _, v := range list {
@@ -49,13 +51,14 @@ func (list {{.Type}}List) Mean{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.
 {{end}}
 
 {{if .TypeParameter.Ordered}}
+// These methods require {{.PName}} be ordered.
 
-// Min{{.TypeParameter.LongName}} selects the least value of {{.TypeParameter}} in {{.Type}}List.
-// Returns error on {{.Type}}List with no elements.
-func (list {{.Type}}List) Min{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}, err error) {
+// Min{{.TypeParameter.LongName}} selects the least value of {{.TypeParameter}} in {{.TName}}List.
+// Returns error on {{.TName}}List with no elements.
+func (list {{.TName}}List) Min{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.TypeParameter}}, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Min of zero-length {{.Type}}List")
+		err = errors.New("cannot determine Min of zero-length {{.TName}}List")
 		return
 	}
 	result = fn(list[0])
@@ -70,12 +73,12 @@ func (list {{.Type}}List) Min{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.T
 	return
 }
 
-// Max{{.TypeParameter.LongName}} selects the largest value of {{.TypeParameter}} in {{.Type}}List.
-// Returns error on {{.Type}}List with no elements.
-func (list {{.Type}}List) Max{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) (result {{.TypeParameter}}, err error) {
+// Max{{.TypeParameter.LongName}} selects the largest value of {{.TypeParameter}} in {{.TName}}List.
+// Returns error on {{.TName}}List with no elements.
+func (list {{.TName}}List) Max{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.TypeParameter}}, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Max of zero-length {{.Type}}List")
+		err = errors.New("cannot determine Max of zero-length {{.TName}}List")
 		return
 	}
 	result = fn(list[0])

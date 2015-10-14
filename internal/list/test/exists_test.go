@@ -2,10 +2,10 @@ package main
 
 import "testing"
 
-func TestExistsOther(t *testing.T) {
-	things := OtherList{60, -20, 100}
+func TestExistsNum1(t *testing.T) {
+	things := Num1List{60, -20, 100}
 
-	any1 := things.Exists(func(x Other) bool {
+	any1 := things.Exists(func(x Num1) bool {
 		return x == 10
 	})
 
@@ -13,7 +13,7 @@ func TestExistsOther(t *testing.T) {
 		t.Errorf("Exists should not evaluate true for 10")
 	}
 
-	any2 := things.Exists(func(x Other) bool {
+	any2 := things.Exists(func(x Num1) bool {
 		return x > 50
 	})
 
@@ -21,7 +21,35 @@ func TestExistsOther(t *testing.T) {
 		t.Errorf("Exists should evaluate true for Number > 50")
 	}
 
-	any3 := OtherList{}.Exists(func(x Other) bool {
+	any3 := Num1List{}.Exists(func(x Num1) bool {
+		return true
+	})
+
+	if any3 {
+		t.Errorf("Exists should evaluate false for empty slices")
+	}
+}
+
+func TestExistsNum2(t *testing.T) {
+	things := Num2List{ip(60), ip(-20), ip(100)}
+
+	any1 := things.Exists(func(x *Num2) bool {
+		return *x == 10
+	})
+
+	if any1 {
+		t.Errorf("Exists should not evaluate true for 10")
+	}
+
+	any2 := things.Exists(func(x *Num2) bool {
+		return *x > 50
+	})
+
+	if !any2 {
+		t.Errorf("Exists should evaluate true for Number > 50")
+	}
+
+	any3 := Num2List{}.Exists(func(x *Num2) bool {
 		return true
 	})
 

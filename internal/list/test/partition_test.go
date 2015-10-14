@@ -5,16 +5,16 @@ import (
 	"reflect"
 )
 
-func TestPartitionOther(t *testing.T) {
-	things := OtherList{60, -20, -10, 100}
+func TestPartitionNum(t *testing.T) {
+	things := Num1List{60, -20, -10, 100}
 
-	m1, o1 := things.Partition(func(x Other) bool {
+	m1, o1 := things.Partition(func(x Num1) bool {
 		return x > 0
 	})
 
-	expected1 := OtherList{60, 100}
+	expected1 := Num1List{60, 100}
 
-	others1 := OtherList{-20, -10}
+	others1 := Num1List{-20, -10}
 
 	if !reflect.DeepEqual(m1, expected1) {
 		t.Errorf("Partition should result in %v, got %v", expected1, m1)
@@ -24,7 +24,7 @@ func TestPartitionOther(t *testing.T) {
 		t.Errorf("Partition should result in %v, got %v", others1, o1)
 	}
 
-	m2, o2 := things.Partition(func(x Other) bool {
+	m2, o2 := things.Partition(func(x Num1) bool {
 		return x == 1
 	})
 
@@ -36,7 +36,7 @@ func TestPartitionOther(t *testing.T) {
 		t.Errorf("Partition should result in %v, got %v", things, o2)
 	}
 
-	m3, o3 := OtherList{}.Partition(func(x Other) bool {
+	m3, o3 := Num1List{}.Partition(func(x Num1) bool {
 		return true
 	})
 

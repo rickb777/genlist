@@ -1,7 +1,15 @@
 package main
 
-// methods where underlying type is ordered or numeric
-// +test Seq List Option
-type Foo Underlying
+// +test List:" Option "
+type Foo1 Underlying
+
+// +test Option:" List "
+type Foo2 Underlying
+
+// +test * List:" Option "
+type Foo3 Underlying
+
+// +test * Option:" List "
+type Foo4 Underlying
 
 type Underlying int

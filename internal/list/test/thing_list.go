@@ -9,12 +9,51 @@ import (
 	"math/rand"
 )
 
+// Sequence: Has {true false true}
+
+// ThingSeq is an interface for sequences of type Thing, including lists and options (where present).
+type ThingSeq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predictate supplied.
+	Exists(predicate func(Thing) bool) bool
+
+	// Forall returns true if every element in the sequence matches the predictate supplied.
+	Forall(predicate func(Thing) bool) bool
+
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func(Thing))
+
+	// Filter returns a new ThingSeq whose elements return true for func.
+	Filter(predicate func(Thing) bool) (result ThingSeq)
+
+	// Converts the sequence to a list. For lists, this is a no-op.
+	ToList() ThingList
+
+	// Contains tests whether a given value is present in the sequence.
+	Contains(value Thing) bool
+
+	// Count counts the number of times a given value occurs in the sequence.
+	Count(value Thing) int
+}
+
+//-------------------------------------------------------------------------------------------------
 // ThingList is a slice of type Thing. Use it where you would use []Thing.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type ThingList []Thing
+
+//-------------------------------------------------------------------------------------------------
 
 // Len returns the number of items in the list.
 // There is no Size() method; use Len() instead.
@@ -37,6 +76,11 @@ func (list ThingList) IsEmpty() bool {
 // NonEmpty tests whether ThingList is empty.
 func (list ThingList) NonEmpty() bool {
 	return len(list) > 0
+}
+
+// ToList simply returns the list in this case, but is part of the Seq interface.
+func (list ThingList) ToList() ThingList {
+	return list
 }
 
 // Exists verifies that one or more elements of ThingList return true for the passed func.
@@ -87,11 +131,6 @@ func (list ThingList) Shuffle() ThingList {
 		result.Swap(i, r)
 	}
 	return result
-}
-
-// ToList simply returns the list in this case, but is part of the Seq interface.
-func (list ThingList) ToList() ThingList {
-	return list
 }
 
 // Take returns a new ThingList containing the leading n elements of the source list.
@@ -166,7 +205,8 @@ func (list ThingList) DropWhile(p func(Thing) bool) (result ThingList) {
 }
 
 // Filter returns a new ThingList whose elements return true for func.
-func (list ThingList) Filter(fn func(Thing) bool) (result ThingList) {
+func (list ThingList) Filter(fn func(Thing) bool) ThingSeq {
+	result := make(ThingList, 0, len(list)/2)
 	for _, v := range list {
 		if fn(v) {
 			result = append(result, v)
@@ -252,14 +292,16 @@ Outer:
 	return result
 }
 
-// These methods require Thing be comarable.
+// These methods require Thing be comparable.
 
 // Contains verifies that a given value is contained in ThingList.
 func (list ThingList) Contains(value Thing) bool {
 	for _, v := range list {
+
 		if v == value {
 			return true
 		}
+
 	}
 	return false
 }
@@ -267,21 +309,25 @@ func (list ThingList) Contains(value Thing) bool {
 // Count gives the number elements of ThingList that match a certain value.
 func (list ThingList) Count(value Thing) (result int) {
 	for _, v := range list {
+
 		if v == value {
 			result++
 		}
+
 	}
 	return
 }
 
-// Distinct returns a new ThingList whose elements are unique. See: http://clipperhouse.github.io/gen/#Distinct
+// Distinct returns a new ThingList whose elements are unique.
 func (list ThingList) Distinct() (result ThingList) {
 	appended := make(map[Thing]bool)
 	for _, v := range list {
+
 		if !appended[v] {
 			result = append(result, v)
 			appended[v] = true
 		}
+
 	}
 	return result
 }
@@ -322,25 +368,41 @@ func (list ThingList) Max(less func(Thing, Thing) bool) (result Thing, err error
 	return
 }
 
-// MapToOther transforms ThingList to OtherList.
-func (list ThingList) MapToOther(fn func(Thing) Other) (result OtherList) {
+// optionForList
+
+// MapToNum1 transforms ThingList to Num1List.
+func (list ThingList) MapToNum1(fn func(Thing) Num1) (result Num1List) {
 	for _, v := range list {
+
 		result = append(result, fn(v))
+
 	}
 	return
 }
 
-// AggregateOther iterates over ThingList, operating on each element while maintaining ‘state’.
-func (list ThingList) AggregateOther(fn func(Other, Thing) Other) (result Other) {
+// MapToNum2 transforms ThingList to Num2List.
+func (list ThingList) MapToNum2(fn func(Thing) *Num2) (result Num2List) {
+	for _, v := range list {
+
+		result = append(result, fn(v))
+
+	}
+	return
+}
+
+// AggregateNum1 iterates over ThingList, operating on each element while maintaining ‘state’.
+func (list ThingList) AggregateNum1(fn func(Num1, Thing) Num1) (result Num1) {
 	for _, v := range list {
 		result = fn(result, v)
 	}
 	return
 }
 
-// GroupByOther groups elements into a map keyed by Other.
-func (list ThingList) GroupByOther(fn func(Thing) Other) map[Other]ThingList {
-	result := make(map[Other]ThingList)
+// This methods require Thing be comparable.
+
+// GroupByNum1 groups elements into a map keyed by Num1.
+func (list ThingList) GroupByNum1(fn func(Thing) Num1) map[Num1]ThingList {
+	result := make(map[Num1]ThingList)
 	for _, v := range list {
 		key := fn(v)
 		result[key] = append(result[key], v)
@@ -348,31 +410,35 @@ func (list ThingList) GroupByOther(fn func(Thing) Other) map[Other]ThingList {
 	return result
 }
 
-// SumOther sums Thing over elements in ThingList. See: http://clipperhouse.github.io/gen/#Sum
-func (list ThingList) SumOther(fn func(Thing) Other) (result Other) {
+// These methods require Thing be numeric.
+
+// SumNum1 sums Thing over elements in ThingList. See: http://clipperhouse.github.io/gen/#Sum
+func (list ThingList) SumNum1(fn func(Thing) Num1) (result Num1) {
 	for _, v := range list {
 		result += fn(v)
 	}
 	return
 }
 
-// MeanOther sums Other over all elements and divides by len(ThingList). See: http://clipperhouse.github.io/gen/#Mean
-func (list ThingList) MeanOther(fn func(Thing) Other) (result Other, err error) {
+// MeanNum1 sums Num1 over all elements and divides by len(ThingList). See: http://clipperhouse.github.io/gen/#Mean
+func (list ThingList) MeanNum1(fn func(Thing) Num1) (result Num1, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Mean[Other] of zero-length ThingList")
+		err = errors.New("cannot determine Mean[Num1] of zero-length ThingList")
 		return
 	}
 	for _, v := range list {
 		result += fn(v)
 	}
-	result = result / Other(l)
+	result = result / Num1(l)
 	return
 }
 
-// MinOther selects the least value of Other in ThingList.
+// These methods require Thing be ordered.
+
+// MinNum1 selects the least value of Num1 in ThingList.
 // Returns error on ThingList with no elements.
-func (list ThingList) MinOther(fn func(Thing) Other) (result Other, err error) {
+func (list ThingList) MinNum1(fn func(Thing) Num1) (result Num1, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("cannot determine Min of zero-length ThingList")
@@ -390,9 +456,9 @@ func (list ThingList) MinOther(fn func(Thing) Other) (result Other, err error) {
 	return
 }
 
-// MaxOther selects the largest value of Other in ThingList.
+// MaxNum1 selects the largest value of Num1 in ThingList.
 // Returns error on ThingList with no elements.
-func (list ThingList) MaxOther(fn func(Thing) Other) (result Other, err error) {
+func (list ThingList) MaxNum1(fn func(Thing) Num1) (result Num1, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("cannot determine Max of zero-length ThingList")
@@ -418,6 +484,8 @@ func (list ThingList) AggregateColour(fn func(Colour, Thing) Colour) (result Col
 	return
 }
 
+// This methods require Thing be comparable.
+
 // GroupByColour groups elements into a map keyed by Colour.
 func (list ThingList) GroupByColour(fn func(Thing) Colour) map[Colour]ThingList {
 	result := make(map[Colour]ThingList)
@@ -427,6 +495,8 @@ func (list ThingList) GroupByColour(fn func(Thing) Colour) map[Colour]ThingList 
 	}
 	return result
 }
+
+// These methods require Thing be ordered.
 
 // MinColour selects the least value of Colour in ThingList.
 // Returns error on ThingList with no elements.

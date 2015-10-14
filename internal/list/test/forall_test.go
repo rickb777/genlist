@@ -2,10 +2,10 @@ package main
 
 import "testing"
 
-func TestForallOther(t *testing.T) {
-	things := OtherList{60, -20, 100}
+func TestForallNum1(t *testing.T) {
+	things := Num1List{60, -20, 100}
 
-	all1 := things.Forall(func(x Other) bool {
+	all1 := things.Forall(func(x Num1) bool {
 		return x == 60
 	})
 
@@ -13,7 +13,7 @@ func TestForallOther(t *testing.T) {
 		t.Errorf("Forall should be false for 60")
 	}
 
-	all2 := things.Forall(func(x Other) bool {
+	all2 := things.Forall(func(x Num1) bool {
 		return x == 60 || x == -20 || x == 100
 	})
 
@@ -21,7 +21,7 @@ func TestForallOther(t *testing.T) {
 		t.Errorf("Forall should be true")
 	}
 
-	all3 := OtherList{}.Forall(func(x Other) bool {
+	all3 := Num1List{}.Forall(func(x Num1) bool {
 		return false
 	})
 

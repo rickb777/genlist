@@ -2,28 +2,28 @@ package list
 
 const numericFunctions = `
 {{if .Type.Numeric}}
-// These methods require {{.Type}} be numeric.
+// These methods require {{.PName}} be numeric.
 
-// Sum sums {{.Type}} elements in {{.Type}}List. See: http://clipperhouse.github.io/gen/#Sum
-func (list {{.Type}}List) Sum() (result {{.Type}}) {
+// Sum sums {{.PName}} elements in {{.TName}}List. See: http://clipperhouse.github.io/gen/#Sum
+func (list {{.TName}}List) Sum() (result {{.PName}}) {
 	for _, v := range list {
 		result += v
 	}
 	return
 }
 
-// Mean sums {{.Type}}List over all elements and divides by len({{.Type}}List). See: http://clipperhouse.github.io/gen/#Mean
-func (list {{.Type}}List) Mean() ({{.Type}}, error) {
-	var result {{.Type}}
+// Mean sums {{.TName}}List over all elements and divides by len({{.TName}}List). See: http://clipperhouse.github.io/gen/#Mean
+func (list {{.TName}}List) Mean() ({{.PName}}, error) {
+	var result {{.PName}}
 
 	l := len(list)
 	if l == 0 {
-		return result, errors.New("cannot determine Mean of zero-length {{.Type}}List")
+		return result, errors.New("cannot determine Mean of zero-length {{.TName}}List")
 	}
 	for _, v := range list {
 		result += v
 	}
-	result = result / {{.Type}}(l)
+	result = result / {{.PName}}(l)
 	return result, nil
 }
 {{end}}

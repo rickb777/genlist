@@ -1,25 +1,18 @@
 package option
 
-import "github.com/rickb777/typewriter"
+const OptionMapToParamFunctions = `
 
-var WithT = &typewriter.Template{
-	Name: "With",
-	Text: generalParamFunctions,
-	// exactly one type parameter is required, but no constraints on that type
-	TypeParameterConstraints: []typewriter.Constraint{{}},
-}
-
-const generalParamFunctions = `
-
-// MapTo{{.TypeParameter.LongName}} transforms Optional{{.Type}} to Optional{{.TypeParameter}}.
-func (v Some{{.Type}}) MapTo{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) Optional{{.TypeParameter}} {
-	u := fn({{.Type}}(v))
+// MapTo{{.TypeParameter.LongName}} transforms Optional{{.TName}} to Optional{{.TypeParameter}}.
+func (o Optional{{.TName}}) MapTo{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) Optional{{.TypeParameter}} {
+	if o.IsEmpty() {
+		return No{{.TypeParameter}}()
+	}
+	{{if .Type.Pointer}}
+	u := fn(o.x)
+	{{else}}
+	u := fn(*(o.x))
+	{{end}}
 	return Some{{.TypeParameter}}(u)
-}
-
-// MapTo{{.TypeParameter.LongName}} transforms Optional{{.Type}} to Optional{{.TypeParameter}}.
-func (v no{{.Type}}) MapTo{{.TypeParameter.LongName}}(fn func({{.Type}}) {{.TypeParameter}}) Optional{{.TypeParameter}} {
-	return no{{.TypeParameter}}{}
 }
 
 `

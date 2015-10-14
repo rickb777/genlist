@@ -1,9 +1,9 @@
 package main
 
-// +test List:"List[Other], With[Other], With[Colour], SortWith"
+// +test List:"MapTo[Num1], MapTo[*Num2], With[Num1], With[Colour], SortWith"
 type Thing struct {
 	Name   string
-	Number Other
+	Number Num1
 }
 
 type Colour string

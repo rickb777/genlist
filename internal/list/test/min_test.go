@@ -3,10 +3,10 @@ package main
 import "testing"
 
 func TestMinOrdered(t *testing.T) {
-	others := OtherList{50, 100, 9, 7, 100, 99}
+	others := Num1List{50, 100, 9, 7, 100, 99}
 
 	min1, err := others.Min()
-	m1 := Other(7)
+	m1 := Num1(7)
 
 	if err != nil {
 		t.Errorf("Min should succeed")
@@ -16,8 +16,8 @@ func TestMinOrdered(t *testing.T) {
 		t.Errorf("Min should return %v, got %v", m1, min1)
 	}
 
-	min2, err := OtherList{}.Min()
-	var m2 Other
+	min2, err := Num1List{}.Min()
+	var m2 Num1
 
 	if err == nil || min2 != m2 {
 		t.Errorf("Min should fail on empty list")

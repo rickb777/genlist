@@ -2,9 +2,9 @@ package list
 
 const takeDropFunctions = `
 
-// Take returns a new {{.Type}}List containing the leading n elements of the source list.
+// Take returns a new {{.TName}}List containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
-func (list {{.Type}}List) Take(n int) {{.Type}}List {
+func (list {{.TName}}List) Take(n int) {{.TName}}List {
 	if n > len(list) {
 		return list
 	} else {
@@ -12,9 +12,9 @@ func (list {{.Type}}List) Take(n int) {{.Type}}List {
 	}
 }
 
-// Drop returns a new {{.Type}}List without the leading n elements of the source list.
+// Drop returns a new {{.TName}}List without the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
-func (list {{.Type}}List) Drop(n int) {{.Type}}List {
+func (list {{.TName}}List) Drop(n int) {{.TName}}List {
 	l := len(list)
 	if n > l {
 		return list[l:]
@@ -23,9 +23,9 @@ func (list {{.Type}}List) Drop(n int) {{.Type}}List {
 	}
 }
 
-// TakeLast returns a new {{.Type}}List containing the trailing n elements of the source list.
+// TakeLast returns a new {{.TName}}List containing the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
-func (list {{.Type}}List) TakeLast(n int) {{.Type}}List {
+func (list {{.TName}}List) TakeLast(n int) {{.TName}}List {
 	l := len(list)
 	if n > l {
 		return list
@@ -34,9 +34,9 @@ func (list {{.Type}}List) TakeLast(n int) {{.Type}}List {
 	}
 }
 
-// DropLast returns a new {{.Type}}List without the trailing n elements of the source list.
+// DropLast returns a new {{.TName}}List without the trailing n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
-func (list {{.Type}}List) DropLast(n int) {{.Type}}List {
+func (list {{.TName}}List) DropLast(n int) {{.TName}}List {
 	l := len(list)
 	if n > l {
 		return list[l:]
@@ -45,10 +45,10 @@ func (list {{.Type}}List) DropLast(n int) {{.Type}}List {
 	}
 }
 
-// TakeWhile returns a new {{.Type}}List containing the leading elements of the source list. Whilst the
+// TakeWhile returns a new {{.TName}}List containing the leading elements of the source list. Whilst the
 // predicate p returns true, elements are added to the result. Once predicate p returns false, all remaining
 // elemense are excluded.
-func (list {{.Type}}List) TakeWhile(p func({{.Type}}) bool) (result {{.Type}}List) {
+func (list {{.TName}}List) TakeWhile(p func({{.PName}}) bool) (result {{.TName}}List) {
 	for _, v := range list {
 		if p(v) {
 			result = append(result, v)
@@ -59,10 +59,10 @@ func (list {{.Type}}List) TakeWhile(p func({{.Type}}) bool) (result {{.Type}}Lis
 	return
 }
 
-// DropWhile returns a new {{.Type}}List containing the trailing elements of the source list. Whilst the
+// DropWhile returns a new {{.TName}}List containing the trailing elements of the source list. Whilst the
 // predicate p returns true, elements are excluded from the result. Once predicate p returns false, all remaining
 // elemense are added.
-func (list {{.Type}}List) DropWhile(p func({{.Type}}) bool) (result {{.Type}}List) {
+func (list {{.TName}}List) DropWhile(p func({{.PName}}) bool) (result {{.TName}}List) {
 	adding := false
 	for _, v := range list {
 		if !p(v) || adding {

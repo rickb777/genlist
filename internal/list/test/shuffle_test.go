@@ -2,12 +2,12 @@ package main
 
 import "testing"
 
-func TestShuffleOther(t *testing.T) {
-	original := OtherList{50, 100, 9, 7, 100, 99}
+func TestShuffleNum(t *testing.T) {
+	original := Num1List{50, 100, 9, 7, 100, 99}
 
 	shuffled := original.Shuffle()
 
-	notFound := func(t Other) bool {
+	notFound := func(t Num1) bool {
 		for x := 0; x < len(shuffled); x++ {
 			if shuffled[x] == t {
 				return false

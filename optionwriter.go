@@ -2,9 +2,10 @@ package genlist
 
 import (
 	"io"
-	"github.com/rickb777/genlist/internal/option"
 	"github.com/rickb777/typewriter"
 )
+
+const optionName = "Option"
 
 func init() {
 	err := typewriter.Register(NewOptionWriter())
@@ -20,7 +21,7 @@ func NewOptionWriter() *OptionWriter {
 }
 
 func (sw *OptionWriter) Name() string {
-	return "Option"
+	return optionName
 }
 
 func (sw *OptionWriter) Imports(typ typewriter.Type) (result []typewriter.ImportSpec) {
@@ -29,25 +30,27 @@ func (sw *OptionWriter) Imports(typ typewriter.Type) (result []typewriter.Import
 }
 
 func (sw *OptionWriter) Write(w io.Writer, typ typewriter.Type) error {
-	tag, found := typ.FindTag(sw)
+	//	fmt.Printf("OptionWriter.Write %s %+v\n", typ.String(), typ.Tags)
+	tag, found := typ.FindTag(sw.Name())
 
 	if !found {
 		return nil
 	}
 
-	// start with the option template
-	tmpl, err := option.Option.Parse()
-
-	if err != nil {
-		return err
+	flags := flags{Option: true}
+	for _, v := range tag.Values {
+		if v.Name == listName {
+			flags.List = true
+		}
 	}
 
-	if err := writeBasicTemplate(w, tmpl, typ); err != nil {
+	// start with the option template
+	if err := writeBasicTemplate(w, coreOptionTemplate, typ, flags); err != nil {
 		return err
 	}
 
 	for _, v := range tag.Values {
-		err = sw.writeOne(w, typ, v)
+		err := sw.writeForTag(w, typ, v, flags)
 		if err != nil {
 			return err
 		}
@@ -56,27 +59,12 @@ func (sw *OptionWriter) Write(w io.Writer, typ typewriter.Type) error {
 	return nil
 }
 
-func (sw *OptionWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type, t typewriter.Template) (bool, error) {
-	//	fmt.Printf("writeTemplateIfPossible %s\n", t.Name)
-	if t.TypeConstraint.TryType(typ) == nil {
-		v := typewriter.TagValue{}
-		v.Name = t.Name
-		tmpl, err := t.Parse()
-		if err != nil {
-			return false, err
-		}
-		err = writeTaggedTemplate(w, tmpl, typ, v)
-		return err == nil, err
-	}
-	return false, nil
-}
-
-func (sw *OptionWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.TagValue) error {
-	tmpl, err := optionTemplates.ByTagValue(typ, v)
+func (sw *OptionWriter) writeForTag(w io.Writer, typ typewriter.Type, v typewriter.TagValue, flags flags) error {
+	tmpl, err := optionTemplates.ByTagValue2(typ, v)
 
 	if err != nil {
 		return err
 	}
 
-	return writeTaggedTemplate(w, tmpl, typ, v)
+	return writeTaggedTemplate(w, tmpl, typ, flags, v)
 }

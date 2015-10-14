@@ -10,9 +10,9 @@ var SortWith = `
 //-----------------------------------------------------------------------------
 
 
-// SortWith returns a new ordered {{.Type}}List, determined by a func defining ‘less’.
-func (list {{.Type}}List) SortWith(less func({{.Type}}, {{.Type}}) bool) {{.Type}}List {
-	result := make({{.Type}}List, len(list))
+// SortWith returns a new ordered {{.TName}}List, determined by a func defining ‘less’.
+func (list {{.TName}}List) SortWith(less func({{.PName}}, {{.PName}}) bool) {{.TName}}List {
+	result := make({{.TName}}List, len(list))
 	copy(result, list)
 	// Switch to heapsort if depth of 2*ceil(lg(n+1)) is reached.
 	n := len(result)
@@ -21,12 +21,12 @@ func (list {{.Type}}List) SortWith(less func({{.Type}}, {{.Type}}) bool) {{.Type
 		maxDepth++
 	}
 	maxDepth *= 2
-	quickSort{{.Type}}List(result, less, 0, n, maxDepth)
+	quickSort{{.TName}}List(result, less, 0, n, maxDepth)
 	return result
 }
 
-// IsSortedWith reports whether an instance of {{.Type}}List is sorted, using the pass func to define ‘less’.
-func (list {{.Type}}List) IsSortedWith(less func({{.Type}}, {{.Type}}) bool) bool {
+// IsSortedWith reports whether an instance of {{.TName}}List is sorted, using the pass func to define ‘less’.
+func (list {{.TName}}List) IsSortedWith(less func({{.PName}}, {{.PName}}) bool) bool {
 	n := len(list)
 	for i := n - 1; i > 0; i-- {
 		if less(list[i], list[i-1]) {
@@ -36,17 +36,17 @@ func (list {{.Type}}List) IsSortedWith(less func({{.Type}}, {{.Type}}) bool) boo
 	return true
 }
 
-// SortWithDesc returns a new, descending-ordered {{.Type}}List, determined by a func defining ‘less’.
-func (list {{.Type}}List) SortWithDesc(less func({{.Type}}, {{.Type}}) bool) {{.Type}}List {
-	greater := func(a, b {{.Type}}) bool {
+// SortWithDesc returns a new, descending-ordered {{.TName}}List, determined by a func defining ‘less’.
+func (list {{.TName}}List) SortWithDesc(less func({{.PName}}, {{.PName}}) bool) {{.TName}}List {
+	greater := func(a, b {{.PName}}) bool {
 		return less(b, a)
 	}
 	return list.SortWith(greater)
 }
 
-// IsSortedDesc reports whether an instance of {{.Type}}List is sorted in descending order, using the pass func to define ‘less’.
-func (list {{.Type}}List) IsSortedWithDesc(less func({{.Type}}, {{.Type}}) bool) bool {
-	greater := func(a, b {{.Type}}) bool {
+// IsSortedDesc reports whether an instance of {{.TName}}List is sorted in descending order, using the pass func to define ‘less’.
+func (list {{.TName}}List) IsSortedWithDesc(less func({{.PName}}, {{.PName}}) bool) bool {
+	greater := func(a, b {{.PName}}) bool {
 		return less(b, a)
 	}
 	return list.IsSortedWith(greater)

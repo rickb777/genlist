@@ -2,11 +2,11 @@ package main
 
 import "testing"
 
-func TestForeachOther(t *testing.T) {
-	things := OtherList{60, -20, 100}
+func TestForeachNum1(t *testing.T) {
+	things := Num1List{60, -20, 100}
 
-	sum := Other(0)
-	things.Foreach(func(x Other) {
+	sum := Num1(0)
+	things.Foreach(func(x Num1) {
 		sum += x
 	})
 

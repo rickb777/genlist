@@ -6,5 +6,5 @@ type Other Underlying
 
 type Underlying int
 
-// +test Option:""
+// +test Option
 type Foo string

@@ -2,10 +2,10 @@ package main
 
 import "testing"
 
-func TestCountByOther(t *testing.T) {
-	things := OtherList{50, 100, 9, 7, 100, 99}
+func TestCountByNum1(t *testing.T) {
+	things := Num1List{50, 100, 9, 7, 100, 99}
 
-	count1 := things.CountBy(func(x Other) bool {
+	count1 := things.CountBy(func(x Num1) bool {
 		return x == 9
 	})
 
@@ -13,7 +13,7 @@ func TestCountByOther(t *testing.T) {
 		t.Errorf("CountBy should find one item with the value 9")
 	}
 
-	count2 := things.CountBy(func(x Other) bool {
+	count2 := things.CountBy(func(x Num1) bool {
 		return x > 50
 	})
 
@@ -21,7 +21,7 @@ func TestCountByOther(t *testing.T) {
 		t.Errorf("CountBy should find 3 items > 50")
 	}
 
-	count3 := things.CountBy(func(x Other) bool {
+	count3 := things.CountBy(func(x Num1) bool {
 		return x == 1
 	})
 
@@ -29,12 +29,24 @@ func TestCountByOther(t *testing.T) {
 		t.Errorf("CountBy should no items with the value 1")
 	}
 
-	count4 := OtherList{}.CountBy(func(x Other) bool {
+	count4 := Num1List{}.CountBy(func(x Num1) bool {
 		return true
 	})
 
 	if count4 != 0 {
 		t.Errorf("CountBy should find no items in an empty list")
+	}
+}
+
+func TestCountByNum2(t *testing.T) {
+	things := Num2List{ip(50)}
+
+	count1 := things.CountBy(func(x *Num2) bool {
+		return *x == 50
+	})
+
+	if count1 != 1 {
+		t.Errorf("CountBy should find one item with the value 9")
 	}
 }
 

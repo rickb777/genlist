@@ -5,6 +5,8 @@ import (
 	"github.com/rickb777/typewriter"
 )
 
+const listName = "List"
+
 func init() {
 	err := typewriter.Register(NewListWriter())
 	if err != nil {
@@ -19,7 +21,7 @@ func NewListWriter() *ListWriter {
 }
 
 func (sw *ListWriter) Name() string {
-	return "List"
+	return listName
 }
 
 func (sw *ListWriter) Imports(typ typewriter.Type) (result []typewriter.ImportSpec) {
@@ -28,25 +30,27 @@ func (sw *ListWriter) Imports(typ typewriter.Type) (result []typewriter.ImportSp
 }
 
 func (sw *ListWriter) Write(w io.Writer, typ typewriter.Type) error {
-	tag, found := typ.FindTag(sw)
+	//	fmt.Printf("ListWriter.Write %s %+v\n", typ.String(), typ.Tags)
+	tag, found := typ.FindTag(sw.Name())
 
 	if !found {
 		return nil
 	}
 
-	// start with the list template
-	tmpl, err := coreListTemplate.Parse()
-
-	if err != nil {
-		return err
+	flags := flags{List: true}
+	for _, v := range tag.Values {
+		if v.Name == optionName {
+			flags.Option = true
+		}
 	}
 
-	if err := writeBasicTemplate(w, tmpl, typ); err != nil {
+	// start with the list template
+	if err := writeBasicTemplate(w, coreListTemplate, typ, flags); err != nil {
 		return err
 	}
 
 	for _, v := range tag.Values {
-		err = sw.writeOne(w, typ, v)
+		err := sw.writeForTag(w, typ, v, flags)
 		if err != nil {
 			return err
 		}
@@ -55,27 +59,12 @@ func (sw *ListWriter) Write(w io.Writer, typ typewriter.Type) error {
 	return nil
 }
 
-func (sw *ListWriter) writeTemplateIfPossible(w io.Writer, typ typewriter.Type, t typewriter.Template) (bool, error) {
-	//	fmt.Printf("writeTemplateIfPossible %s\n", t.Name)
-	if t.TypeConstraint.TryType(typ) == nil {
-		v := typewriter.TagValue{}
-		v.Name = t.Name
-		tmpl, err := t.Parse()
-		if err != nil {
-			return false, err
-		}
-		err = writeTaggedTemplate(w, tmpl, typ, v)
-		return err == nil, err
-	}
-	return false, nil
-}
-
-func (sw *ListWriter) writeOne(w io.Writer, typ typewriter.Type, v typewriter.TagValue) error {
-	tmpl, err := otherListTemplates.ByTagValue(typ, v)
+func (sw *ListWriter) writeForTag(w io.Writer, typ typewriter.Type, v typewriter.TagValue, flags flags) error {
+	tmpl, err := otherListTemplates.ByTagValue2(typ, v)
 
 	if err != nil {
 		return err
 	}
 
-	return writeTaggedTemplate(w, tmpl, typ, v)
+	return writeTaggedTemplate(w, tmpl, typ, flags, v)
 }

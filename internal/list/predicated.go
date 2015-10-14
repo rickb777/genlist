@@ -2,8 +2,9 @@ package list
 
 const predicatedFunctions = `
 
-// Filter returns a new {{.Type}}List whose elements return true for func.
-func (list {{.Type}}List) Filter(fn func({{.Type}}) bool) (result {{.Type}}List) {
+// Filter returns a new {{.TName}}List whose elements return true for func.
+func (list {{.TName}}List) Filter(fn func({{.PName}}) bool) {{.TName}}Seq {
+	result := make({{.TName}}List, 0, len(list)/2)
 	for _, v := range list {
 		if fn(v) {
 			result = append(result, v)
@@ -12,11 +13,11 @@ func (list {{.Type}}List) Filter(fn func({{.Type}}) bool) (result {{.Type}}List)
 	return result
 }
 
-// Partition returns two new {{.Type}}Lists whose elements return true or false for the predicate, p.
+// Partition returns two new {{.TName}}Lists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list {{.Type}}List) Partition(p func({{.Type}}) bool) (matching {{.Type}}List, others {{.Type}}List) {
+func (list {{.TName}}List) Partition(p func({{.PName}}) bool) (matching {{.TName}}List, others {{.TName}}List) {
 	for _, v := range list {
 		if p(v) {
 			matching = append(matching, v)
@@ -27,8 +28,8 @@ func (list {{.Type}}List) Partition(p func({{.Type}}) bool) (matching {{.Type}}L
 	return
 }
 
-// CountBy gives the number elements of {{.Type}}List that return true for the passed predicate.
-func (list {{.Type}}List) CountBy(predicate func({{.Type}}) bool) (result int) {
+// CountBy gives the number elements of {{.TName}}List that return true for the passed predicate.
+func (list {{.TName}}List) CountBy(predicate func({{.PName}}) bool) (result int) {
 	for _, v := range list {
 		if predicate(v) {
 			result++
@@ -37,10 +38,10 @@ func (list {{.Type}}List) CountBy(predicate func({{.Type}}) bool) (result int) {
 	return
 }
 
-// MinBy returns an element of {{.Type}}List containing the minimum value, when compared to other elements
+// MinBy returns an element of {{.TName}}List containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
 // element is returned. Returns error if no elements.
-func (list {{.Type}}List) MinBy(less func({{.Type}}, {{.Type}}) bool) (result {{.Type}}, err error) {
+func (list {{.TName}}List) MinBy(less func({{.PName}}, {{.PName}}) bool) (result {{.PName}}, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("Cannot determine the MinBy of an empty list.")
@@ -56,10 +57,10 @@ func (list {{.Type}}List) MinBy(less func({{.Type}}, {{.Type}}) bool) (result {{
 	return
 }
 
-// MaxBy returns an element of {{.Type}}List containing the maximum value, when compared to other elements
+// MaxBy returns an element of {{.TName}}List containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
 // element is returned. Returns error if no elements.
-func (list {{.Type}}List) MaxBy(less func({{.Type}}, {{.Type}}) bool) (result {{.Type}}, err error) {
+func (list {{.TName}}List) MaxBy(less func({{.PName}}, {{.PName}}) bool) (result {{.PName}}, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("Cannot determine the MaxBy of an empty list.")
@@ -75,8 +76,8 @@ func (list {{.Type}}List) MaxBy(less func({{.Type}}, {{.Type}}) bool) (result {{
 	return
 }
 
-// DistinctBy returns a new {{.Type}}List whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
-func (list {{.Type}}List) DistinctBy(equal func({{.Type}}, {{.Type}}) bool) (result {{.Type}}List) {
+// DistinctBy returns a new {{.TName}}List whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
+func (list {{.TName}}List) DistinctBy(equal func({{.PName}}, {{.PName}}) bool) (result {{.TName}}List) {
 Outer:
 	for _, v := range list {
 		for _, r := range result {

@@ -3,10 +3,10 @@ package main
 import "testing"
 
 func TestMaxOrdered(t *testing.T) {
-	others := OtherList{50, 100, 9, 7, 100, 99}
+	others := Num1List{50, 100, 9, 7, 100, 99}
 
 	max1, err := others.Max()
-	m1 := Other(100)
+	m1 := Num1(100)
 
 	if err != nil {
 		t.Errorf("Max should succeed")
@@ -16,8 +16,8 @@ func TestMaxOrdered(t *testing.T) {
 		t.Errorf("Max should return %v, got %v", m1, max1)
 	}
 
-	max2, err := OtherList{}.Max()
-	var m2 Other
+	max2, err := Num1List{}.Max()
+	var m2 Num1
 
 	if err == nil || max2 != m2 {
 		t.Errorf("Max should fail on empty list")
