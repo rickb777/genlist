@@ -10,8 +10,6 @@ import (
 	"sort"
 )
 
-// Sequence: Has {true true true}
-
 // Foo2Seq is an interface for sequences of type Foo2, including lists and options (where present).
 type Foo2Seq interface {
 	// Len gets the size/length of the sequence.
@@ -49,19 +47,12 @@ type Foo2Seq interface {
 	Count(value Foo2) int
 }
 
-// Optional: Has {true true true}
 //-------------------------------------------------------------------------------------------------
 // OptionalFoo2 is an optional of type Foo2. Use it where you want to be explicit about
 // the presence or absence of data.
 //
 // Optional values follow a similar pattern to Scala Options.
 // See e.g. http://www.scala-lang.org/api/2.11.7/index.html#scala.Option
-
-// Foo2
-// Foo2
-// Foo2
-// Foo2
-// Foo2
 
 type OptionalFoo2 struct {
 	x *Foo2
@@ -176,9 +167,6 @@ func (o OptionalFoo2) ToList() Foo2List {
 
 }
 
-// Sequence: Has {false true true}
-
-// List: Has {false true true}
 //-------------------------------------------------------------------------------------------------
 // Foo2List is a slice of type Foo2. Use it where you would use []Foo2.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.

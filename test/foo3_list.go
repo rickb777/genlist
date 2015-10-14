@@ -9,8 +9,6 @@ import (
 	"math/rand"
 )
 
-// Sequence: Has {true true true}
-
 // Foo3Seq is an interface for sequences of type *Foo3, including lists and options (where present).
 type Foo3Seq interface {
 	// Len gets the size/length of the sequence.
@@ -48,7 +46,6 @@ type Foo3Seq interface {
 	Count(value *Foo3) int
 }
 
-// List: Has {true true true}
 //-------------------------------------------------------------------------------------------------
 // Foo3List is a slice of type *Foo3. Use it where you would use []*Foo3.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
@@ -393,21 +390,12 @@ func (list Foo3List) HeadOption() OptionalFoo3 {
 	}
 }
 
-// Sequence: Has {false true true}
-
-// Optional: Has {false true true}
 //-------------------------------------------------------------------------------------------------
 // OptionalFoo3 is an optional of type *Foo3. Use it where you want to be explicit about
 // the presence or absence of data.
 //
 // Optional values follow a similar pattern to Scala Options.
 // See e.g. http://www.scala-lang.org/api/2.11.7/index.html#scala.Option
-
-// *Foo3
-// Foo3
-// *Foo3
-// Foo3
-// Foo3
 
 type OptionalFoo3 struct {
 	x *Foo3

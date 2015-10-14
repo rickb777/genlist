@@ -2,12 +2,22 @@ package list
 
 const WithParamFunctions = `
 
-// Aggregate{{.TypeParameter.LongName}} iterates over {{.TName}}List, operating on each element while maintaining ‘state’.
-func (list {{.TName}}List) Aggregate{{.TypeParameter.LongName}}(fn func({{.TypeParameter}}, {{.PName}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
+// FoldLeft{{.TypeParameter.LongName}} applies a binary operator to a start value and all elements of this list, going left to right.
+func (list {{.TName}}List) FoldLeft{{.TypeParameter.LongName}}(zero {{.TypeParameter}}, fn func({{.TypeParameter}}, {{.PName}}) {{.TypeParameter}}) {{.TypeParameter}} {
+	sum := zero
 	for _, v := range list {
-		result = fn(result, v)
+		sum = fn(sum, v)
 	}
-	return
+	return sum
+}
+
+// FoldRight{{.TypeParameter.LongName}} applies a binary operator to a start value and all elements of this list, going right to left.
+func (list {{.TName}}List) FoldRight{{.TypeParameter.LongName}}(zero {{.TypeParameter}}, fn func({{.TypeParameter}}, {{.PName}}) {{.TypeParameter}}) {{.TypeParameter}} {
+	sum := zero
+	for i := len(list) - 1; i >= 0; i-- {
+		sum = fn(sum, list[i])
+	}
+	return sum
 }
 
 {{if .TypeParameter.Comparable}}

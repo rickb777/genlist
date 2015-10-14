@@ -1,7 +1,6 @@
 package sequence
 
 const Sequence = `
-// Sequence: Has {{.Has}}
 {{if .Has.Sequence}}
 // {{.TName}}Seq is an interface for sequences of type {{.PName}}, including lists and options (where present).
 type {{.TName}}Seq interface {

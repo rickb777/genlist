@@ -9,8 +9,6 @@ import (
 	"math/rand"
 )
 
-// Sequence: Has {true false true}
-
 // ThingSeq is an interface for sequences of type Thing, including lists and options (where present).
 type ThingSeq interface {
 	// Len gets the size/length of the sequence.
@@ -390,12 +388,22 @@ func (list ThingList) MapToNum2(fn func(Thing) *Num2) (result Num2List) {
 	return
 }
 
-// AggregateNum1 iterates over ThingList, operating on each element while maintaining ‘state’.
-func (list ThingList) AggregateNum1(fn func(Num1, Thing) Num1) (result Num1) {
+// FoldLeftNum1 applies a binary operator to a start value and all elements of this list, going left to right.
+func (list ThingList) FoldLeftNum1(zero Num1, fn func(Num1, Thing) Num1) Num1 {
+	sum := zero
 	for _, v := range list {
-		result = fn(result, v)
+		sum = fn(sum, v)
 	}
-	return
+	return sum
+}
+
+// FoldRightNum1 applies a binary operator to a start value and all elements of this list, going right to left.
+func (list ThingList) FoldRightNum1(zero Num1, fn func(Num1, Thing) Num1) Num1 {
+	sum := zero
+	for i := len(list) - 1; i >= 0; i-- {
+		sum = fn(sum, list[i])
+	}
+	return sum
 }
 
 // This methods require Thing be comparable.
@@ -476,12 +484,22 @@ func (list ThingList) MaxNum1(fn func(Thing) Num1) (result Num1, err error) {
 	return
 }
 
-// AggregateColour iterates over ThingList, operating on each element while maintaining ‘state’.
-func (list ThingList) AggregateColour(fn func(Colour, Thing) Colour) (result Colour) {
+// FoldLeftColour applies a binary operator to a start value and all elements of this list, going left to right.
+func (list ThingList) FoldLeftColour(zero Colour, fn func(Colour, Thing) Colour) Colour {
+	sum := zero
 	for _, v := range list {
-		result = fn(result, v)
+		sum = fn(sum, v)
 	}
-	return
+	return sum
+}
+
+// FoldRightColour applies a binary operator to a start value and all elements of this list, going right to left.
+func (list ThingList) FoldRightColour(zero Colour, fn func(Colour, Thing) Colour) Colour {
+	sum := zero
+	for i := len(list) - 1; i >= 0; i-- {
+		sum = fn(sum, list[i])
+	}
+	return sum
 }
 
 // This methods require Thing be comparable.

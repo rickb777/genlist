@@ -9,8 +9,6 @@ import (
 	"math/rand"
 )
 
-// Sequence: Has {true false true}
-
 // Num2Seq is an interface for sequences of type *Num2, including lists and options (where present).
 type Num2Seq interface {
 	// Len gets the size/length of the sequence.

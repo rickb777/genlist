@@ -9,8 +9,6 @@ import (
 	"math/rand"
 )
 
-// Sequence: Has {true true true}
-
 // Foo4Seq is an interface for sequences of type *Foo4, including lists and options (where present).
 type Foo4Seq interface {
 	// Len gets the size/length of the sequence.
@@ -48,19 +46,12 @@ type Foo4Seq interface {
 	Count(value *Foo4) int
 }
 
-// Optional: Has {true true true}
 //-------------------------------------------------------------------------------------------------
 // OptionalFoo4 is an optional of type *Foo4. Use it where you want to be explicit about
 // the presence or absence of data.
 //
 // Optional values follow a similar pattern to Scala Options.
 // See e.g. http://www.scala-lang.org/api/2.11.7/index.html#scala.Option
-
-// *Foo4
-// Foo4
-// *Foo4
-// Foo4
-// Foo4
 
 type OptionalFoo4 struct {
 	x *Foo4
@@ -178,9 +169,6 @@ func (o OptionalFoo4) ToList() Foo4List {
 
 }
 
-// Sequence: Has {false true true}
-
-// List: Has {false true true}
 //-------------------------------------------------------------------------------------------------
 // Foo4List is a slice of type *Foo4. Use it where you would use []*Foo4.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.

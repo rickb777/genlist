@@ -10,8 +10,6 @@ import (
 	"sort"
 )
 
-// Sequence: Has {true true true}
-
 // Foo1Seq is an interface for sequences of type Foo1, including lists and options (where present).
 type Foo1Seq interface {
 	// Len gets the size/length of the sequence.
@@ -49,7 +47,6 @@ type Foo1Seq interface {
 	Count(value Foo1) int
 }
 
-// List: Has {true true true}
 //-------------------------------------------------------------------------------------------------
 // Foo1List is a slice of type Foo1. Use it where you would use []Foo1.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
@@ -451,21 +448,12 @@ func (list Foo1List) HeadOption() OptionalFoo1 {
 	}
 }
 
-// Sequence: Has {false true true}
-
-// Optional: Has {false true true}
 //-------------------------------------------------------------------------------------------------
 // OptionalFoo1 is an optional of type Foo1. Use it where you want to be explicit about
 // the presence or absence of data.
 //
 // Optional values follow a similar pattern to Scala Options.
 // See e.g. http://www.scala-lang.org/api/2.11.7/index.html#scala.Option
-
-// Foo1
-// Foo1
-// Foo1
-// Foo1
-// Foo1
 
 type OptionalFoo1 struct {
 	x *Foo1

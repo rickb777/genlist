@@ -10,8 +10,6 @@ import (
 	"sort"
 )
 
-// Sequence: Has {true false true}
-
 // Num1Seq is an interface for sequences of type Num1, including lists and options (where present).
 type Num1Seq interface {
 	// Len gets the size/length of the sequence.
