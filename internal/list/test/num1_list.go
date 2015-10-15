@@ -22,10 +22,10 @@ type Num1Seq interface {
 	NonEmpty() bool
 
 	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predictate supplied.
+	// the predicate supplied.
 	Exists(predicate func(Num1) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predictate supplied.
+	// Forall returns true if every element in the sequence matches the predicate supplied.
 	Forall(predicate func(Num1) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
@@ -38,10 +38,20 @@ type Num1Seq interface {
 	ToList() Num1List
 
 	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Num1 is not comparable.
 	Contains(value Num1) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
+	// Omitted if Num1 is not comparable.
 	Count(value Num1) int
+
+	// Distinct returns a new Num1Seq whose elements are all unique.
+	// Omitted if Num1 is not comparable.
+	Distinct() Num1Seq
+
+	// Sum sums Num1 elements.
+	// Omitted if Num1 is not numeric.
+	Sum() Num1
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -352,7 +362,8 @@ func (list Num1List) Count(value Num1) (result int) {
 }
 
 // Distinct returns a new Num1List whose elements are unique.
-func (list Num1List) Distinct() (result Num1List) {
+func (list Num1List) Distinct() Num1Seq {
+	result := make(Num1List, 0)
 	appended := make(map[Num1]bool)
 	for _, v := range list {
 
@@ -367,7 +378,7 @@ func (list Num1List) Distinct() (result Num1List) {
 
 // These methods require Num1 be numeric.
 
-// Sum sums Num1 elements in Num1List. See: http://clipperhouse.github.io/gen/#Sum
+// Sum sums Num1 elements in Num1List.
 func (list Num1List) Sum() (result Num1) {
 	for _, v := range list {
 		result += v
@@ -375,7 +386,7 @@ func (list Num1List) Sum() (result Num1) {
 	return
 }
 
-// Mean sums Num1List over all elements and divides by len(Num1List). See: http://clipperhouse.github.io/gen/#Mean
+// Mean sums Num1List over all elements and divides by len(Num1List).
 func (list Num1List) Mean() (Num1, error) {
 	var result Num1
 
@@ -393,7 +404,7 @@ func (list Num1List) Mean() (Num1, error) {
 // These methods require Num1 be ordered.
 
 // Min returns the minimum value of Num1List. In the case of multiple items being equally minimal,
-// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Min
+// the first such element is returned. Returns error if no elements.
 func (list Num1List) Min() (result Num1, err error) {
 	if len(list) == 0 {
 		err = errors.New("Cannot determine the Min of an empty list.")
@@ -409,7 +420,7 @@ func (list Num1List) Min() (result Num1, err error) {
 }
 
 // Max returns the maximum value of Num1List. In the case of multiple items being equally maximal,
-// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Max
+// the first such element is returned. Returns error if no elements.
 func (list Num1List) Max() (result Num1, err error) {
 	if len(list) == 0 {
 		err = errors.New("Cannot determine the Max of an empty list.")

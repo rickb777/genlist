@@ -21,10 +21,10 @@ type Num2Seq interface {
 	NonEmpty() bool
 
 	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predictate supplied.
+	// the predicate supplied.
 	Exists(predicate func(*Num2) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predictate supplied.
+	// Forall returns true if every element in the sequence matches the predicate supplied.
 	Forall(predicate func(*Num2) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
@@ -37,10 +37,16 @@ type Num2Seq interface {
 	ToList() Num2List
 
 	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Num2 is not comparable.
 	Contains(value *Num2) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
+	// Omitted if Num2 is not comparable.
 	Count(value *Num2) int
+
+	// Distinct returns a new Num2Seq whose elements are all unique.
+	// Omitted if Num2 is not comparable.
+	Distinct() Num2Seq
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -317,7 +323,8 @@ func (list Num2List) Count(value *Num2) (result int) {
 }
 
 // Distinct returns a new Num2List whose elements are unique.
-func (list Num2List) Distinct() (result Num2List) {
+func (list Num2List) Distinct() Num2Seq {
+	result := make(Num2List, 0)
 	appended := make(map[Num2]bool)
 	for _, v := range list {
 

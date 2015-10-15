@@ -22,10 +22,10 @@ type Foo1Seq interface {
 	NonEmpty() bool
 
 	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predictate supplied.
+	// the predicate supplied.
 	Exists(predicate func(Foo1) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predictate supplied.
+	// Forall returns true if every element in the sequence matches the predicate supplied.
 	Forall(predicate func(Foo1) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
@@ -41,10 +41,20 @@ type Foo1Seq interface {
 	ToList() Foo1List
 
 	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Foo1 is not comparable.
 	Contains(value Foo1) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
+	// Omitted if Foo1 is not comparable.
 	Count(value Foo1) int
+
+	// Distinct returns a new Foo1Seq whose elements are all unique.
+	// Omitted if Foo1 is not comparable.
+	Distinct() Foo1Seq
+
+	// Sum sums Foo1 elements.
+	// Omitted if Foo1 is not numeric.
+	Sum() Foo1
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -355,7 +365,8 @@ func (list Foo1List) Count(value Foo1) (result int) {
 }
 
 // Distinct returns a new Foo1List whose elements are unique.
-func (list Foo1List) Distinct() (result Foo1List) {
+func (list Foo1List) Distinct() Foo1Seq {
+	result := make(Foo1List, 0)
 	appended := make(map[Foo1]bool)
 	for _, v := range list {
 
@@ -370,7 +381,7 @@ func (list Foo1List) Distinct() (result Foo1List) {
 
 // These methods require Foo1 be numeric.
 
-// Sum sums Foo1 elements in Foo1List. See: http://clipperhouse.github.io/gen/#Sum
+// Sum sums Foo1 elements in Foo1List.
 func (list Foo1List) Sum() (result Foo1) {
 	for _, v := range list {
 		result += v
@@ -378,7 +389,7 @@ func (list Foo1List) Sum() (result Foo1) {
 	return
 }
 
-// Mean sums Foo1List over all elements and divides by len(Foo1List). See: http://clipperhouse.github.io/gen/#Mean
+// Mean sums Foo1List over all elements and divides by len(Foo1List).
 func (list Foo1List) Mean() (Foo1, error) {
 	var result Foo1
 
@@ -396,7 +407,7 @@ func (list Foo1List) Mean() (Foo1, error) {
 // These methods require Foo1 be ordered.
 
 // Min returns the minimum value of Foo1List. In the case of multiple items being equally minimal,
-// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Min
+// the first such element is returned. Returns error if no elements.
 func (list Foo1List) Min() (result Foo1, err error) {
 	if len(list) == 0 {
 		err = errors.New("Cannot determine the Min of an empty list.")
@@ -412,7 +423,7 @@ func (list Foo1List) Min() (result Foo1, err error) {
 }
 
 // Max returns the maximum value of Foo1List. In the case of multiple items being equally maximal,
-// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Max
+// the first such element is returned. Returns error if no elements.
 func (list Foo1List) Max() (result Foo1, err error) {
 	if len(list) == 0 {
 		err = errors.New("Cannot determine the Max of an empty list.")
@@ -552,18 +563,33 @@ func (o OptionalFoo1) Contains(value Foo1) bool {
 	return false
 }
 
-func (o OptionalFoo1) Count(value Foo1) (result int) {
+func (o OptionalFoo1) Count(value Foo1) int {
 	if o.Contains(value) {
-		result++
+		return 1
 	}
-	return
+	return 0
+}
+
+// Distinct returns a new Foo1Seq whose elements are all unique. For options, this simply returns the receiver.
+// Omitted if Foo1 is not comparable.
+func (o OptionalFoo1) Distinct() Foo1Seq {
+	return o
+}
+
+// Sum sums Foo1 elements.
+// Omitted if Foo1 is not numeric.
+func (o OptionalFoo1) Sum() Foo1 {
+
+	if o.IsEmpty() {
+		return 0
+	}
+	return *(o.x)
+
 }
 
 func (o OptionalFoo1) ToList() Foo1List {
 	if o.IsEmpty() {
 		return Foo1List{}
 	}
-
-	return Foo1List{*(o.x)}
-
+	return Foo1List{*o.x}
 }

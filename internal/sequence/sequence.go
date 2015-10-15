@@ -14,10 +14,10 @@ type {{.TName}}Seq interface {
 	NonEmpty() bool
 
 	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predictate supplied.
+	// the predicate supplied.
 	Exists(predicate func({{.PName}}) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predictate supplied.
+	// Forall returns true if every element in the sequence matches the predicate supplied.
 	Forall(predicate func({{.PName}}) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
@@ -38,10 +38,24 @@ type {{.TName}}Seq interface {
 
 {{if .Type.Comparable}}
 	// Contains tests whether a given value is present in the sequence.
+	// Omitted if {{.TName}} is not comparable.
 	Contains(value {{.PName}}) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
+	// Omitted if {{.TName}} is not comparable.
 	Count(value {{.PName}}) int
+{{if .Has.List}}
+
+	// Distinct returns a new {{.TName}}Seq whose elements are all unique.
+	// Omitted if {{.TName}} is not comparable.
+	Distinct() {{.TName}}Seq
+{{end}}
+{{end}}
+
+{{if .Type.Numeric}}
+	// Sum sums {{.PName}} elements.
+	// Omitted if {{.TName}} is not numeric.
+	Sum() {{.PName}}
 {{end}}
 }
 

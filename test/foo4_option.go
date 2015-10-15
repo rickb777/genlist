@@ -21,10 +21,10 @@ type Foo4Seq interface {
 	NonEmpty() bool
 
 	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predictate supplied.
+	// the predicate supplied.
 	Exists(predicate func(*Foo4) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predictate supplied.
+	// Forall returns true if every element in the sequence matches the predicate supplied.
 	Forall(predicate func(*Foo4) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
@@ -40,10 +40,16 @@ type Foo4Seq interface {
 	ToList() Foo4List
 
 	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Foo4 is not comparable.
 	Contains(value *Foo4) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
+	// Omitted if Foo4 is not comparable.
 	Count(value *Foo4) int
+
+	// Distinct returns a new Foo4Seq whose elements are all unique.
+	// Omitted if Foo4 is not comparable.
+	Distinct() Foo4Seq
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -153,20 +159,24 @@ func (o OptionalFoo4) Contains(value *Foo4) bool {
 	return false
 }
 
-func (o OptionalFoo4) Count(value *Foo4) (result int) {
+func (o OptionalFoo4) Count(value *Foo4) int {
 	if o.Contains(value) {
-		result++
+		return 1
 	}
-	return
+	return 0
+}
+
+// Distinct returns a new Foo4Seq whose elements are all unique. For options, this simply returns the receiver.
+// Omitted if Foo4 is not comparable.
+func (o OptionalFoo4) Distinct() Foo4Seq {
+	return o
 }
 
 func (o OptionalFoo4) ToList() Foo4List {
 	if o.IsEmpty() {
 		return Foo4List{}
 	}
-
 	return Foo4List{o.x}
-
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -443,7 +453,8 @@ func (list Foo4List) Count(value *Foo4) (result int) {
 }
 
 // Distinct returns a new Foo4List whose elements are unique.
-func (list Foo4List) Distinct() (result Foo4List) {
+func (list Foo4List) Distinct() Foo4Seq {
+	result := make(Foo4List, 0)
 	appended := make(map[Foo4]bool)
 	for _, v := range list {
 

@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"testing"
+	"fmt"
+)
 
 func TestSomeOther(t *testing.T) {
 	someThing := SomeOther(60)
@@ -54,6 +57,31 @@ func TestSomeOther(t *testing.T) {
 	if x != 1 {
 		t.Errorf("Foreach should set x")
 	}
+
+	if someThing.Contains(50) {
+		t.Errorf("Should not contain 50")
+	}
+
+	if !someThing.Contains(60) {
+		t.Errorf("Should contain 60")
+	}
+
+	if someThing.Count(50) != 0 {
+		t.Errorf("Should contain zero 50s")
+	}
+
+	if someThing.Count(60) != 1 {
+		t.Errorf("Should contain one 60")
+	}
+
+	if someThing.Sum() != 60 {
+		t.Errorf("Sum should be 60")
+	}
+
+	m := someThing.MapToFoo(func(o Other) Foo { return Foo(fmt.Sprintf("%d", o)) }).Get()
+	if m != "60" {
+		t.Errorf("MapToFoo should be '60' but got %q", m)
+	}
 }
 
 func TestNoOther(t *testing.T) {
@@ -99,5 +127,17 @@ func TestNoOther(t *testing.T) {
 	noThing.Foreach(func(Other) { x = Other(1) })
 	if x != 0 {
 		t.Errorf("Foreach should not set x")
+	}
+
+	if noThing.Contains(50) {
+		t.Errorf("Should not contain 50")
+	}
+
+	if noThing.Count(50) != 0 {
+		t.Errorf("Should not contain 50")
+	}
+
+	if noThing.Sum() != 0 {
+		t.Errorf("Sum should be 0")
 	}
 }

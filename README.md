@@ -5,6 +5,52 @@ This package is a typewriter for use with [gen](https://github.com/clipperhouse/
 This Go code generator offers scala-like **List** and **Option** containers, with methods such as filtering and sorting,
 for working with Go types and slices of types.
 
+## The Sequence Interface
+
+The generated code can easily be configured to contain List types and/or Option types. You don't *need* both, but
+there is a unifying interface provided anyway, and this makes them polymorphic. The principle is that an optional
+value is a sequence of zero or one value, whilst a list is a sequence of zero or more. 
+
+It looks like this:
+
+```go
+// ExampleSeq is an interface for sequences of type Example, including lists and options (where present).
+type ExampleSeq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predictate supplied.
+	Exists(predicate func(Example) bool) bool
+
+	// Forall returns true if every element in the sequence matches the predictate supplied.
+	Forall(predicate func(Example) bool) bool
+
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func(Example))
+
+	// Filter returns a new ExampleSeq whose elements return true for func.
+	Filter(predicate func(Example) bool) (result ExampleSeq)
+
+	// Converts the sequence to a list. For lists, this is a no-op.
+	ToList() ExampleList
+
+	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Example is not comparable.
+	Contains(value Example) bool
+
+	// Count counts the number of times a given value occurs in the sequence.
+	// Omitted if Example is not comparable.
+	Count(value Example) int
+}
+```
+
 ## The List typewriter
 
 The **List** typewriter generates a type and corresponding methods that follow a pattern inspired by Scala's List and
@@ -31,20 +77,12 @@ This creates a core list to hold `Example` values. It provides methods including
  * IsEmpty, NonEmpty, Len - get simple properties
  * Swap - get a new list with two elements swapped
  * Exists, Forall - tests whether any or all elements match some specified condition
- * Foreach
+ * Foreach - applies a function to every element in turn, typically causing side-effects
  * Reverse, Shuffle - get a new list that is reversed or shuffled
  * Take, TakeLast, TakeWhile - get a new list without some trailing elements
  * Drop, DropLast, DropWhile - get a new list without some leading elements
- * Filter, Partition
- * CountBy, MaxBy, MinBy, DistinctBy
-
-If the element type is comparable, it adds:
-
- * Contains, Count, Distinct
-
-If the element type is numeric, it adds:
-
- * Sum, Mean
+ * Filter, Partition - gets a subset, or two disjoint subsets, of the list
+ * CountBy, MaxBy, MinBy, DistinctBy - statistics based on supplied operator functions
 
 It adds:
 
@@ -53,10 +91,24 @@ It adds:
 but the implementation depends on whether the element type is ordered or not. For ordered elements, Min and Max use
 simple inequality operators '<' and '>'. Otherwise a comparison function must be supplied.
 
-Also in the case of ordered elements, it implements sorting using the standard Go api in these methods:
+Also in the case of ordered elements, the list implements sorting using the [standard Go api](https://golang.org/pkg/sort/)
+within these methods:
 
 * Sort, IsSorted
 * SortDesc, IsSortedDesc
+
+If the element type is comparable, it adds:
+
+ * Contains, Count - comparison with a specified value
+ * Distinct - removal of duplicates
+
+If the element type is numeric, it adds:
+
+ * Sum, Mean
+
+Finally, if a companion option is present, it adds:
+
+ * HeadOption - gets the first element if present
 
 ### List For Pointer Elements
 

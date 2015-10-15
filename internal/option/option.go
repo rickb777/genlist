@@ -107,29 +107,53 @@ func (o Optional{{.TName}}) Filter(predicate func({{.PName}}) bool) {{.TName}}Se
 
 {{if .Type.Comparable}}
 func (o Optional{{.TName}}) Contains(value {{.PName}}) bool {
-	if *(o.x) == {{.Ptr}}value {
-		return true
+	if o.IsEmpty() {
+		return false
 	}
-	return false
+	return *(o.x) == {{.Ptr}}value
 }
 
-func (o Optional{{.TName}}) Count(value {{.PName}}) (result int) {
+func (o Optional{{.TName}}) Count(value {{.PName}}) int {
 	if o.Contains(value) {
-		result++
+		return 1
 	}
-	return
+	return 0
 }
+{{if .Has.List}}
+
+// Distinct returns a new {{.TName}}Seq whose elements are all unique. For options, this simply returns the receiver.
+// Omitted if {{.TName}} is not comparable.
+func (o Optional{{.TName}}) Distinct() {{.TName}}Seq {
+	return o
+}
+{{end}}
+
+{{end}}
+{{if .Type.Numeric}}
+// Sum sums {{.PName}} elements.
+// Omitted if {{.TName}} is not numeric.
+func (o Optional{{.TName}}) Sum() {{.PName}} {
+	{{if .Type.Pointer}}
+	if o.IsEmpty() {
+		r := 0
+		return &r
+	}
+	return o.x
+	{{else}}
+	if o.IsEmpty() {
+		return 0
+	}
+	return *(o.x)
+	{{end}}
+}
+
 {{end}}
 {{if .Has.List}}
 func (o Optional{{.TName}}) ToList() {{.TName}}List {
 	if o.IsEmpty() {
 		return {{.TName}}List{}
 	}
-	{{if .Type.Pointer}}
-	return {{.TName}}List{ o.x }
-	{{else}}
-	return {{.TName}}List{ *(o.x) }
-	{{end}}
+	return {{.TName}}List{ {{.Deref}}o.x }
 }
 
 {{end}}

@@ -5,7 +5,7 @@ const orderedFunctions = `
 // These methods require {{.PName}} be ordered.
 
 // Min returns the minimum value of {{.TName}}List. In the case of multiple items being equally minimal,
-// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Min
+// the first such element is returned. Returns error if no elements.
 func (list {{.TName}}List) Min() (result {{.PName}}, err error) {
 	if len(list) == 0 {
 		err = errors.New("Cannot determine the Min of an empty list.")
@@ -21,7 +21,7 @@ func (list {{.TName}}List) Min() (result {{.PName}}, err error) {
 }
 
 // Max returns the maximum value of {{.TName}}List. In the case of multiple items being equally maximal,
-// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Max
+// the first such element is returned. Returns error if no elements.
 func (list {{.TName}}List) Max() (result {{.PName}}, err error) {
 	if len(list) == 0 {
 		err = errors.New("Cannot determine the Max of an empty list.")

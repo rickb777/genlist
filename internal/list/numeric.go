@@ -4,7 +4,7 @@ const numericFunctions = `
 {{if .Type.Numeric}}
 // These methods require {{.PName}} be numeric.
 
-// Sum sums {{.PName}} elements in {{.TName}}List. See: http://clipperhouse.github.io/gen/#Sum
+// Sum sums {{.PName}} elements in {{.TName}}List.
 func (list {{.TName}}List) Sum() (result {{.PName}}) {
 	for _, v := range list {
 		result += v
@@ -12,7 +12,7 @@ func (list {{.TName}}List) Sum() (result {{.PName}}) {
 	return
 }
 
-// Mean sums {{.TName}}List over all elements and divides by len({{.TName}}List). See: http://clipperhouse.github.io/gen/#Mean
+// Mean sums {{.TName}}List over all elements and divides by len({{.TName}}List).
 func (list {{.TName}}List) Mean() ({{.PName}}, error) {
 	var result {{.PName}}
 

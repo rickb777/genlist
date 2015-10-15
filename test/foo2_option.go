@@ -22,10 +22,10 @@ type Foo2Seq interface {
 	NonEmpty() bool
 
 	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predictate supplied.
+	// the predicate supplied.
 	Exists(predicate func(Foo2) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predictate supplied.
+	// Forall returns true if every element in the sequence matches the predicate supplied.
 	Forall(predicate func(Foo2) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
@@ -41,10 +41,20 @@ type Foo2Seq interface {
 	ToList() Foo2List
 
 	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Foo2 is not comparable.
 	Contains(value Foo2) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
+	// Omitted if Foo2 is not comparable.
 	Count(value Foo2) int
+
+	// Distinct returns a new Foo2Seq whose elements are all unique.
+	// Omitted if Foo2 is not comparable.
+	Distinct() Foo2Seq
+
+	// Sum sums Foo2 elements.
+	// Omitted if Foo2 is not numeric.
+	Sum() Foo2
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -151,20 +161,35 @@ func (o OptionalFoo2) Contains(value Foo2) bool {
 	return false
 }
 
-func (o OptionalFoo2) Count(value Foo2) (result int) {
+func (o OptionalFoo2) Count(value Foo2) int {
 	if o.Contains(value) {
-		result++
+		return 1
 	}
-	return
+	return 0
+}
+
+// Distinct returns a new Foo2Seq whose elements are all unique. For options, this simply returns the receiver.
+// Omitted if Foo2 is not comparable.
+func (o OptionalFoo2) Distinct() Foo2Seq {
+	return o
+}
+
+// Sum sums Foo2 elements.
+// Omitted if Foo2 is not numeric.
+func (o OptionalFoo2) Sum() Foo2 {
+
+	if o.IsEmpty() {
+		return 0
+	}
+	return *(o.x)
+
 }
 
 func (o OptionalFoo2) ToList() Foo2List {
 	if o.IsEmpty() {
 		return Foo2List{}
 	}
-
-	return Foo2List{*(o.x)}
-
+	return Foo2List{*o.x}
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -475,7 +500,8 @@ func (list Foo2List) Count(value Foo2) (result int) {
 }
 
 // Distinct returns a new Foo2List whose elements are unique.
-func (list Foo2List) Distinct() (result Foo2List) {
+func (list Foo2List) Distinct() Foo2Seq {
+	result := make(Foo2List, 0)
 	appended := make(map[Foo2]bool)
 	for _, v := range list {
 
@@ -490,7 +516,7 @@ func (list Foo2List) Distinct() (result Foo2List) {
 
 // These methods require Foo2 be numeric.
 
-// Sum sums Foo2 elements in Foo2List. See: http://clipperhouse.github.io/gen/#Sum
+// Sum sums Foo2 elements in Foo2List.
 func (list Foo2List) Sum() (result Foo2) {
 	for _, v := range list {
 		result += v
@@ -498,7 +524,7 @@ func (list Foo2List) Sum() (result Foo2) {
 	return
 }
 
-// Mean sums Foo2List over all elements and divides by len(Foo2List). See: http://clipperhouse.github.io/gen/#Mean
+// Mean sums Foo2List over all elements and divides by len(Foo2List).
 func (list Foo2List) Mean() (Foo2, error) {
 	var result Foo2
 
@@ -516,7 +542,7 @@ func (list Foo2List) Mean() (Foo2, error) {
 // These methods require Foo2 be ordered.
 
 // Min returns the minimum value of Foo2List. In the case of multiple items being equally minimal,
-// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Min
+// the first such element is returned. Returns error if no elements.
 func (list Foo2List) Min() (result Foo2, err error) {
 	if len(list) == 0 {
 		err = errors.New("Cannot determine the Min of an empty list.")
@@ -532,7 +558,7 @@ func (list Foo2List) Min() (result Foo2, err error) {
 }
 
 // Max returns the maximum value of Foo2List. In the case of multiple items being equally maximal,
-// the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#Max
+// the first such element is returned. Returns error if no elements.
 func (list Foo2List) Max() (result Foo2, err error) {
 	if len(list) == 0 {
 		err = errors.New("Cannot determine the Max of an empty list.")

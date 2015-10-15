@@ -37,7 +37,8 @@ func (list {{.TName}}List) Count(value {{.PName}}) (result int) {
 }
 
 // Distinct returns a new {{.TName}}List whose elements are unique.
-func (list {{.TName}}List) Distinct() (result {{.TName}}List) {
+func (list {{.TName}}List) Distinct() {{.TName}}Seq {
+	result := make({{.TName}}List, 0)
 	appended := make(map[{{.TName}}]bool)
 	for _, v := range list {
 	    {{if .Type.Pointer}}

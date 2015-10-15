@@ -21,10 +21,10 @@ type ThingSeq interface {
 	NonEmpty() bool
 
 	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predictate supplied.
+	// the predicate supplied.
 	Exists(predicate func(Thing) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predictate supplied.
+	// Forall returns true if every element in the sequence matches the predicate supplied.
 	Forall(predicate func(Thing) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
@@ -37,10 +37,16 @@ type ThingSeq interface {
 	ToList() ThingList
 
 	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Thing is not comparable.
 	Contains(value Thing) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
+	// Omitted if Thing is not comparable.
 	Count(value Thing) int
+
+	// Distinct returns a new ThingSeq whose elements are all unique.
+	// Omitted if Thing is not comparable.
+	Distinct() ThingSeq
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -317,7 +323,8 @@ func (list ThingList) Count(value Thing) (result int) {
 }
 
 // Distinct returns a new ThingList whose elements are unique.
-func (list ThingList) Distinct() (result ThingList) {
+func (list ThingList) Distinct() ThingSeq {
+	result := make(ThingList, 0)
 	appended := make(map[Thing]bool)
 	for _, v := range list {
 

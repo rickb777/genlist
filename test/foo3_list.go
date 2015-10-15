@@ -21,10 +21,10 @@ type Foo3Seq interface {
 	NonEmpty() bool
 
 	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predictate supplied.
+	// the predicate supplied.
 	Exists(predicate func(*Foo3) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predictate supplied.
+	// Forall returns true if every element in the sequence matches the predicate supplied.
 	Forall(predicate func(*Foo3) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
@@ -40,10 +40,16 @@ type Foo3Seq interface {
 	ToList() Foo3List
 
 	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Foo3 is not comparable.
 	Contains(value *Foo3) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
+	// Omitted if Foo3 is not comparable.
 	Count(value *Foo3) int
+
+	// Distinct returns a new Foo3Seq whose elements are all unique.
+	// Omitted if Foo3 is not comparable.
+	Distinct() Foo3Seq
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -320,7 +326,8 @@ func (list Foo3List) Count(value *Foo3) (result int) {
 }
 
 // Distinct returns a new Foo3List whose elements are unique.
-func (list Foo3List) Distinct() (result Foo3List) {
+func (list Foo3List) Distinct() Foo3Seq {
+	result := make(Foo3List, 0)
 	appended := make(map[Foo3]bool)
 	for _, v := range list {
 
@@ -497,18 +504,22 @@ func (o OptionalFoo3) Contains(value *Foo3) bool {
 	return false
 }
 
-func (o OptionalFoo3) Count(value *Foo3) (result int) {
+func (o OptionalFoo3) Count(value *Foo3) int {
 	if o.Contains(value) {
-		result++
+		return 1
 	}
-	return
+	return 0
+}
+
+// Distinct returns a new Foo3Seq whose elements are all unique. For options, this simply returns the receiver.
+// Omitted if Foo3 is not comparable.
+func (o OptionalFoo3) Distinct() Foo3Seq {
+	return o
 }
 
 func (o OptionalFoo3) ToList() Foo3List {
 	if o.IsEmpty() {
 		return Foo3List{}
 	}
-
 	return Foo3List{o.x}
-
 }
