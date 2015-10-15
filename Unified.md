@@ -24,7 +24,9 @@ This creates
 
  * an optional example type `OptionalExample`, and 
  * the list example type `ExampleList`, plus 
- * the [common interface](README.md) `ExampleSeq`, which includes:
+ * the [common interface](README.md) `ExampleSeq`
+ 
+The common interface includes:
 
  * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
  * **Exists**, **Forall** - tests whether any or all elements match some specified condition
