@@ -119,14 +119,12 @@ func (o Optional{{.TName}}) Count(value {{.PName}}) int {
 	}
 	return 0
 }
-{{if .Has.List}}
 
 // Distinct returns a new {{.TName}}Seq whose elements are all unique. For options, this simply returns the receiver.
 // Omitted if {{.TName}} is not comparable.
 func (o Optional{{.TName}}) Distinct() {{.TName}}Seq {
 	return o
 }
-{{end}}
 
 {{end}}
 {{if .Type.Numeric}}

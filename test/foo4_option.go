@@ -36,7 +36,7 @@ type Foo4Seq interface {
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(*Foo4) bool) OptionalFoo4
 
-	// Converts the sequence to a list. For lists, this is a no-op.
+	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Foo4List
 
 	// Contains tests whether a given value is present in the sequence.
@@ -255,7 +255,7 @@ func (list Foo4List) Reverse() Foo4List {
 	return result
 }
 
-// Shuffle returns a shuffled copy of Foo4List, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+// Shuffle returns a shuffled copy of Foo4List, using a version of the Fisher-Yates shuffle.
 func (list Foo4List) Shuffle() Foo4List {
 	numItems := len(list)
 	result := make(Foo4List, numItems)
@@ -412,7 +412,7 @@ func (list Foo4List) MaxBy(less func(*Foo4, *Foo4) bool) (result *Foo4, err erro
 	return
 }
 
-// DistinctBy returns a new Foo4List whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
+// DistinctBy returns a new Foo4List whose elements are unique, where equality is defined by a passed func.
 func (list Foo4List) DistinctBy(equal func(*Foo4, *Foo4) bool) (result Foo4List) {
 Outer:
 	for _, v := range list {
@@ -467,11 +467,13 @@ func (list Foo4List) Distinct() Foo4Seq {
 	return result
 }
 
-// Min returns an element of Foo4List containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
+// Min returns the first element of Foo4List containing the minimum value, when compared to other elements
+// using a specified comparator function defining ‘less’.
+// Returns an error if the Foo4List is empty.
 func (list Foo4List) Min(less func(*Foo4, *Foo4) bool) (result *Foo4, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the Min of an empty list.")
+		err = errors.New("Cannot determine the minimum of an empty list.")
 		return
 	}
 	m := 0
@@ -484,13 +486,13 @@ func (list Foo4List) Min(less func(*Foo4, *Foo4) bool) (result *Foo4, err error)
 	return
 }
 
-// Max returns an element of Foo4List containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
+// Max returns the first element of Foo4List containing the maximum value, when compared to other elements
+// using a specified comparator function defining ‘less’.
+// Returns an error if the Foo4List is empty.
 func (list Foo4List) Max(less func(*Foo4, *Foo4) bool) (result *Foo4, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the Max of an empty list.")
+		err = errors.New("Cannot determine the maximum of an empty list.")
 		return
 	}
 	m := 0
@@ -505,7 +507,7 @@ func (list Foo4List) Max(less func(*Foo4, *Foo4) bool) (result *Foo4, err error)
 
 // optionForList
 
-// First returns the first element that returns true for the passed func. Returns error if no elements return true. See: http://clipperhouse.github.io/gen/#First
+// First returns the first element that returns true for the passed func. Returns error if no elements return true.
 func (list Foo4List) Find(fn func(*Foo4) bool) OptionalFoo4 {
 	for _, v := range list {
 		if fn(v) {

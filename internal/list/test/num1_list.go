@@ -34,7 +34,7 @@ type Num1Seq interface {
 	// Filter returns a new Num1Seq whose elements return true for func.
 	Filter(predicate func(Num1) bool) (result Num1Seq)
 
-	// Converts the sequence to a list. For lists, this is a no-op.
+	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Num1List
 
 	// Contains tests whether a given value is present in the sequence.
@@ -164,7 +164,7 @@ func (list Num1List) Reverse() Num1List {
 	return result
 }
 
-// Shuffle returns a shuffled copy of Num1List, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+// Shuffle returns a shuffled copy of Num1List, using a version of the Fisher-Yates shuffle.
 func (list Num1List) Shuffle() Num1List {
 	numItems := len(list)
 	result := make(Num1List, numItems)
@@ -321,7 +321,7 @@ func (list Num1List) MaxBy(less func(Num1, Num1) bool) (result Num1, err error) 
 	return
 }
 
-// DistinctBy returns a new Num1List whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
+// DistinctBy returns a new Num1List whose elements are unique, where equality is defined by a passed func.
 func (list Num1List) DistinctBy(equal func(Num1, Num1) bool) (result Num1List) {
 Outer:
 	for _, v := range list {

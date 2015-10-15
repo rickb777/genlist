@@ -33,7 +33,7 @@ type Num2Seq interface {
 	// Filter returns a new Num2Seq whose elements return true for func.
 	Filter(predicate func(*Num2) bool) (result Num2Seq)
 
-	// Converts the sequence to a list. For lists, this is a no-op.
+	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Num2List
 
 	// Contains tests whether a given value is present in the sequence.
@@ -125,7 +125,7 @@ func (list Num2List) Reverse() Num2List {
 	return result
 }
 
-// Shuffle returns a shuffled copy of Num2List, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+// Shuffle returns a shuffled copy of Num2List, using a version of the Fisher-Yates shuffle.
 func (list Num2List) Shuffle() Num2List {
 	numItems := len(list)
 	result := make(Num2List, numItems)
@@ -282,7 +282,7 @@ func (list Num2List) MaxBy(less func(*Num2, *Num2) bool) (result *Num2, err erro
 	return
 }
 
-// DistinctBy returns a new Num2List whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
+// DistinctBy returns a new Num2List whose elements are unique, where equality is defined by a passed func.
 func (list Num2List) DistinctBy(equal func(*Num2, *Num2) bool) (result Num2List) {
 Outer:
 	for _, v := range list {
@@ -337,11 +337,13 @@ func (list Num2List) Distinct() Num2Seq {
 	return result
 }
 
-// Min returns an element of Num2List containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
+// Min returns the first element of Num2List containing the minimum value, when compared to other elements
+// using a specified comparator function defining ‘less’.
+// Returns an error if the Num2List is empty.
 func (list Num2List) Min(less func(*Num2, *Num2) bool) (result *Num2, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the Min of an empty list.")
+		err = errors.New("Cannot determine the minimum of an empty list.")
 		return
 	}
 	m := 0
@@ -354,13 +356,13 @@ func (list Num2List) Min(less func(*Num2, *Num2) bool) (result *Num2, err error)
 	return
 }
 
-// Max returns an element of Num2List containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
+// Max returns the first element of Num2List containing the maximum value, when compared to other elements
+// using a specified comparator function defining ‘less’.
+// Returns an error if the Num2List is empty.
 func (list Num2List) Max(less func(*Num2, *Num2) bool) (result *Num2, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the Max of an empty list.")
+		err = errors.New("Cannot determine the maximum of an empty list.")
 		return
 	}
 	m := 0

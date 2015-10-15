@@ -17,6 +17,10 @@ func TestLenNum(t *testing.T) {
 		t.Errorf("NonEmpty should be true")
 	}
 
+	if things.ToList().Len() != 3 {
+		t.Errorf("Size should be 3")
+	}
+
 	noThings := Num1List{}
 
 	if noThings.Len() != 0 {
@@ -29,6 +33,10 @@ func TestLenNum(t *testing.T) {
 
 	if noThings.NonEmpty() {
 		t.Errorf("NonEmpty should be false")
+	}
+
+	if noThings.ToList().Len() != 0 {
+		t.Errorf("Size should be 0")
 	}
 }
 
@@ -51,6 +59,10 @@ func TestLenThing(t *testing.T) {
 		t.Errorf("NonEmpty should be true")
 	}
 
+	if things.ToList().Len() != 3 {
+		t.Errorf("Size should be 3")
+	}
+
 	noThings := ThingList{}
 
 	if noThings.Len() != 0 {
@@ -63,5 +75,9 @@ func TestLenThing(t *testing.T) {
 
 	if noThings.NonEmpty() {
 		t.Errorf("NonEmpty should be false")
+	}
+
+	if noThings.ToList().Len() != 0 {
+		t.Errorf("Size should be 0")
 	}
 }

@@ -38,11 +38,13 @@ func (list {{.TName}}List) Max() (result {{.PName}}, err error) {
 
 {{else}}
 
-// Min returns an element of {{.TName}}List containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
+// Min returns the first element of {{.TName}}List containing the minimum value, when compared to other elements
+// using a specified comparator function defining ‘less’.
+// Returns an error if the {{.TName}}List is empty.
 func (list {{.TName}}List) Min(less func({{.PName}}, {{.PName}}) bool) (result {{.PName}}, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the Min of an empty list.")
+		err = errors.New("Cannot determine the minimum of an empty list.")
 		return
 	}
 	m := 0
@@ -55,13 +57,13 @@ func (list {{.TName}}List) Min(less func({{.PName}}, {{.PName}}) bool) (result {
 	return
 }
 
-// Max returns an element of {{.TName}}List containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
+// Max returns the first element of {{.TName}}List containing the maximum value, when compared to other elements
+// using a specified comparator function defining ‘less’.
+// Returns an error if the {{.TName}}List is empty.
 func (list {{.TName}}List) Max(less func({{.PName}}, {{.PName}}) bool) (result {{.PName}}, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the Max of an empty list.")
+		err = errors.New("Cannot determine the maximum of an empty list.")
 		return
 	}
 	m := 0

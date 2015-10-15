@@ -155,6 +155,12 @@ func (o OptionalOther) Count(value Other) int {
 	return 0
 }
 
+// Distinct returns a new OtherSeq whose elements are all unique. For options, this simply returns the receiver.
+// Omitted if Other is not comparable.
+func (o OptionalOther) Distinct() OtherSeq {
+	return o
+}
+
 // Sum sums Other elements.
 // Omitted if Other is not numeric.
 func (o OptionalOther) Sum() Other {

@@ -76,7 +76,7 @@ func (list {{.TName}}List) MaxBy(less func({{.PName}}, {{.PName}}) bool) (result
 	return
 }
 
-// DistinctBy returns a new {{.TName}}List whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
+// DistinctBy returns a new {{.TName}}List whose elements are unique, where equality is defined by a passed func.
 func (list {{.TName}}List) DistinctBy(equal func({{.PName}}, {{.PName}}) bool) (result {{.TName}}List) {
 Outer:
 	for _, v := range list {

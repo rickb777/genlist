@@ -32,7 +32,7 @@ type {{.TName}}Seq interface {
 {{end}}
 
 {{if .Has.List}}
-	// Converts the sequence to a list. For lists, this is a no-op.
+	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() {{.TName}}List
 {{end}}
 

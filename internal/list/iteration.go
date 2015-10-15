@@ -39,7 +39,7 @@ func (list {{.TName}}List) Reverse() {{.TName}}List {
     return result
 }
 
-// Shuffle returns a shuffled copy of {{.TName}}List, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+// Shuffle returns a shuffled copy of {{.TName}}List, using a version of the Fisher-Yates shuffle.
 func (list {{.TName}}List) Shuffle() {{.TName}}List {
     numItems := len(list)
     result := make({{.TName}}List, numItems)

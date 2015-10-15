@@ -3,7 +3,7 @@ package list
 const optionForList = `
 // optionForList
 {{if .Has.Option}}
-// First returns the first element that returns true for the passed func. Returns error if no elements return true. See: http://clipperhouse.github.io/gen/#First
+// First returns the first element that returns true for the passed func. Returns error if no elements return true.
 func (list {{.TName}}List) Find(fn func({{.PName}}) bool) Optional{{.TName}} {
 	for _, v := range list {
 		if fn(v) {

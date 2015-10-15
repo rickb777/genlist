@@ -33,7 +33,7 @@ type ThingSeq interface {
 	// Filter returns a new ThingSeq whose elements return true for func.
 	Filter(predicate func(Thing) bool) (result ThingSeq)
 
-	// Converts the sequence to a list. For lists, this is a no-op.
+	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() ThingList
 
 	// Contains tests whether a given value is present in the sequence.
@@ -125,7 +125,7 @@ func (list ThingList) Reverse() ThingList {
 	return result
 }
 
-// Shuffle returns a shuffled copy of ThingList, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+// Shuffle returns a shuffled copy of ThingList, using a version of the Fisher-Yates shuffle.
 func (list ThingList) Shuffle() ThingList {
 	numItems := len(list)
 	result := make(ThingList, numItems)
@@ -282,7 +282,7 @@ func (list ThingList) MaxBy(less func(Thing, Thing) bool) (result Thing, err err
 	return
 }
 
-// DistinctBy returns a new ThingList whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
+// DistinctBy returns a new ThingList whose elements are unique, where equality is defined by a passed func.
 func (list ThingList) DistinctBy(equal func(Thing, Thing) bool) (result ThingList) {
 Outer:
 	for _, v := range list {
@@ -337,11 +337,13 @@ func (list ThingList) Distinct() ThingSeq {
 	return result
 }
 
-// Min returns an element of ThingList containing the minimum value, when compared to other elements using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MinBy
+// Min returns the first element of ThingList containing the minimum value, when compared to other elements
+// using a specified comparator function defining ‘less’.
+// Returns an error if the ThingList is empty.
 func (list ThingList) Min(less func(Thing, Thing) bool) (result Thing, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the Min of an empty list.")
+		err = errors.New("Cannot determine the minimum of an empty list.")
 		return
 	}
 	m := 0
@@ -354,13 +356,13 @@ func (list ThingList) Min(less func(Thing, Thing) bool) (result Thing, err error
 	return
 }
 
-// Max returns an element of ThingList containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements. See: http://clipperhouse.github.io/gen/#MaxBy
+// Max returns the first element of ThingList containing the maximum value, when compared to other elements
+// using a specified comparator function defining ‘less’.
+// Returns an error if the ThingList is empty.
 func (list ThingList) Max(less func(Thing, Thing) bool) (result Thing, err error) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the Max of an empty list.")
+		err = errors.New("Cannot determine the maximum of an empty list.")
 		return
 	}
 	m := 0
@@ -427,7 +429,7 @@ func (list ThingList) GroupByNum1(fn func(Thing) Num1) map[Num1]ThingList {
 
 // These methods require Thing be numeric.
 
-// SumNum1 sums Thing over elements in ThingList. See: http://clipperhouse.github.io/gen/#Sum
+// SumNum1 sums Thing over elements in ThingList.
 func (list ThingList) SumNum1(fn func(Thing) Num1) (result Num1) {
 	for _, v := range list {
 		result += fn(v)
@@ -435,7 +437,7 @@ func (list ThingList) SumNum1(fn func(Thing) Num1) (result Num1) {
 	return
 }
 
-// MeanNum1 sums Num1 over all elements and divides by len(ThingList). See: http://clipperhouse.github.io/gen/#Mean
+// MeanNum1 sums Num1 over all elements and divides by len(ThingList).
 func (list ThingList) MeanNum1(fn func(Thing) Num1) (result Num1, err error) {
 	l := len(list)
 	if l == 0 {
@@ -449,42 +451,50 @@ func (list ThingList) MeanNum1(fn func(Thing) Num1) (result Num1, err error) {
 	return
 }
 
-// These methods require Thing be ordered.
+// These methods require Num1 be ordered.
 
-// MinNum1 selects the least value of Num1 in ThingList.
-// Returns error on ThingList with no elements.
-func (list ThingList) MinNum1(fn func(Thing) Num1) (result Num1, err error) {
+// MinByNum1 finds the first element which yields the smallest value measured by function fn.
+// fn is usually called a projection or measuring function.
+// Returns an error if the ThingList is empty.
+func (list ThingList) MinByNum1(fn func(Thing) Num1) (result Thing, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("cannot determine Min of zero-length ThingList")
 		return
 	}
-	result = fn(list[0])
+	result = list[0]
 	if l > 1 {
-		for _, v := range list[1:] {
+		min := fn(result)
+		for i := 1; i < l; i++ {
+			v := list[i]
 			f := fn(v)
-			if f < result {
-				result = f
+			if min > f {
+				min = f
+				result = v
 			}
 		}
 	}
 	return
 }
 
-// MaxNum1 selects the largest value of Num1 in ThingList.
-// Returns error on ThingList with no elements.
-func (list ThingList) MaxNum1(fn func(Thing) Num1) (result Num1, err error) {
+// MaxByNum1 finds the first element which yields the largest value measured by function fn.
+// fn is usually called a projection or measuring function.
+// Returns an error if the ThingList is empty.
+func (list ThingList) MaxByNum1(fn func(Thing) Num1) (result Thing, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("cannot determine Max of zero-length ThingList")
 		return
 	}
-	result = fn(list[0])
+	result = list[0]
 	if l > 1 {
-		for _, v := range list[1:] {
+		max := fn(result)
+		for i := 1; i < l; i++ {
+			v := list[i]
 			f := fn(v)
-			if f > result {
-				result = f
+			if max < f {
+				max = f
+				result = v
 			}
 		}
 	}
@@ -521,42 +531,50 @@ func (list ThingList) GroupByColour(fn func(Thing) Colour) map[Colour]ThingList 
 	return result
 }
 
-// These methods require Thing be ordered.
+// These methods require Colour be ordered.
 
-// MinColour selects the least value of Colour in ThingList.
-// Returns error on ThingList with no elements.
-func (list ThingList) MinColour(fn func(Thing) Colour) (result Colour, err error) {
+// MinByColour finds the first element which yields the smallest value measured by function fn.
+// fn is usually called a projection or measuring function.
+// Returns an error if the ThingList is empty.
+func (list ThingList) MinByColour(fn func(Thing) Colour) (result Thing, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("cannot determine Min of zero-length ThingList")
 		return
 	}
-	result = fn(list[0])
+	result = list[0]
 	if l > 1 {
-		for _, v := range list[1:] {
+		min := fn(result)
+		for i := 1; i < l; i++ {
+			v := list[i]
 			f := fn(v)
-			if f < result {
-				result = f
+			if min > f {
+				min = f
+				result = v
 			}
 		}
 	}
 	return
 }
 
-// MaxColour selects the largest value of Colour in ThingList.
-// Returns error on ThingList with no elements.
-func (list ThingList) MaxColour(fn func(Thing) Colour) (result Colour, err error) {
+// MaxByColour finds the first element which yields the largest value measured by function fn.
+// fn is usually called a projection or measuring function.
+// Returns an error if the ThingList is empty.
+func (list ThingList) MaxByColour(fn func(Thing) Colour) (result Thing, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("cannot determine Max of zero-length ThingList")
 		return
 	}
-	result = fn(list[0])
+	result = list[0]
 	if l > 1 {
-		for _, v := range list[1:] {
+		max := fn(result)
+		for i := 1; i < l; i++ {
+			v := list[i]
 			f := fn(v)
-			if f > result {
-				result = f
+			if max < f {
+				max = f
+				result = v
 			}
 		}
 	}

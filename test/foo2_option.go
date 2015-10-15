@@ -37,7 +37,7 @@ type Foo2Seq interface {
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Foo2) bool) OptionalFoo2
 
-	// Converts the sequence to a list. For lists, this is a no-op.
+	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Foo2List
 
 	// Contains tests whether a given value is present in the sequence.
@@ -302,7 +302,7 @@ func (list Foo2List) Reverse() Foo2List {
 	return result
 }
 
-// Shuffle returns a shuffled copy of Foo2List, using a version of the Fisher-Yates shuffle. See: http://clipperhouse.github.io/gen/#Shuffle
+// Shuffle returns a shuffled copy of Foo2List, using a version of the Fisher-Yates shuffle.
 func (list Foo2List) Shuffle() Foo2List {
 	numItems := len(list)
 	result := make(Foo2List, numItems)
@@ -459,7 +459,7 @@ func (list Foo2List) MaxBy(less func(Foo2, Foo2) bool) (result Foo2, err error) 
 	return
 }
 
-// DistinctBy returns a new Foo2List whose elements are unique, where equality is defined by a passed func. See: http://clipperhouse.github.io/gen/#DistinctBy
+// DistinctBy returns a new Foo2List whose elements are unique, where equality is defined by a passed func.
 func (list Foo2List) DistinctBy(equal func(Foo2, Foo2) bool) (result Foo2List) {
 Outer:
 	for _, v := range list {
@@ -575,7 +575,7 @@ func (list Foo2List) Max() (result Foo2, err error) {
 
 // optionForList
 
-// First returns the first element that returns true for the passed func. Returns error if no elements return true. See: http://clipperhouse.github.io/gen/#First
+// First returns the first element that returns true for the passed func. Returns error if no elements return true.
 func (list Foo2List) Find(fn func(Foo2) bool) OptionalFoo2 {
 	for _, v := range list {
 		if fn(v) {

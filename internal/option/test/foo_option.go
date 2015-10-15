@@ -150,3 +150,9 @@ func (o OptionalFoo) Count(value Foo) int {
 	}
 	return 0
 }
+
+// Distinct returns a new FooSeq whose elements are all unique. For options, this simply returns the receiver.
+// Omitted if Foo is not comparable.
+func (o OptionalFoo) Distinct() FooSeq {
+	return o
+}
