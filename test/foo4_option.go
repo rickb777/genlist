@@ -517,10 +517,21 @@ func (list Foo4List) Find(fn func(*Foo4) bool) OptionalFoo4 {
 	return NoFoo4()
 }
 
-// HeadOption converts an option to a list of zero or one item
+// HeadOption gets the first item in the list, provided there is one.
 func (list Foo4List) HeadOption() OptionalFoo4 {
-	if len(list) > 0 {
+	l := len(list)
+	if l > 0 {
 		return SomeFoo4(list[0])
+	} else {
+		return NoFoo4()
+	}
+}
+
+// TailOption gets the last item in the list, provided there is one.
+func (list Foo4List) TailOption() OptionalFoo4 {
+	l := len(list)
+	if l > 0 {
+		return SomeFoo4(list[l-1])
 	} else {
 		return NoFoo4()
 	}

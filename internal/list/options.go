@@ -13,10 +13,21 @@ func (list {{.TName}}List) Find(fn func({{.PName}}) bool) Optional{{.TName}} {
 	return No{{.TName}}()
 }
 
-// HeadOption converts an option to a list of zero or one item
+// HeadOption gets the first item in the list, provided there is one.
 func (list {{.TName}}List) HeadOption() Optional{{.TName}} {
-	if len(list) > 0 {
+	l := len(list)
+	if l > 0 {
 		return Some{{.TName}}(list[0])
+	} else {
+		return No{{.TName}}()
+	}
+}
+
+// TailOption gets the last item in the list, provided there is one.
+func (list {{.TName}}List) TailOption() Optional{{.TName}} {
+	l := len(list)
+	if l > 0 {
+		return Some{{.TName}}(list[l-1])
 	} else {
 		return No{{.TName}}()
 	}

@@ -28,7 +28,7 @@ This creates
 
 In addition, `ExampleList` has the following extra methods:
 
- * **HeadOption** - gets the first item in the list, if there is one.
+ * **HeadOption**, **TailOption** - gets the first/last item in the list, if there is one.
  * **Find** - finds a match in the list, if there is one.
  * **ToList** - returns the list (a type conversion only because it's a list already)
 

@@ -7,6 +7,9 @@ Scala's [Option](http://www.scala-lang.org/api/2.11.7/#scala.Option).
 
 By design, the generated code *does not provide* any mutation methods.
 
+Options can store a value or a pointer to a value. So if you choose to store a pointer value, using this pointer,
+you can change the value itself should you need to.
+
 At it simplest, the annotation looks like:
 
 ````go
@@ -16,9 +19,10 @@ type Example struct { ... }
 
 This creates a optional example type `OptionalExample` to hold `Example` values. It provides methods including:
 
- * IsEmpty, NonEmpty, Len - get simple properties
- * Exists, Forall - tests whether any or all elements match some specified condition
- * Foreach - applies a function to every element in turn, typically causing side-effects
+ * **Get**, **GetOrElse**, **OrElse** - get the value, possibly supplying a default
+ * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
+ * **Exists**, **Forall** - tests whether any or all elements match some specified condition
+ * **Foreach** - applies a function to every element in turn, typically causing side-effects
 
 If the element type is comparable, it adds:
 
