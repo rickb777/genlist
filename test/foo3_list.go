@@ -498,10 +498,10 @@ func (o OptionalFoo3) Filter(predicate func(*Foo3) bool) Foo3Seq {
 }
 
 func (o OptionalFoo3) Contains(value *Foo3) bool {
-	if *(o.x) == *value {
-		return true
+	if o.IsEmpty() {
+		return false
 	}
-	return false
+	return *(o.x) == *value
 }
 
 func (o OptionalFoo3) Count(value *Foo3) int {
