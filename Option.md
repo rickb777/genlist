@@ -24,10 +24,10 @@ This creates a optional example type `OptionalExample` to hold `Example` values.
  * **Exists**, **Forall** - tests whether any or all elements match some specified condition
  * **Foreach** - applies a function to every element in turn, typically causing side-effects
 
-If the element type is comparable, it adds:
+If the element type is *comparable*, it adds:
 
- * Contains, Count - comparison with a specified value
- * Distinct - removal of duplicates (clearly trivial in the case of options)
+ * **Contains**, **Count** - comparison with a specified value
+ * **Distinct** - removal of duplicates (clearly trivial in the case of options)
 
 ### Option For Pointer Elements
 
@@ -54,7 +54,8 @@ option by transforming its element using a function you provide. `MapTo[T]` can 
 type Example struct { ... }
 ````
 
-Each tag creates a corresponding `MapToFred`, `MapToJim` etc function.
+Each tag creates a corresponding `MapToFred`, `MapToJim` etc function. These functions return the corresponding
+`OptionalFred`, `OptionalJim` etc values.
 
 ### Next: [Joint Lists With Options](Unified.md)
 #### Contents:
@@ -62,4 +63,4 @@ Each tag creates a corresponding `MapToFred`, `MapToJim` etc function.
  * [Intro](README.md)
  * [Lists](List.md)
  * **Options**
- * [Joint Lists With Options](Unified.md)
+ * [Using Lists and Options Together](Unified.md)

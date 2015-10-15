@@ -30,8 +30,14 @@ type Num2Seq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Num2))
 
-	// Filter returns a new Num2Seq whose elements return true for func.
+	// Filter returns a new Num2Seq whose elements return true for a predicate function.
 	Filter(predicate func(*Num2) bool) (result Num2Seq)
+
+	// Partition returns two new Num2Lists whose elements return true or false for the predicate, p.
+	// The first result consists of all elements that satisfy the predicate and the second result consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original list.
+	Partition(p func(*Num2) bool) (matching Num2Seq, others Num2Seq)
 
 	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Num2List
@@ -223,7 +229,9 @@ func (list Num2List) Filter(fn func(*Num2) bool) Num2Seq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list Num2List) Partition(p func(*Num2) bool) (matching Num2List, others Num2List) {
+func (list Num2List) Partition(p func(*Num2) bool) (Num2Seq, Num2Seq) {
+	matching := make(Num2List, 0, len(list)/2)
+	others := make(Num2List, 0, len(list)/2)
 	for _, v := range list {
 		if p(v) {
 			matching = append(matching, v)
@@ -231,7 +239,7 @@ func (list Num2List) Partition(p func(*Num2) bool) (matching Num2List, others Nu
 			others = append(others, v)
 		}
 	}
-	return
+	return matching, others
 }
 
 // CountBy gives the number elements of Num2List that return true for the passed predicate.

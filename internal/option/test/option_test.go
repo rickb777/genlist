@@ -98,17 +98,50 @@ func TestForall(t *testing.T) {
 
 func TestFilter(t *testing.T) {
 	someThing := SomeOther(60)
-	if someThing.Filter(func(Other) bool { return true }).(OptionalOther).Get() != 60 {
+	v1 := someThing.Filter(func(Other) bool { return true })
+	if v1.(OptionalOther).Get() != 60 {
 		t.Errorf("Filter should be 60")
 	}
 
-	if someThing.Filter(func(Other) bool { return false }).NonEmpty() {
+	v2 := someThing.Filter(func(Other) bool { return false })
+	if v2.NonEmpty() {
 		t.Errorf("Filter should be empty")
 	}
 
 	noThing := NoOther()
-	if noThing.Filter(func(Other) bool { return true }).NonEmpty() {
+	v3 := noThing.Filter(func(Other) bool { return true })
+	if v3.NonEmpty() {
 		t.Errorf("Filter should be empty")
+	}
+}
+
+func TestPartition(t *testing.T) {
+	someThing := SomeOther(60)
+	m1, o1 := someThing.Partition(func(Other) bool { return true })
+	if m1.(OptionalOther).Get() != 60 {
+		t.Errorf("Partition match should be 60")
+	}
+
+	if o1.NonEmpty() {
+		t.Errorf("Partition other should be empty")
+	}
+
+	m2, o2 := someThing.Partition(func(Other) bool { return false })
+	if m2.NonEmpty() {
+		t.Errorf("Partition match should be empty")
+	}
+
+	if o2.(OptionalOther).Get() != 60 {
+		t.Errorf("Partition other should be 60")
+	}
+
+	noThing := NoOther()
+	m3, o3 := noThing.Partition(func(Other) bool { return true })
+	if m3.NonEmpty() {
+		t.Errorf("Partition match should be empty")
+	}
+	if o3.NonEmpty() {
+		t.Errorf("Partition other should be empty")
 	}
 }
 

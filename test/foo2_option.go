@@ -31,8 +31,14 @@ type Foo2Seq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo2))
 
-	// Filter returns a new Foo2Seq whose elements return true for func.
+	// Filter returns a new Foo2Seq whose elements return true for a predicate function.
 	Filter(predicate func(Foo2) bool) (result Foo2Seq)
+
+	// Partition returns two new Foo2Lists whose elements return true or false for the predicate, p.
+	// The first result consists of all elements that satisfy the predicate and the second result consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original list.
+	Partition(p func(Foo2) bool) (matching Foo2Seq, others Foo2Seq)
 
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Foo2) bool) OptionalFoo2
@@ -68,6 +74,7 @@ type OptionalFoo2 struct {
 	x *Foo2
 }
 
+// shared none value
 var noneFoo2 = OptionalFoo2{nil}
 
 func NoFoo2() OptionalFoo2 {
@@ -152,6 +159,16 @@ func (o OptionalFoo2) Foreach(fn func(Foo2)) {
 
 func (o OptionalFoo2) Filter(predicate func(Foo2) bool) Foo2Seq {
 	return o.Find(predicate)
+}
+
+func (o OptionalFoo2) Partition(predicate func(Foo2) bool) (Foo2Seq, Foo2Seq) {
+	if o.IsEmpty() {
+		return o, o
+	}
+	if predicate(*o.x) {
+		return o, noneFoo2
+	}
+	return noneFoo2, o
 }
 
 func (o OptionalFoo2) Contains(value Foo2) bool {
@@ -400,7 +417,9 @@ func (list Foo2List) Filter(fn func(Foo2) bool) Foo2Seq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list Foo2List) Partition(p func(Foo2) bool) (matching Foo2List, others Foo2List) {
+func (list Foo2List) Partition(p func(Foo2) bool) (Foo2Seq, Foo2Seq) {
+	matching := make(Foo2List, 0, len(list)/2)
+	others := make(Foo2List, 0, len(list)/2)
 	for _, v := range list {
 		if p(v) {
 			matching = append(matching, v)
@@ -408,7 +427,7 @@ func (list Foo2List) Partition(p func(Foo2) bool) (matching Foo2List, others Foo
 			others = append(others, v)
 		}
 	}
-	return
+	return matching, others
 }
 
 // CountBy gives the number elements of Foo2List that return true for the passed predicate.

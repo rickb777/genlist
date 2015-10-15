@@ -28,8 +28,8 @@ This creates a core list to hold `Example` values. It provides methods including
  * **Exists**, **Forall** - tests whether any or all elements match some specified condition
  * **Foreach** - applies a function to every element in turn, typically causing side-effects
  * **Reverse**, **Shuffle** - get a new list that is reversed or shuffled
- * **Take**, **TakeLast**, **TakeWhile** - get a new list without some trailing elements
- * **Drop**, **DropLast**, **DropWhile** - get a new list without some leading elements
+ * **Take**, **TakeWhile**, **DropLast** - get a new list without some trailing elements
+ * **Drop**, **DropWhile**, **TakeLast** - get a new list without some leading elements
  * **Filter**, **Partition** - gets a subset, or two disjoint subsets, of the list
  * **CountBy**, **MaxBy**, **MinBy**, **DistinctBy** - statistics based on supplied operator functions
 
@@ -40,24 +40,25 @@ It adds:
 but the implementation depends on whether the element type is ordered or not. For ordered elements, Min and Max use
 simple inequality operators '<' and '>'. Otherwise a comparison function must be supplied.
 
-Also in the case of ordered elements, the list implements sorting using the [standard Go api](https://golang.org/pkg/sort/)
+Also in the case of *ordered* elements, the list implements sorting using the [standard Go api](https://golang.org/pkg/sort/)
 within these methods:
 
-* **Sort**, **IsSorted**
-* **SortDesc**, **IsSortedDesc**
+* **Sort**, **IsSorted** - ascending order
+* **SortDesc**, **IsSortedDesc** - descending order
 
-If the element type is comparable, it adds:
+If the element type is *comparable*, it adds:
 
  * **Contains**, **Count** - comparison with a specified value
- * **Distinct** - removal of duplicates
+ * **Distinct** - removes duplicates
 
-If the element type is numeric, it adds:
+If the element type is *numeric*, it adds:
 
  * **Sum**, **Mean**
 
 Finally, if a companion option is present, it adds:
 
  * **HeadOption** - gets the first element if present
+ * **TailOption** - gets the last element if present
 
 ### List For Pointer Elements
 
@@ -98,14 +99,15 @@ type Example struct { ... }
 This adds methods according to the type `T`:
 
  * **FoldLeft**T, **FoldRight**T (always) - provide general summation functions
- * **GroupBy**T (only if `T` is comparable)
- * **Sum**T, **Mean**T (only if `T` is numeric)
- * **MinBy**T, **MaxBy**T (only if `T` is ordered) - find the min/max list entry according to a projection function
+ * **GroupBy**T (only if `T` is *comparable*) - clustering and histogramming
+ * **Sum**T, **Mean**T (only if `T` is *numeric*)
+ * **MinBy**T, **MaxBy**T (only if `T` is *ordered*) - find the min/max list entry according to a projection function
 
 #### `SortWith` Tag
 
-This adds extra sort methods that simply depend on providing a comparator function. The benefit is simpler usage, but
-much more code is generated to implement the sorting, so there is a trade-off you can decide upon.
+This adds extra sort methods (as alternatives) that simply depend on providing a comparator function. The benefit is
+simpler usage at the calling sites, but much more code is generated to implement the sorting, so there is a trade-off
+you can decide upon.
 
 ````go
 // +gen List:"SortWith"

@@ -30,8 +30,14 @@ type ThingSeq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Thing))
 
-	// Filter returns a new ThingSeq whose elements return true for func.
+	// Filter returns a new ThingSeq whose elements return true for a predicate function.
 	Filter(predicate func(Thing) bool) (result ThingSeq)
+
+	// Partition returns two new ThingLists whose elements return true or false for the predicate, p.
+	// The first result consists of all elements that satisfy the predicate and the second result consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original list.
+	Partition(p func(Thing) bool) (matching ThingSeq, others ThingSeq)
 
 	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() ThingList
@@ -223,7 +229,9 @@ func (list ThingList) Filter(fn func(Thing) bool) ThingSeq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list ThingList) Partition(p func(Thing) bool) (matching ThingList, others ThingList) {
+func (list ThingList) Partition(p func(Thing) bool) (ThingSeq, ThingSeq) {
+	matching := make(ThingList, 0, len(list)/2)
+	others := make(ThingList, 0, len(list)/2)
 	for _, v := range list {
 		if p(v) {
 			matching = append(matching, v)
@@ -231,7 +239,7 @@ func (list ThingList) Partition(p func(Thing) bool) (matching ThingList, others 
 			others = append(others, v)
 		}
 	}
-	return
+	return matching, others
 }
 
 // CountBy gives the number elements of ThingList that return true for the passed predicate.

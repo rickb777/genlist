@@ -30,8 +30,14 @@ type Foo4Seq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Foo4))
 
-	// Filter returns a new Foo4Seq whose elements return true for func.
+	// Filter returns a new Foo4Seq whose elements return true for a predicate function.
 	Filter(predicate func(*Foo4) bool) (result Foo4Seq)
+
+	// Partition returns two new Foo4Lists whose elements return true or false for the predicate, p.
+	// The first result consists of all elements that satisfy the predicate and the second result consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original list.
+	Partition(p func(*Foo4) bool) (matching Foo4Seq, others Foo4Seq)
 
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(*Foo4) bool) OptionalFoo4
@@ -63,6 +69,7 @@ type OptionalFoo4 struct {
 	x *Foo4
 }
 
+// shared none value
 var noneFoo4 = OptionalFoo4{nil}
 
 func NoFoo4() OptionalFoo4 {
@@ -72,7 +79,7 @@ func NoFoo4() OptionalFoo4 {
 func SomeFoo4(x *Foo4) OptionalFoo4 {
 
 	if x == nil {
-		return noneFoo4
+		return NoFoo4()
 	}
 	return OptionalFoo4{x}
 
@@ -150,6 +157,16 @@ func (o OptionalFoo4) Foreach(fn func(*Foo4)) {
 
 func (o OptionalFoo4) Filter(predicate func(*Foo4) bool) Foo4Seq {
 	return o.Find(predicate)
+}
+
+func (o OptionalFoo4) Partition(predicate func(*Foo4) bool) (Foo4Seq, Foo4Seq) {
+	if o.IsEmpty() {
+		return o, o
+	}
+	if predicate(o.x) {
+		return o, noneFoo4
+	}
+	return noneFoo4, o
 }
 
 func (o OptionalFoo4) Contains(value *Foo4) bool {
@@ -353,7 +370,9 @@ func (list Foo4List) Filter(fn func(*Foo4) bool) Foo4Seq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list Foo4List) Partition(p func(*Foo4) bool) (matching Foo4List, others Foo4List) {
+func (list Foo4List) Partition(p func(*Foo4) bool) (Foo4Seq, Foo4Seq) {
+	matching := make(Foo4List, 0, len(list)/2)
+	others := make(Foo4List, 0, len(list)/2)
 	for _, v := range list {
 		if p(v) {
 			matching = append(matching, v)
@@ -361,7 +380,7 @@ func (list Foo4List) Partition(p func(*Foo4) bool) (matching Foo4List, others Fo
 			others = append(others, v)
 		}
 	}
-	return
+	return matching, others
 }
 
 // CountBy gives the number elements of Foo4List that return true for the passed predicate.

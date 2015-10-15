@@ -17,7 +17,9 @@ func (list {{.TName}}List) Filter(fn func({{.PName}}) bool) {{.TName}}Seq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list {{.TName}}List) Partition(p func({{.PName}}) bool) (matching {{.TName}}List, others {{.TName}}List) {
+func (list {{.TName}}List) Partition(p func({{.PName}}) bool) ({{.TName}}Seq, {{.TName}}Seq) {
+	matching := make({{.TName}}List, 0, len(list)/2)
+	others := make({{.TName}}List, 0, len(list)/2)
 	for _, v := range list {
 		if p(v) {
 			matching = append(matching, v)
@@ -25,7 +27,7 @@ func (list {{.TName}}List) Partition(p func({{.PName}}) bool) (matching {{.TName
 			others = append(others, v)
 		}
 	}
-	return
+	return matching, others
 }
 
 // CountBy gives the number elements of {{.TName}}List that return true for the passed predicate.

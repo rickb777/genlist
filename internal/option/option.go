@@ -14,6 +14,7 @@ type Optional{{.TName}} struct {
 	x *{{.TName}}
 }
 
+// shared none value
 var none{{.TName}} = Optional{{.TName}}{ nil }
 
 func No{{.TName}}() Optional{{.TName}} {
@@ -23,7 +24,7 @@ func No{{.TName}}() Optional{{.TName}} {
 func Some{{.TName}}(x {{.PName}}) Optional{{.TName}} {
 	{{if .Type.Pointer}}
 	if x == nil {
-		return none{{.TName}}
+		return No{{.TName}}()
 	}
 	return Optional{{.TName}}{ x }
 	{{else}}
@@ -103,6 +104,16 @@ func (o Optional{{.TName}}) Foreach(fn func({{.PName}})) {
 
 func (o Optional{{.TName}}) Filter(predicate func({{.PName}}) bool) {{.TName}}Seq {
 	return o.Find(predicate)
+}
+
+func (o Optional{{.TName}}) Partition(predicate func({{.PName}}) bool) ({{.TName}}Seq, {{.TName}}Seq) {
+	if o.IsEmpty() {
+		return o, o
+	}
+	if predicate({{.Deref}}o.x) {
+		return o, none{{.TName}}
+	}
+	return none{{.TName}}, o
 }
 
 {{if .Type.Comparable}}

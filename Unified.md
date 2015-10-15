@@ -24,18 +24,20 @@ This creates
 
  * an optional example type `OptionalExample`, and 
  * the list example type `ExampleList`, plus 
- * the [common interface](README.md) `ExampleSeq`.
+ * the [common interface](README.md) `ExampleSeq`, which includes:
+
+ * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
+ * **Exists**, **Forall** - tests whether any or all elements match some specified condition
+ * **Foreach** - applies a function to every element in turn, typically causing side-effects
+ * **Filter**, **Partition** - gets a subset, or two disjoint subsets, of the list
+ * **Contains**, **Count** - comparison with a specified value (only if *comparable*)
+ * **Distinct** - removes duplicates (only if *comparable*)
+ * **Find** - finds a match in the sequence, if there is one.
+ * **ToList** - returns the sequence as a list (for lists, this is a type conversion only because it's a list already)
 
 In addition, `ExampleList` has the following extra methods:
 
  * **HeadOption**, **TailOption** - gets the first/last item in the list, if there is one.
- * **Find** - finds a match in the list, if there is one.
- * **ToList** - returns the list (a type conversion only because it's a list already)
-
-In addition, `OptionalExample` has the following extra methods:
-
- * **Find** - finds a match in the list, if there is one.
- * **ToList** - returns the option as a list
 
 #### Contents:
 

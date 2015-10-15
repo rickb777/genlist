@@ -25,8 +25,14 @@ type OtherSeq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Other))
 
-	// Filter returns a new OtherSeq whose elements return true for func.
+	// Filter returns a new OtherSeq whose elements return true for a predicate function.
 	Filter(predicate func(Other) bool) (result OtherSeq)
+
+	// Partition returns two new OtherLists whose elements return true or false for the predicate, p.
+	// The first result consists of all elements that satisfy the predicate and the second result consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original list.
+	Partition(p func(Other) bool) (matching OtherSeq, others OtherSeq)
 
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Other) bool) OptionalOther
@@ -55,6 +61,7 @@ type OptionalOther struct {
 	x *Other
 }
 
+// shared none value
 var noneOther = OptionalOther{nil}
 
 func NoOther() OptionalOther {
@@ -139,6 +146,16 @@ func (o OptionalOther) Foreach(fn func(Other)) {
 
 func (o OptionalOther) Filter(predicate func(Other) bool) OtherSeq {
 	return o.Find(predicate)
+}
+
+func (o OptionalOther) Partition(predicate func(Other) bool) (OtherSeq, OtherSeq) {
+	if o.IsEmpty() {
+		return o, o
+	}
+	if predicate(*o.x) {
+		return o, noneOther
+	}
+	return noneOther, o
 }
 
 func (o OptionalOther) Contains(value Other) bool {

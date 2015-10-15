@@ -23,8 +23,14 @@ type {{.TName}}Seq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func({{.PName}}))
 
-	// Filter returns a new {{.TName}}Seq whose elements return true for func.
+	// Filter returns a new {{.TName}}Seq whose elements return true for a predicate function.
 	Filter(predicate func({{.PName}}) bool) (result {{.TName}}Seq)
+
+	// Partition returns two new {{.TName}}Lists whose elements return true or false for the predicate, p.
+	// The first result consists of all elements that satisfy the predicate and the second result consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original list.
+	Partition(p func({{.PName}}) bool) (matching {{.TName}}Seq, others {{.TName}}Seq)
 
 {{if .Has.Option}}
 	// Find searches for the first value that matches a given predicate. It may or may not find one.

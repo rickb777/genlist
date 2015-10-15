@@ -30,8 +30,14 @@ type Foo3Seq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Foo3))
 
-	// Filter returns a new Foo3Seq whose elements return true for func.
+	// Filter returns a new Foo3Seq whose elements return true for a predicate function.
 	Filter(predicate func(*Foo3) bool) (result Foo3Seq)
+
+	// Partition returns two new Foo3Lists whose elements return true or false for the predicate, p.
+	// The first result consists of all elements that satisfy the predicate and the second result consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original list.
+	Partition(p func(*Foo3) bool) (matching Foo3Seq, others Foo3Seq)
 
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(*Foo3) bool) OptionalFoo3
@@ -226,7 +232,9 @@ func (list Foo3List) Filter(fn func(*Foo3) bool) Foo3Seq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list Foo3List) Partition(p func(*Foo3) bool) (matching Foo3List, others Foo3List) {
+func (list Foo3List) Partition(p func(*Foo3) bool) (Foo3Seq, Foo3Seq) {
+	matching := make(Foo3List, 0, len(list)/2)
+	others := make(Foo3List, 0, len(list)/2)
 	for _, v := range list {
 		if p(v) {
 			matching = append(matching, v)
@@ -234,7 +242,7 @@ func (list Foo3List) Partition(p func(*Foo3) bool) (matching Foo3List, others Fo
 			others = append(others, v)
 		}
 	}
-	return
+	return matching, others
 }
 
 // CountBy gives the number elements of Foo3List that return true for the passed predicate.
@@ -421,6 +429,7 @@ type OptionalFoo3 struct {
 	x *Foo3
 }
 
+// shared none value
 var noneFoo3 = OptionalFoo3{nil}
 
 func NoFoo3() OptionalFoo3 {
@@ -430,7 +439,7 @@ func NoFoo3() OptionalFoo3 {
 func SomeFoo3(x *Foo3) OptionalFoo3 {
 
 	if x == nil {
-		return noneFoo3
+		return NoFoo3()
 	}
 	return OptionalFoo3{x}
 
@@ -508,6 +517,16 @@ func (o OptionalFoo3) Foreach(fn func(*Foo3)) {
 
 func (o OptionalFoo3) Filter(predicate func(*Foo3) bool) Foo3Seq {
 	return o.Find(predicate)
+}
+
+func (o OptionalFoo3) Partition(predicate func(*Foo3) bool) (Foo3Seq, Foo3Seq) {
+	if o.IsEmpty() {
+		return o, o
+	}
+	if predicate(o.x) {
+		return o, noneFoo3
+	}
+	return noneFoo3, o
 }
 
 func (o OptionalFoo3) Contains(value *Foo3) bool {

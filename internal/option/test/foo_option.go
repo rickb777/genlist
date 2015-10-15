@@ -25,8 +25,14 @@ type FooSeq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo))
 
-	// Filter returns a new FooSeq whose elements return true for func.
+	// Filter returns a new FooSeq whose elements return true for a predicate function.
 	Filter(predicate func(Foo) bool) (result FooSeq)
+
+	// Partition returns two new FooLists whose elements return true or false for the predicate, p.
+	// The first result consists of all elements that satisfy the predicate and the second result consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original list.
+	Partition(p func(Foo) bool) (matching FooSeq, others FooSeq)
 
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Foo) bool) OptionalFoo
@@ -51,6 +57,7 @@ type OptionalFoo struct {
 	x *Foo
 }
 
+// shared none value
 var noneFoo = OptionalFoo{nil}
 
 func NoFoo() OptionalFoo {
@@ -135,6 +142,16 @@ func (o OptionalFoo) Foreach(fn func(Foo)) {
 
 func (o OptionalFoo) Filter(predicate func(Foo) bool) FooSeq {
 	return o.Find(predicate)
+}
+
+func (o OptionalFoo) Partition(predicate func(Foo) bool) (FooSeq, FooSeq) {
+	if o.IsEmpty() {
+		return o, o
+	}
+	if predicate(*o.x) {
+		return o, noneFoo
+	}
+	return noneFoo, o
 }
 
 func (o OptionalFoo) Contains(value Foo) bool {
