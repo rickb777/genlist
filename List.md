@@ -23,7 +23,7 @@ type Example struct { ... }
 
 This creates a core list to hold `Example` values. It provides methods including:
 
- * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
+ * **Head**, **IsEmpty**, **NonEmpty**, **Len** - get simple properties
  * **Swap** - get a new list with two elements swapped
  * **Exists**, **Forall** - tests whether any or all elements match some specified condition
  * **Foreach** - applies a function to every element in turn, typically causing side-effects

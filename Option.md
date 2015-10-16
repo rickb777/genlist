@@ -19,7 +19,7 @@ type Example struct { ... }
 
 This creates a optional example type `OptionalExample` to hold `Example` values. It provides methods including:
 
- * **Get**, **GetOrElse**, **OrElse** - get the value, possibly supplying a default
+ * **Head**, **Get**, **GetOrElse**, **OrElse** - get the value, possibly supplying a default
  * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
  * **Exists**, **Forall** - tests whether any or all elements match some specified condition
  * **Foreach** - applies a function to every element in turn, typically causing side-effects

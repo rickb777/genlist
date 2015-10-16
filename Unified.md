@@ -28,7 +28,7 @@ This creates
  
 The common interface includes:
 
- * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
+ * **Head**, **IsEmpty**, **NonEmpty**, **Len** - get simple properties
  * **Exists**, **Forall** - tests whether any or all elements match some specified condition
  * **Foreach** - applies a function to every element in turn, typically causing side-effects
  * **Filter**, **Partition** - gets a subset, or two disjoint subsets, of the list
@@ -37,7 +37,7 @@ The common interface includes:
  * **Find** - finds a match in the sequence, if there is one.
  * **ToList** - returns the sequence as a list (for lists, this is a type conversion only because it's a list already)
 
-In addition, `ExampleList` has the following extra methods:
+In addition, the listDocumentatio has the following extra methods:
 
  * **HeadOption**, **TailOption** - gets the first/last item in the list, if there is one.
 
