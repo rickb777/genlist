@@ -205,6 +205,18 @@ func TestCount(t *testing.T) {
 	}
 }
 
+func TestDistinct(t *testing.T) {
+	someThing := SomeOther(60)
+	if someThing.Distinct().Len() != 1 {
+		t.Errorf("Should be length 1")
+	}
+
+	noThing := NoOther()
+	if noThing.Distinct().NonEmpty() {
+		t.Errorf("Should be empty")
+	}
+}
+
 func TestSum(t *testing.T) {
 	someThing := SomeOther(60)
 	if someThing.Sum() != 60 {
