@@ -306,6 +306,25 @@ Outer:
 
 // These methods require Thing be comparable.
 
+// Equals verifies that one or more elements of ThingList return true for the passed func.
+func (list ThingList) Equals(other ThingSeq) bool {
+	if len(list) != other.Len() {
+		return false
+	}
+	eq := true
+	i := 0
+	other.Foreach(func(a Thing) {
+		v := list[i]
+		if v != a {
+			eq = false
+		}
+		i += 1
+	})
+	return eq
+}
+
+// These methods require Thing be comparable.
+
 // Contains verifies that a given value is contained in ThingList.
 func (list ThingList) Contains(value Thing) bool {
 	for _, v := range list {

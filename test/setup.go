@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	_ "github.com/rickb777/genlist"
+	_ "github.com/rickb777/golist"
 	"github.com/rickb777/typewriter"
 )
 

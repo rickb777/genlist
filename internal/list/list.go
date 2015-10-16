@@ -1,6 +1,6 @@
 package list
 
-import "github.com/rickb777/genlist/internal/sequence"
+import "github.com/rickb777/golist/internal/sequence"
 
 const List = sequence.Sequence + `
 //-------------------------------------------------------------------------------------------------
@@ -30,12 +30,12 @@ func (list {{.TName}}List) ToList() {{.TName}}List {
 }
 ` +
 iterationFunctions + takeDropFunctions + predicatedFunctions +
-comparableFunctions + numericFunctions + orderedFunctions +
+equalsFunctions + comparableFunctions + numericFunctions + orderedFunctions +
 optionForList
 
 
-// TODO aggregate, diff
-// TODO PadTo, LastOption,
+// TODO diff
+// TODO PadTo,
 // TODO IndexOf, IndexWhere, LastIndexOf, LastIndexWhere
 // TODO MkString, Equals, StartsWith, EndsWith, IteratorChan
-// TODO FlatMap, Fold, FoldLeft, FoldRight
+// TODO FlatMap, Fold

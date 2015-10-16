@@ -1,4 +1,4 @@
-package genlist
+package golist
 
 import (
 	"io"

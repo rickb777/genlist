@@ -1,8 +1,8 @@
-package genlist
+package golist
 
 import (
 	"github.com/rickb777/typewriter"
-	"github.com/rickb777/genlist/internal/list"
+	"github.com/rickb777/golist/internal/list"
 )
 
 var coreListTemplate = &typewriter.Template{

@@ -1,6 +1,6 @@
 package option
 
-import "github.com/rickb777/genlist/internal/sequence"
+import "github.com/rickb777/golist/internal/sequence"
 
 const Optional = sequence.Sequence + `
 //-------------------------------------------------------------------------------------------------

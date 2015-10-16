@@ -1,8 +1,8 @@
-package genlist
+package golist
 
 import (
 	"github.com/rickb777/typewriter"
-	"github.com/rickb777/genlist/internal/option"
+	"github.com/rickb777/golist/internal/option"
 )
 
 var coreOptionTemplate = &typewriter.Template{

@@ -1,4 +1,4 @@
-package genlist
+package golist
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"go/token"
 	"testing"
 
-	"github.com/rickb777/genlist/internal/option"
+	"github.com/rickb777/golist/internal/option"
 	"github.com/rickb777/typewriter"
 )
 

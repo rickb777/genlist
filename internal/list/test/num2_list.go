@@ -306,6 +306,25 @@ Outer:
 
 // These methods require *Num2 be comparable.
 
+// Equals verifies that one or more elements of Num2List return true for the passed func.
+func (list Num2List) Equals(other Num2Seq) bool {
+	if len(list) != other.Len() {
+		return false
+	}
+	eq := true
+	i := 0
+	other.Foreach(func(a *Num2) {
+		v := list[i]
+		if *v != *a {
+			eq = false
+		}
+		i += 1
+	})
+	return eq
+}
+
+// These methods require *Num2 be comparable.
+
 // Contains verifies that a given value is contained in Num2List.
 func (list Num2List) Contains(value *Num2) bool {
 	for _, v := range list {

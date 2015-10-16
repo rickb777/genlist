@@ -345,6 +345,25 @@ Outer:
 
 // These methods require Num1 be comparable.
 
+// Equals verifies that one or more elements of Num1List return true for the passed func.
+func (list Num1List) Equals(other Num1Seq) bool {
+	if len(list) != other.Len() {
+		return false
+	}
+	eq := true
+	i := 0
+	other.Foreach(func(a Num1) {
+		v := list[i]
+		if v != a {
+			eq = false
+		}
+		i += 1
+	})
+	return eq
+}
+
+// These methods require Num1 be comparable.
+
 // Contains verifies that a given value is contained in Num1List.
 func (list Num1List) Contains(value Num1) bool {
 	for _, v := range list {
