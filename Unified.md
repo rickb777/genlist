@@ -22,9 +22,9 @@ Other tags can, of course, be included in the quotes as a comma-separated list a
 
 This creates 
 
- * an optional example type `OptionalExample`, and 
- * the list example type `ExampleList`, plus 
- * the [common interface](README.md) `ExampleSeq`
+ 1. an optional example type `OptionalExample`, and 
+ 2. the list example type `ExampleList`, plus 
+ 3. the [common interface](README.md) `ExampleSeq`
  
 The common interface includes:
 

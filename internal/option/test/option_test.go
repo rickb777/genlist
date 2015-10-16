@@ -189,6 +189,32 @@ func TestContains(t *testing.T) {
 	}
 }
 
+func TestEquals(t *testing.T) {
+	someThing1 := SomeOther(10)
+	someThing2 := SomeOther(20)
+	noThing := NoOther()
+
+	if someThing1.Equals(someThing2) {
+		t.Errorf("Should not be equal")
+	}
+
+	if !someThing1.Equals(someThing1) {
+		t.Errorf("Should be equal")
+	}
+
+	if someThing1.Equals(noThing) {
+		t.Errorf("Should not be equal")
+	}
+
+	if !noThing.Equals(noThing) {
+		t.Errorf("Should not be equal")
+	}
+
+	if noThing.Equals(someThing1) {
+		t.Errorf("Should not be equal")
+	}
+}
+
 func TestCount(t *testing.T) {
 	someThing := SomeOther(60)
 	if someThing.Count(50) != 0 {
