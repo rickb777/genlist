@@ -12,6 +12,9 @@ import (
 
 // Num1Seq is an interface for sequences of type Num1, including lists and options (where present).
 type Num1Seq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() Num1
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -42,6 +45,10 @@ type Num1Seq interface {
 
 	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Num1List
+
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if Num1 is not comparable.
+	Equals(other Num1Seq) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Num1 is not comparable.
@@ -115,6 +122,11 @@ func (list Num1List) SortDesc() Num1List {
 // IsSortedDesc reports whether Num1List is reverse-sorted.
 func (list Num1List) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
+}
+
+// panics if list is empty
+func (list Num1List) Head() Num1 {
+	return list[0]
 }
 
 // IsEmpty tests whether Num1List is empty.
@@ -353,11 +365,13 @@ func (list Num1List) Equals(other Num1Seq) bool {
 	eq := true
 	i := 0
 	other.Foreach(func(a Num1) {
-		v := list[i]
-		if v != a {
-			eq = false
+		if eq {
+			v := list[i]
+			if v != a {
+				eq = false
+			}
+			i += 1
 		}
-		i += 1
 	})
 	return eq
 }

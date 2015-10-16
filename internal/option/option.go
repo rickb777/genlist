@@ -34,11 +34,20 @@ func Some{{.TName}}(x {{.PName}}) Optional{{.TName}} {
 
 //-------------------------------------------------------------------------------------------------
 
-func (o Optional{{.TName}}) Get() {{.PName}} {
+// panics if option is empty
+func (o Optional{{.TName}}) Head() {{.PName}} {
+	{{if .Type.Pointer}}
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return {{.Deref}}o.x
+	return o.x
+	{{else}}
+	return *(o.x)
+	{{end}}
+}
+
+func (o Optional{{.TName}}) Get() {{.PName}} {
+	return o.Head()
 }
 
 func (o Optional{{.TName}}) GetOrElse(d func() {{.PName}}) {{.PName}} {
@@ -117,6 +126,21 @@ func (o Optional{{.TName}}) Partition(predicate func({{.PName}}) bool) ({{.TName
 }
 
 {{if .Type.Comparable}}
+// These methods require {{.PName}} be comparable.
+
+// Equals verifies that one or more elements of {{.TName}}List return true for the passed func.
+func (o Optional{{.TName}}) Equals(other {{.TName}}Seq) bool {
+	if o.IsEmpty() {
+		return other.IsEmpty()
+	}
+	if other.IsEmpty() || other.Len() > 1 {
+		return false
+	}
+	a := o.Head()
+	b := other.Head()
+	return {{.Ptr}}a == {{.Ptr}}b
+}
+
 func (o Optional{{.TName}}) Contains(value {{.PName}}) bool {
 	if o.IsEmpty() {
 		return false

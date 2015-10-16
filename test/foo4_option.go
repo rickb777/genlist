@@ -11,6 +11,9 @@ import (
 
 // Foo4Seq is an interface for sequences of type *Foo4, including lists and options (where present).
 type Foo4Seq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() *Foo4
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -44,6 +47,10 @@ type Foo4Seq interface {
 
 	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Foo4List
+
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if Foo4 is not comparable.
+	Equals(other Foo4Seq) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Foo4 is not comparable.
@@ -87,11 +94,18 @@ func SomeFoo4(x *Foo4) OptionalFoo4 {
 
 //-------------------------------------------------------------------------------------------------
 
-func (o OptionalFoo4) Get() *Foo4 {
+// panics if option is empty
+func (o OptionalFoo4) Head() *Foo4 {
+
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
 	return o.x
+
+}
+
+func (o OptionalFoo4) Get() *Foo4 {
+	return o.Head()
 }
 
 func (o OptionalFoo4) GetOrElse(d func() *Foo4) *Foo4 {
@@ -169,6 +183,21 @@ func (o OptionalFoo4) Partition(predicate func(*Foo4) bool) (Foo4Seq, Foo4Seq) {
 	return noneFoo4, o
 }
 
+// These methods require *Foo4 be comparable.
+
+// Equals verifies that one or more elements of Foo4List return true for the passed func.
+func (o OptionalFoo4) Equals(other Foo4Seq) bool {
+	if o.IsEmpty() {
+		return other.IsEmpty()
+	}
+	if other.IsEmpty() || other.Len() > 1 {
+		return false
+	}
+	a := o.Head()
+	b := other.Head()
+	return *a == *b
+}
+
 func (o OptionalFoo4) Contains(value *Foo4) bool {
 	if o.IsEmpty() {
 		return false
@@ -217,6 +246,11 @@ func (list Foo4List) Len() int {
 // This is one of the three methods in the standard sort.Interface.
 func (list Foo4List) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
+}
+
+// panics if list is empty
+func (list Foo4List) Head() *Foo4 {
+	return list[0]
 }
 
 // IsEmpty tests whether Foo4List is empty.
@@ -443,6 +477,27 @@ Outer:
 		result = append(result, v)
 	}
 	return result
+}
+
+// These methods require *Foo4 be comparable.
+
+// Equals verifies that one or more elements of Foo4List return true for the passed func.
+func (list Foo4List) Equals(other Foo4Seq) bool {
+	if len(list) != other.Len() {
+		return false
+	}
+	eq := true
+	i := 0
+	other.Foreach(func(a *Foo4) {
+		if eq {
+			v := list[i]
+			if *v != *a {
+				eq = false
+			}
+			i += 1
+		}
+	})
+	return eq
 }
 
 // These methods require *Foo4 be comparable.

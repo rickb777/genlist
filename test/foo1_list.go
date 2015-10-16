@@ -12,6 +12,9 @@ import (
 
 // Foo1Seq is an interface for sequences of type Foo1, including lists and options (where present).
 type Foo1Seq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() Foo1
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -45,6 +48,10 @@ type Foo1Seq interface {
 
 	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Foo1List
+
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if Foo1 is not comparable.
+	Equals(other Foo1Seq) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Foo1 is not comparable.
@@ -118,6 +125,11 @@ func (list Foo1List) SortDesc() Foo1List {
 // IsSortedDesc reports whether Foo1List is reverse-sorted.
 func (list Foo1List) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
+}
+
+// panics if list is empty
+func (list Foo1List) Head() Foo1 {
+	return list[0]
 }
 
 // IsEmpty tests whether Foo1List is empty.
@@ -348,6 +360,27 @@ Outer:
 
 // These methods require Foo1 be comparable.
 
+// Equals verifies that one or more elements of Foo1List return true for the passed func.
+func (list Foo1List) Equals(other Foo1Seq) bool {
+	if len(list) != other.Len() {
+		return false
+	}
+	eq := true
+	i := 0
+	other.Foreach(func(a Foo1) {
+		if eq {
+			v := list[i]
+			if v != a {
+				eq = false
+			}
+			i += 1
+		}
+	})
+	return eq
+}
+
+// These methods require Foo1 be comparable.
+
 // Contains verifies that a given value is contained in Foo1List.
 func (list Foo1List) Contains(value Foo1) bool {
 	for _, v := range list {
@@ -504,11 +537,15 @@ func SomeFoo1(x Foo1) OptionalFoo1 {
 
 //-------------------------------------------------------------------------------------------------
 
+// panics if option is empty
+func (o OptionalFoo1) Head() Foo1 {
+
+	return *(o.x)
+
+}
+
 func (o OptionalFoo1) Get() Foo1 {
-	if o.IsEmpty() {
-		panic("Attempt to access non-existent value")
-	}
-	return *o.x
+	return o.Head()
 }
 
 func (o OptionalFoo1) GetOrElse(d func() Foo1) Foo1 {
@@ -584,6 +621,21 @@ func (o OptionalFoo1) Partition(predicate func(Foo1) bool) (Foo1Seq, Foo1Seq) {
 		return o, noneFoo1
 	}
 	return noneFoo1, o
+}
+
+// These methods require Foo1 be comparable.
+
+// Equals verifies that one or more elements of Foo1List return true for the passed func.
+func (o OptionalFoo1) Equals(other Foo1Seq) bool {
+	if o.IsEmpty() {
+		return other.IsEmpty()
+	}
+	if other.IsEmpty() || other.Len() > 1 {
+		return false
+	}
+	a := o.Head()
+	b := other.Head()
+	return a == b
 }
 
 func (o OptionalFoo1) Contains(value Foo1) bool {

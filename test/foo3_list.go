@@ -11,6 +11,9 @@ import (
 
 // Foo3Seq is an interface for sequences of type *Foo3, including lists and options (where present).
 type Foo3Seq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() *Foo3
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -44,6 +47,10 @@ type Foo3Seq interface {
 
 	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Foo3List
+
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if Foo3 is not comparable.
+	Equals(other Foo3Seq) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Foo3 is not comparable.
@@ -79,6 +86,11 @@ func (list Foo3List) Len() int {
 // This is one of the three methods in the standard sort.Interface.
 func (list Foo3List) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
+}
+
+// panics if list is empty
+func (list Foo3List) Head() *Foo3 {
+	return list[0]
 }
 
 // IsEmpty tests whether Foo3List is empty.
@@ -309,6 +321,27 @@ Outer:
 
 // These methods require *Foo3 be comparable.
 
+// Equals verifies that one or more elements of Foo3List return true for the passed func.
+func (list Foo3List) Equals(other Foo3Seq) bool {
+	if len(list) != other.Len() {
+		return false
+	}
+	eq := true
+	i := 0
+	other.Foreach(func(a *Foo3) {
+		if eq {
+			v := list[i]
+			if *v != *a {
+				eq = false
+			}
+			i += 1
+		}
+	})
+	return eq
+}
+
+// These methods require *Foo3 be comparable.
+
 // Contains verifies that a given value is contained in Foo3List.
 func (list Foo3List) Contains(value *Foo3) bool {
 	for _, v := range list {
@@ -447,11 +480,18 @@ func SomeFoo3(x *Foo3) OptionalFoo3 {
 
 //-------------------------------------------------------------------------------------------------
 
-func (o OptionalFoo3) Get() *Foo3 {
+// panics if option is empty
+func (o OptionalFoo3) Head() *Foo3 {
+
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
 	return o.x
+
+}
+
+func (o OptionalFoo3) Get() *Foo3 {
+	return o.Head()
 }
 
 func (o OptionalFoo3) GetOrElse(d func() *Foo3) *Foo3 {
@@ -527,6 +567,21 @@ func (o OptionalFoo3) Partition(predicate func(*Foo3) bool) (Foo3Seq, Foo3Seq) {
 		return o, noneFoo3
 	}
 	return noneFoo3, o
+}
+
+// These methods require *Foo3 be comparable.
+
+// Equals verifies that one or more elements of Foo3List return true for the passed func.
+func (o OptionalFoo3) Equals(other Foo3Seq) bool {
+	if o.IsEmpty() {
+		return other.IsEmpty()
+	}
+	if other.IsEmpty() || other.Len() > 1 {
+		return false
+	}
+	a := o.Head()
+	b := other.Head()
+	return *a == *b
 }
 
 func (o OptionalFoo3) Contains(value *Foo3) bool {

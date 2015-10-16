@@ -4,6 +4,9 @@ const Sequence = `
 {{if .Has.Sequence}}
 // {{.TName}}Seq is an interface for sequences of type {{.PName}}, including lists and options (where present).
 type {{.TName}}Seq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() {{.PName}}
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -43,6 +46,10 @@ type {{.TName}}Seq interface {
 {{end}}
 
 {{if .Type.Comparable}}
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if {{.TName}} is not comparable.
+	Equals(other {{.TName}}Seq) bool
+
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if {{.TName}} is not comparable.
 	Contains(value {{.PName}}) bool

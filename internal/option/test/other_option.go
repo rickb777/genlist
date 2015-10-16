@@ -6,6 +6,9 @@ package main
 
 // OtherSeq is an interface for sequences of type Other, including lists and options (where present).
 type OtherSeq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() Other
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -36,6 +39,10 @@ type OtherSeq interface {
 
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Other) bool) OptionalOther
+
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if Other is not comparable.
+	Equals(other OtherSeq) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Other is not comparable.
@@ -76,11 +83,15 @@ func SomeOther(x Other) OptionalOther {
 
 //-------------------------------------------------------------------------------------------------
 
+// panics if option is empty
+func (o OptionalOther) Head() Other {
+
+	return *(o.x)
+
+}
+
 func (o OptionalOther) Get() Other {
-	if o.IsEmpty() {
-		panic("Attempt to access non-existent value")
-	}
-	return *o.x
+	return o.Head()
 }
 
 func (o OptionalOther) GetOrElse(d func() Other) Other {
@@ -156,6 +167,21 @@ func (o OptionalOther) Partition(predicate func(Other) bool) (OtherSeq, OtherSeq
 		return o, noneOther
 	}
 	return noneOther, o
+}
+
+// These methods require Other be comparable.
+
+// Equals verifies that one or more elements of OtherList return true for the passed func.
+func (o OptionalOther) Equals(other OtherSeq) bool {
+	if o.IsEmpty() {
+		return other.IsEmpty()
+	}
+	if other.IsEmpty() || other.Len() > 1 {
+		return false
+	}
+	a := o.Head()
+	b := other.Head()
+	return a == b
 }
 
 func (o OptionalOther) Contains(value Other) bool {

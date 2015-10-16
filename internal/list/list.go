@@ -14,6 +14,11 @@ type {{.TName}}List []{{.PName}}
 //-------------------------------------------------------------------------------------------------
 ` + sortable + `
 
+// panics if list is empty
+func (list {{.TName}}List) Head() {{.PName}} {
+	return list[0]
+}
+
 // IsEmpty tests whether {{.TName}}List is empty.
 func (list {{.TName}}List) IsEmpty() bool {
 	return len(list) == 0

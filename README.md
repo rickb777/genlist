@@ -42,8 +42,11 @@ value is a sequence of zero or one value, whilst a list is a sequence of zero or
 It looks like this:
 
 ```go
-// ExampleSeq is an interface for sequences of type Example, including lists and options (where present).
-type ExampleSeq interface {
+// FooSeq is an interface for sequences of type Foo, including lists and options (where present).
+type FooSeq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() Foo
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -54,28 +57,38 @@ type ExampleSeq interface {
 	NonEmpty() bool
 
 	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predictate supplied.
-	Exists(predicate func(Example) bool) bool
+	// the predicate supplied.
+	Exists(predicate func(Foo) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predictate supplied.
-	Forall(predicate func(Example) bool) bool
+	// Forall returns true if every element in the sequence matches the predicate supplied.
+	Forall(predicate func(Foo) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
-	Foreach(fn func(Example))
+	Foreach(fn func(Foo))
 
-	// Filter returns a new ExampleSeq whose elements return true for func.
-	Filter(predicate func(Example) bool) (result ExampleSeq)
+	// Filter returns a new FooSeq whose elements return true for a predicate function.
+	Filter(predicate func(Foo) bool) (result FooSeq)
 
-	// Converts the sequence to a list. For lists, this is a no-op.
-	ToList() ExampleList
+	// Partition returns two new FooLists whose elements return true or false for the predicate, p.
+	// The first result consists of all elements that satisfy the predicate and the second result consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original list.
+	Partition(p func(Foo) bool) (matching FooSeq, others FooSeq)
+
+	// Find searches for the first value that matches a given predicate. It may or may not find one.
+	Find(predicate func(Foo) bool) OptionalFoo
+
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if Foo is not comparable.
+	Equals(other FooSeq) bool
 
 	// Contains tests whether a given value is present in the sequence.
-	// Omitted if Example is not comparable.
-	Contains(value Example) bool
+	// Omitted if Foo is not comparable.
+	Contains(value Foo) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
-	// Omitted if Example is not comparable.
-	Count(value Example) int
+	// Omitted if Foo is not comparable.
+	Count(value Foo) int
 }
 ```
 

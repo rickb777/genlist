@@ -12,6 +12,9 @@ import (
 
 // Foo2Seq is an interface for sequences of type Foo2, including lists and options (where present).
 type Foo2Seq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() Foo2
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -45,6 +48,10 @@ type Foo2Seq interface {
 
 	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Foo2List
+
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if Foo2 is not comparable.
+	Equals(other Foo2Seq) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Foo2 is not comparable.
@@ -89,11 +96,15 @@ func SomeFoo2(x Foo2) OptionalFoo2 {
 
 //-------------------------------------------------------------------------------------------------
 
+// panics if option is empty
+func (o OptionalFoo2) Head() Foo2 {
+
+	return *(o.x)
+
+}
+
 func (o OptionalFoo2) Get() Foo2 {
-	if o.IsEmpty() {
-		panic("Attempt to access non-existent value")
-	}
-	return *o.x
+	return o.Head()
 }
 
 func (o OptionalFoo2) GetOrElse(d func() Foo2) Foo2 {
@@ -169,6 +180,21 @@ func (o OptionalFoo2) Partition(predicate func(Foo2) bool) (Foo2Seq, Foo2Seq) {
 		return o, noneFoo2
 	}
 	return noneFoo2, o
+}
+
+// These methods require Foo2 be comparable.
+
+// Equals verifies that one or more elements of Foo2List return true for the passed func.
+func (o OptionalFoo2) Equals(other Foo2Seq) bool {
+	if o.IsEmpty() {
+		return other.IsEmpty()
+	}
+	if other.IsEmpty() || other.Len() > 1 {
+		return false
+	}
+	a := o.Head()
+	b := other.Head()
+	return a == b
 }
 
 func (o OptionalFoo2) Contains(value Foo2) bool {
@@ -264,6 +290,11 @@ func (list Foo2List) SortDesc() Foo2List {
 // IsSortedDesc reports whether Foo2List is reverse-sorted.
 func (list Foo2List) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
+}
+
+// panics if list is empty
+func (list Foo2List) Head() Foo2 {
+	return list[0]
 }
 
 // IsEmpty tests whether Foo2List is empty.
@@ -490,6 +521,27 @@ Outer:
 		result = append(result, v)
 	}
 	return result
+}
+
+// These methods require Foo2 be comparable.
+
+// Equals verifies that one or more elements of Foo2List return true for the passed func.
+func (list Foo2List) Equals(other Foo2Seq) bool {
+	if len(list) != other.Len() {
+		return false
+	}
+	eq := true
+	i := 0
+	other.Foreach(func(a Foo2) {
+		if eq {
+			v := list[i]
+			if v != a {
+				eq = false
+			}
+			i += 1
+		}
+	})
+	return eq
 }
 
 // These methods require Foo2 be comparable.

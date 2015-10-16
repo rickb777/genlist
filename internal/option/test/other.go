@@ -8,3 +8,6 @@ type Underlying int
 
 // +test Option
 type Foo string
+
+// +test * Option
+type Bar int

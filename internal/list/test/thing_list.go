@@ -11,6 +11,9 @@ import (
 
 // ThingSeq is an interface for sequences of type Thing, including lists and options (where present).
 type ThingSeq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() Thing
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -41,6 +44,10 @@ type ThingSeq interface {
 
 	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() ThingList
+
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if Thing is not comparable.
+	Equals(other ThingSeq) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Thing is not comparable.
@@ -76,6 +83,11 @@ func (list ThingList) Len() int {
 // This is one of the three methods in the standard sort.Interface.
 func (list ThingList) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
+}
+
+// panics if list is empty
+func (list ThingList) Head() Thing {
+	return list[0]
 }
 
 // IsEmpty tests whether ThingList is empty.
@@ -314,11 +326,13 @@ func (list ThingList) Equals(other ThingSeq) bool {
 	eq := true
 	i := 0
 	other.Foreach(func(a Thing) {
-		v := list[i]
-		if v != a {
-			eq = false
+		if eq {
+			v := list[i]
+			if v != a {
+				eq = false
+			}
+			i += 1
 		}
-		i += 1
 	})
 	return eq
 }

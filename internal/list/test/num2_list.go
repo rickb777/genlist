@@ -11,6 +11,9 @@ import (
 
 // Num2Seq is an interface for sequences of type *Num2, including lists and options (where present).
 type Num2Seq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() *Num2
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -41,6 +44,10 @@ type Num2Seq interface {
 
 	// Converts the sequence to a list. For lists, this is merely a type conversion.
 	ToList() Num2List
+
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if Num2 is not comparable.
+	Equals(other Num2Seq) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Num2 is not comparable.
@@ -76,6 +83,11 @@ func (list Num2List) Len() int {
 // This is one of the three methods in the standard sort.Interface.
 func (list Num2List) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
+}
+
+// panics if list is empty
+func (list Num2List) Head() *Num2 {
+	return list[0]
 }
 
 // IsEmpty tests whether Num2List is empty.
@@ -314,11 +326,13 @@ func (list Num2List) Equals(other Num2Seq) bool {
 	eq := true
 	i := 0
 	other.Foreach(func(a *Num2) {
-		v := list[i]
-		if *v != *a {
-			eq = false
+		if eq {
+			v := list[i]
+			if *v != *a {
+				eq = false
+			}
+			i += 1
 		}
-		i += 1
 	})
 	return eq
 }

@@ -6,6 +6,9 @@ package main
 
 // FooSeq is an interface for sequences of type Foo, including lists and options (where present).
 type FooSeq interface {
+	// Gets the first element from the sequence. This panics if the sequence is empty.
+	Head() Foo
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -36,6 +39,10 @@ type FooSeq interface {
 
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Foo) bool) OptionalFoo
+
+	// Tests whether this sequence has the same length and the same elements as another sequence.
+	// Omitted if Foo is not comparable.
+	Equals(other FooSeq) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Foo is not comparable.
@@ -72,11 +79,15 @@ func SomeFoo(x Foo) OptionalFoo {
 
 //-------------------------------------------------------------------------------------------------
 
+// panics if option is empty
+func (o OptionalFoo) Head() Foo {
+
+	return *(o.x)
+
+}
+
 func (o OptionalFoo) Get() Foo {
-	if o.IsEmpty() {
-		panic("Attempt to access non-existent value")
-	}
-	return *o.x
+	return o.Head()
 }
 
 func (o OptionalFoo) GetOrElse(d func() Foo) Foo {
@@ -152,6 +163,21 @@ func (o OptionalFoo) Partition(predicate func(Foo) bool) (FooSeq, FooSeq) {
 		return o, noneFoo
 	}
 	return noneFoo, o
+}
+
+// These methods require Foo be comparable.
+
+// Equals verifies that one or more elements of FooList return true for the passed func.
+func (o OptionalFoo) Equals(other FooSeq) bool {
+	if o.IsEmpty() {
+		return other.IsEmpty()
+	}
+	if other.IsEmpty() || other.Len() > 1 {
+		return false
+	}
+	a := o.Head()
+	b := other.Head()
+	return a == b
 }
 
 func (o OptionalFoo) Contains(value Foo) bool {

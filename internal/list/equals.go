@@ -11,12 +11,14 @@ func (list {{.TName}}List) Equals(other {{.TName}}Seq) bool {
 	}
 	eq := true
 	i := 0
-	other.Foreach(func(a {{.PName}}){
-		v := list[i]
-		if {{.Ptr}}v != {{.Ptr}}a {
-			eq = false
+	other.Foreach(func(a {{.PName}}) {
+		if eq {
+			v := list[i]
+			if {{.Ptr}}v != {{.Ptr}}a {
+				eq = false
+			}
+			i += 1
 		}
-		i += 1
 	})
 	return eq
 }

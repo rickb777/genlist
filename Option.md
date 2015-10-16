@@ -26,6 +26,7 @@ This creates a optional example type `OptionalExample` to hold `Example` values.
 
 If the element type is *comparable*, it adds:
 
+ * **Equals** - comparison with another option
  * **Contains**, **Count** - comparison with a specified value
  * **Distinct** - removal of duplicates (clearly trivial in the case of options)
 
