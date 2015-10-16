@@ -1,9 +1,37 @@
 # GenList
 
-This package is a typewriter for use with [gen](https://github.com/clipperhouse/gen), a type-driven code generation tool for Go.
+This package is a typewriter for use with Mark Sherman's [gen](https://github.com/clipperhouse/gen), an excellent 
+type-driven code generation tool for Go.
 
 This Go code generator offers scala-like **List** and **Option** containers, with methods such as filtering and sorting,
 for working with Go types and slices of types.
+
+**This work is still beta quality.** If you use it, be prepared for small API changes as it gets completed. 
+
+## Quick start
+
+Start by [installing Go](https://golang.org/dl/), [setting up paths](http://golang.org/doc/code.html), etc. Then:
+
+```
+go get github.com/clipperhouse/gen
+```
+
+Create a new Go project, and cd into it. Create a main.go file and define a type.
+
+Now, mark it up with a +gen annotation in an adjacent comment like so:
+
+```go
+// +gen List
+type MyType struct {}
+```
+
+And at the command line, simply type:
+
+```
+gen
+```
+
+You should see a new file, named mytype_list.go. Have a look around.
 
 ## The Sequence Interface
 
