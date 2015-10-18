@@ -523,6 +523,27 @@ Outer:
 	return result
 }
 
+// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+func (list Foo2List) IndexWhere(p func(Foo2) bool) int {
+	for i, v := range list {
+		if p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// IndexWhere2 finds the index of the first element satisfying some predicate after or at some start index.
+// If none exists, -1 is returned.
+func (list Foo2List) IndexWhere2(p func(Foo2) bool, from int) int {
+	for i, v := range list {
+		if i >= from && p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
 // These methods require Foo2 be comparable.
 
 // Equals verifies that one or more elements of Foo2List return true for the passed func.

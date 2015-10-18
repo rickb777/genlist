@@ -32,6 +32,7 @@ This creates a core list to hold `Example` values. It provides methods including
  * **Drop**, **DropWhile**, **TakeLast** - get a new list without some leading elements
  * **Filter**, **Partition** - gets a subset, or two disjoint subsets, of the list
  * **CountBy**, **MaxBy**, **MinBy**, **DistinctBy** - statistics based on supplied operator functions
+ * **IndexWhere**, **IndexWhere2** - lookup using predicate functions
 
 It adds:
 

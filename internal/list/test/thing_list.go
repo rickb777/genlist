@@ -316,6 +316,27 @@ Outer:
 	return result
 }
 
+// IndexWhere finds the index of the first element satisfying some predicate. If none exists, -1 is returned.
+func (list ThingList) IndexWhere(p func(Thing) bool) int {
+	for i, v := range list {
+		if p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// IndexWhere2 finds the index of the first element satisfying some predicate after or at some start index.
+// If none exists, -1 is returned.
+func (list ThingList) IndexWhere2(p func(Thing) bool, from int) int {
+	for i, v := range list {
+		if i >= from && p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
 // These methods require Thing be comparable.
 
 // Equals verifies that one or more elements of ThingList return true for the passed func.
