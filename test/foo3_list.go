@@ -5,7 +5,9 @@
 package main
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"math/rand"
 )
 
@@ -510,6 +512,29 @@ func (list Foo3List) Max(less func(*Foo3, *Foo3) bool) (result *Foo3, err error)
 	}
 	result = list[m]
 	return
+}
+
+// MkString concatenates the values as a string.
+func (list Foo3List) MkString(sep string) string {
+	return list.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the values as a string.
+func (list Foo3List) MkString3(pfx, mid, sfx string) string {
+	b := bytes.Buffer{}
+	b.WriteString(pfx)
+	l := len(list)
+	if l > 0 {
+		v := list[0]
+		b.WriteString(fmt.Sprintf("%v", *v))
+		for i := 1; i < l; i++ {
+			v := list[i]
+			b.WriteString(mid)
+			b.WriteString(fmt.Sprintf("%v", *v))
+		}
+	}
+	b.WriteString(sfx)
+	return b.String()
 }
 
 // optionForList

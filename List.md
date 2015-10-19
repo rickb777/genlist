@@ -37,6 +37,7 @@ The generated code is a list to hold `Example` values. It provides methods inclu
  * **CountBy**, **MaxBy**, **MinBy**, **DistinctBy** - statistics based on supplied operator functions
  * **IndexWhere**, **IndexWhere2** - find the index of the first match using a predicate function
  * **LastIndexWhere**, **LastIndexWhere2** - find the index of the last match using a predicate function
+ * **MkString**, **MkString3** - constructs a string representation of the list
 
 #### Comparable Methods
 

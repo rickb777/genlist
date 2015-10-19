@@ -15,7 +15,7 @@ type {{.TName}}List []{{.PName}}
 ` + headTail + sortable +
 iterationFunctions + takeDropFunctions + predicatedFunctions +
 equalsFunctions + comparableFunctions + numericFunctions + orderedFunctions +
-optionForList
+mkstringFunctions + optionForList
 
 
 // TODO diff
