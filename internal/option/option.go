@@ -36,15 +36,31 @@ func Some{{.TName}}(x {{.PName}}) Optional{{.TName}} {
 
 // panics if option is empty
 func (o Optional{{.TName}}) Head() {{.PName}} {
-	{{if .Type.Pointer}}
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return o.x
-	{{else}}
-	return *(o.x)
-	{{end}}
+	return {{.Deref}}(o.x)
 }
+
+// panics if option is empty
+func (o Optional{{.TName}}) Last() {{.PName}} {
+	return o.Head()
+}
+
+// panics if option is empty
+func (o Optional{{.TName}}) Tail() {{.TName}}Seq {
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
+	return none{{.TName}}
+}
+
+// panics if option is empty
+func (o Optional{{.TName}}) Init() {{.TName}}Seq {
+	return o.Tail()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o Optional{{.TName}}) Get() {{.PName}} {
 	return o.Head()
@@ -64,7 +80,7 @@ func (o Optional{{.TName}}) OrElse(alternative func() Optional{{.TName}}) Option
 	return o
 }
 
-//----- {{.TName}}Seq Methods -----
+//-------------------------------------------------------------------------------------------------
 
 func (o Optional{{.TName}}) Len() int {
 	if o.IsEmpty() {
@@ -80,6 +96,13 @@ func (o Optional{{.TName}}) IsEmpty() bool {
 func (o Optional{{.TName}}) NonEmpty() bool {
 	return o.x != nil
 }
+
+// IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
+func (o Optional{{.TName}}) IsDefined() bool {
+	return o.NonEmpty()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o Optional{{.TName}}) Find(predicate func({{.PName}}) bool) Optional{{.TName}} {
 	if o.IsEmpty() {
@@ -126,6 +149,7 @@ func (o Optional{{.TName}}) Partition(predicate func({{.PName}}) bool) ({{.TName
 }
 
 {{if .Type.Comparable}}
+//-------------------------------------------------------------------------------------------------
 // These methods require {{.PName}} be comparable.
 
 // Equals verifies that one or more elements of {{.TName}}List return true for the passed func.
@@ -163,6 +187,7 @@ func (o Optional{{.TName}}) Distinct() {{.TName}}Seq {
 
 {{end}}
 {{if .Type.Numeric}}
+//-------------------------------------------------------------------------------------------------
 // Sum sums {{.PName}} elements.
 // Omitted if {{.TName}} is not numeric.
 func (o Optional{{.TName}}) Sum() {{.PName}} {

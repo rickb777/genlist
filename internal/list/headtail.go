@@ -16,13 +16,13 @@ func (list {{.TName}}List) Last() {{.PName}} {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list {{.TName}}List) Tail() {{.TName}}List {
+func (list {{.TName}}List) Tail() {{.TName}}Seq {
 	return {{.TName}}List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list {{.TName}}List) Init() {{.TName}}List {
+func (list {{.TName}}List) Init() {{.TName}}Seq {
 	return {{.TName}}List(list[:len(list)-1])
 }
 

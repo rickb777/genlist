@@ -14,6 +14,15 @@ type ThingSeq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() Thing
 
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() Thing
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() ThingSeq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() ThingSeq
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -86,13 +95,13 @@ func (list ThingList) Last() Thing {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list ThingList) Tail() ThingList {
+func (list ThingList) Tail() ThingSeq {
 	return ThingList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list ThingList) Init() ThingList {
+func (list ThingList) Init() ThingSeq {
 	return ThingList(list[:len(list)-1])
 }
 

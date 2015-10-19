@@ -14,6 +14,15 @@ type Foo4Seq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() *Foo4
 
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() *Foo4
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() Foo4Seq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() Foo4Seq
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -96,13 +105,31 @@ func SomeFoo4(x *Foo4) OptionalFoo4 {
 
 // panics if option is empty
 func (o OptionalFoo4) Head() *Foo4 {
-
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return o.x
-
+	return (o.x)
 }
+
+// panics if option is empty
+func (o OptionalFoo4) Last() *Foo4 {
+	return o.Head()
+}
+
+// panics if option is empty
+func (o OptionalFoo4) Tail() Foo4Seq {
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
+	return noneFoo4
+}
+
+// panics if option is empty
+func (o OptionalFoo4) Init() Foo4Seq {
+	return o.Tail()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo4) Get() *Foo4 {
 	return o.Head()
@@ -122,7 +149,7 @@ func (o OptionalFoo4) OrElse(alternative func() OptionalFoo4) OptionalFoo4 {
 	return o
 }
 
-//----- Foo4Seq Methods -----
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo4) Len() int {
 	if o.IsEmpty() {
@@ -138,6 +165,13 @@ func (o OptionalFoo4) IsEmpty() bool {
 func (o OptionalFoo4) NonEmpty() bool {
 	return o.x != nil
 }
+
+// IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
+func (o OptionalFoo4) IsDefined() bool {
+	return o.NonEmpty()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo4) Find(predicate func(*Foo4) bool) OptionalFoo4 {
 	if o.IsEmpty() {
@@ -183,6 +217,7 @@ func (o OptionalFoo4) Partition(predicate func(*Foo4) bool) (Foo4Seq, Foo4Seq) {
 	return noneFoo4, o
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require *Foo4 be comparable.
 
 // Equals verifies that one or more elements of Foo4List return true for the passed func.
@@ -249,13 +284,13 @@ func (list Foo4List) Last() *Foo4 {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list Foo4List) Tail() Foo4List {
+func (list Foo4List) Tail() Foo4Seq {
 	return Foo4List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list Foo4List) Init() Foo4List {
+func (list Foo4List) Init() Foo4Seq {
 	return Foo4List(list[:len(list)-1])
 }
 

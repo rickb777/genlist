@@ -9,6 +9,15 @@ type BarSeq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() *Bar
 
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() *Bar
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() BarSeq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() BarSeq
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -84,13 +93,31 @@ func SomeBar(x *Bar) OptionalBar {
 
 // panics if option is empty
 func (o OptionalBar) Head() *Bar {
-
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return o.x
-
+	return (o.x)
 }
+
+// panics if option is empty
+func (o OptionalBar) Last() *Bar {
+	return o.Head()
+}
+
+// panics if option is empty
+func (o OptionalBar) Tail() BarSeq {
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
+	return noneBar
+}
+
+// panics if option is empty
+func (o OptionalBar) Init() BarSeq {
+	return o.Tail()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalBar) Get() *Bar {
 	return o.Head()
@@ -110,7 +137,7 @@ func (o OptionalBar) OrElse(alternative func() OptionalBar) OptionalBar {
 	return o
 }
 
-//----- BarSeq Methods -----
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalBar) Len() int {
 	if o.IsEmpty() {
@@ -126,6 +153,13 @@ func (o OptionalBar) IsEmpty() bool {
 func (o OptionalBar) NonEmpty() bool {
 	return o.x != nil
 }
+
+// IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
+func (o OptionalBar) IsDefined() bool {
+	return o.NonEmpty()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalBar) Find(predicate func(*Bar) bool) OptionalBar {
 	if o.IsEmpty() {
@@ -171,6 +205,7 @@ func (o OptionalBar) Partition(predicate func(*Bar) bool) (BarSeq, BarSeq) {
 	return noneBar, o
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require *Bar be comparable.
 
 // Equals verifies that one or more elements of BarList return true for the passed func.

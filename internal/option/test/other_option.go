@@ -9,6 +9,15 @@ type OtherSeq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() Other
 
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() Other
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() OtherSeq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() OtherSeq
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -85,10 +94,31 @@ func SomeOther(x Other) OptionalOther {
 
 // panics if option is empty
 func (o OptionalOther) Head() Other {
-
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
 	return *(o.x)
-
 }
+
+// panics if option is empty
+func (o OptionalOther) Last() Other {
+	return o.Head()
+}
+
+// panics if option is empty
+func (o OptionalOther) Tail() OtherSeq {
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
+	return noneOther
+}
+
+// panics if option is empty
+func (o OptionalOther) Init() OtherSeq {
+	return o.Tail()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalOther) Get() Other {
 	return o.Head()
@@ -108,7 +138,7 @@ func (o OptionalOther) OrElse(alternative func() OptionalOther) OptionalOther {
 	return o
 }
 
-//----- OtherSeq Methods -----
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalOther) Len() int {
 	if o.IsEmpty() {
@@ -124,6 +154,13 @@ func (o OptionalOther) IsEmpty() bool {
 func (o OptionalOther) NonEmpty() bool {
 	return o.x != nil
 }
+
+// IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
+func (o OptionalOther) IsDefined() bool {
+	return o.NonEmpty()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalOther) Find(predicate func(Other) bool) OptionalOther {
 	if o.IsEmpty() {
@@ -169,6 +206,7 @@ func (o OptionalOther) Partition(predicate func(Other) bool) (OtherSeq, OtherSeq
 	return noneOther, o
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require Other be comparable.
 
 // Equals verifies that one or more elements of OtherList return true for the passed func.
@@ -204,6 +242,7 @@ func (o OptionalOther) Distinct() OtherSeq {
 	return o
 }
 
+//-------------------------------------------------------------------------------------------------
 // Sum sums Other elements.
 // Omitted if Other is not numeric.
 func (o OptionalOther) Sum() Other {

@@ -7,6 +7,15 @@ type {{.TName}}Seq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() {{.PName}}
 
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() {{.PName}}
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() {{.TName}}Seq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() {{.TName}}Seq
+
 	// Len gets the size/length of the sequence.
 	Len() int
 

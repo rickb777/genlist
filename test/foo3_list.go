@@ -14,6 +14,15 @@ type Foo3Seq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() *Foo3
 
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() *Foo3
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() Foo3Seq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() Foo3Seq
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -89,13 +98,13 @@ func (list Foo3List) Last() *Foo3 {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list Foo3List) Tail() Foo3List {
+func (list Foo3List) Tail() Foo3Seq {
 	return Foo3List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list Foo3List) Init() Foo3List {
+func (list Foo3List) Init() Foo3Seq {
 	return Foo3List(list[:len(list)-1])
 }
 
@@ -561,13 +570,31 @@ func SomeFoo3(x *Foo3) OptionalFoo3 {
 
 // panics if option is empty
 func (o OptionalFoo3) Head() *Foo3 {
-
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return o.x
-
+	return (o.x)
 }
+
+// panics if option is empty
+func (o OptionalFoo3) Last() *Foo3 {
+	return o.Head()
+}
+
+// panics if option is empty
+func (o OptionalFoo3) Tail() Foo3Seq {
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
+	return noneFoo3
+}
+
+// panics if option is empty
+func (o OptionalFoo3) Init() Foo3Seq {
+	return o.Tail()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo3) Get() *Foo3 {
 	return o.Head()
@@ -587,7 +614,7 @@ func (o OptionalFoo3) OrElse(alternative func() OptionalFoo3) OptionalFoo3 {
 	return o
 }
 
-//----- Foo3Seq Methods -----
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo3) Len() int {
 	if o.IsEmpty() {
@@ -603,6 +630,13 @@ func (o OptionalFoo3) IsEmpty() bool {
 func (o OptionalFoo3) NonEmpty() bool {
 	return o.x != nil
 }
+
+// IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
+func (o OptionalFoo3) IsDefined() bool {
+	return o.NonEmpty()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo3) Find(predicate func(*Foo3) bool) OptionalFoo3 {
 	if o.IsEmpty() {
@@ -648,6 +682,7 @@ func (o OptionalFoo3) Partition(predicate func(*Foo3) bool) (Foo3Seq, Foo3Seq) {
 	return noneFoo3, o
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require *Foo3 be comparable.
 
 // Equals verifies that one or more elements of Foo3List return true for the passed func.

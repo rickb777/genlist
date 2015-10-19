@@ -15,6 +15,15 @@ type Foo2Seq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() Foo2
 
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() Foo2
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() Foo2Seq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() Foo2Seq
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -98,10 +107,31 @@ func SomeFoo2(x Foo2) OptionalFoo2 {
 
 // panics if option is empty
 func (o OptionalFoo2) Head() Foo2 {
-
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
 	return *(o.x)
-
 }
+
+// panics if option is empty
+func (o OptionalFoo2) Last() Foo2 {
+	return o.Head()
+}
+
+// panics if option is empty
+func (o OptionalFoo2) Tail() Foo2Seq {
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
+	return noneFoo2
+}
+
+// panics if option is empty
+func (o OptionalFoo2) Init() Foo2Seq {
+	return o.Tail()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo2) Get() Foo2 {
 	return o.Head()
@@ -121,7 +151,7 @@ func (o OptionalFoo2) OrElse(alternative func() OptionalFoo2) OptionalFoo2 {
 	return o
 }
 
-//----- Foo2Seq Methods -----
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo2) Len() int {
 	if o.IsEmpty() {
@@ -137,6 +167,13 @@ func (o OptionalFoo2) IsEmpty() bool {
 func (o OptionalFoo2) NonEmpty() bool {
 	return o.x != nil
 }
+
+// IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
+func (o OptionalFoo2) IsDefined() bool {
+	return o.NonEmpty()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo2) Find(predicate func(Foo2) bool) OptionalFoo2 {
 	if o.IsEmpty() {
@@ -182,6 +219,7 @@ func (o OptionalFoo2) Partition(predicate func(Foo2) bool) (Foo2Seq, Foo2Seq) {
 	return noneFoo2, o
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require Foo2 be comparable.
 
 // Equals verifies that one or more elements of Foo2List return true for the passed func.
@@ -217,6 +255,7 @@ func (o OptionalFoo2) Distinct() Foo2Seq {
 	return o
 }
 
+//-------------------------------------------------------------------------------------------------
 // Sum sums Foo2 elements.
 // Omitted if Foo2 is not numeric.
 func (o OptionalFoo2) Sum() Foo2 {
@@ -259,13 +298,13 @@ func (list Foo2List) Last() Foo2 {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list Foo2List) Tail() Foo2List {
+func (list Foo2List) Tail() Foo2Seq {
 	return Foo2List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list Foo2List) Init() Foo2List {
+func (list Foo2List) Init() Foo2Seq {
 	return Foo2List(list[:len(list)-1])
 }
 

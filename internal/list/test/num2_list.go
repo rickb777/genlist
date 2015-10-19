@@ -14,6 +14,15 @@ type Num2Seq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() *Num2
 
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() *Num2
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() Num2Seq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() Num2Seq
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -86,13 +95,13 @@ func (list Num2List) Last() *Num2 {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list Num2List) Tail() Num2List {
+func (list Num2List) Tail() Num2Seq {
 	return Num2List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list Num2List) Init() Num2List {
+func (list Num2List) Init() Num2Seq {
 	return Num2List(list[:len(list)-1])
 }
 

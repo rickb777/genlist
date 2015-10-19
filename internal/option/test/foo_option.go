@@ -9,6 +9,15 @@ type FooSeq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() Foo
 
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() Foo
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() FooSeq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() FooSeq
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -81,10 +90,31 @@ func SomeFoo(x Foo) OptionalFoo {
 
 // panics if option is empty
 func (o OptionalFoo) Head() Foo {
-
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
 	return *(o.x)
-
 }
+
+// panics if option is empty
+func (o OptionalFoo) Last() Foo {
+	return o.Head()
+}
+
+// panics if option is empty
+func (o OptionalFoo) Tail() FooSeq {
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
+	return noneFoo
+}
+
+// panics if option is empty
+func (o OptionalFoo) Init() FooSeq {
+	return o.Tail()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo) Get() Foo {
 	return o.Head()
@@ -104,7 +134,7 @@ func (o OptionalFoo) OrElse(alternative func() OptionalFoo) OptionalFoo {
 	return o
 }
 
-//----- FooSeq Methods -----
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo) Len() int {
 	if o.IsEmpty() {
@@ -120,6 +150,13 @@ func (o OptionalFoo) IsEmpty() bool {
 func (o OptionalFoo) NonEmpty() bool {
 	return o.x != nil
 }
+
+// IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
+func (o OptionalFoo) IsDefined() bool {
+	return o.NonEmpty()
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (o OptionalFoo) Find(predicate func(Foo) bool) OptionalFoo {
 	if o.IsEmpty() {
@@ -165,6 +202,7 @@ func (o OptionalFoo) Partition(predicate func(Foo) bool) (FooSeq, FooSeq) {
 	return noneFoo, o
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require Foo be comparable.
 
 // Equals verifies that one or more elements of FooList return true for the passed func.

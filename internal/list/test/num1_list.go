@@ -15,6 +15,15 @@ type Num1Seq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() Num1
 
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() Num1
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() Num1Seq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() Num1Seq
+
 	// Len gets the size/length of the sequence.
 	Len() int
 
@@ -91,13 +100,13 @@ func (list Num1List) Last() Num1 {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list Num1List) Tail() Num1List {
+func (list Num1List) Tail() Num1Seq {
 	return Num1List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list Num1List) Init() Num1List {
+func (list Num1List) Init() Num1Seq {
 	return Num1List(list[:len(list)-1])
 }
 
