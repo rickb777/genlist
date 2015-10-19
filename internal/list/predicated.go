@@ -113,4 +113,28 @@ func (list {{.TName}}List) IndexWhere2(p func({{.PName}}) bool, from int) int {
 	return -1
 }
 
+// LastIndexWhere finds the index of the last element satisfying some predicate.
+// If none exists, -1 is returned.
+func (list {{.TName}}List) LastIndexWhere(p func({{.PName}}) bool) int {
+	for i := len(list) - 1; i >= 0; i-- {
+		v := list[i]
+		if p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// If none exists, -1 is returned.
+func (list {{.TName}}List) LastIndexWhere2(p func({{.PName}}) bool, before int) int {
+	for i := len(list) - 1; i >= 0; i-- {
+		v := list[i]
+		if i <= before && p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
 `

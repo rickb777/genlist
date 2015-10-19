@@ -21,47 +21,64 @@ At it simplest, the annotation looks like:
 type Example struct { ... }
 ````
 
-This creates a core list to hold `Example` values. It provides methods including:
+#### Core methods
 
- * **Head**, **IsEmpty**, **NonEmpty**, **Len** - get simple properties
+The generated code is a list to hold `Example` values. It provides methods including:
+
+ * **Head**, **Tail** - get the first element and the rest
+ * **Init**, **Last** - get the last element and the rest
+ * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
  * **Swap** - get a new list with two elements swapped
- * **Exists**, **Forall** - tests whether any or all elements match some specified condition
- * **Foreach** - applies a function to every element in turn, typically causing side-effects
+ * **Exists**, **Forall** - test whether any or all elements match some specified condition
+ * **Foreach** - apply a function to every element in turn, typically causing side-effects
  * **Reverse**, **Shuffle** - get a new list that is reversed or shuffled
  * **Take**, **TakeWhile**, **DropLast** - get a new list without some trailing elements
  * **Drop**, **DropWhile**, **TakeLast** - get a new list without some leading elements
- * **Filter**, **Partition** - gets a subset, or two disjoint subsets, of the list
+ * **Filter**, **Partition** - get a subset, or two disjoint subsets, of the list
  * **CountBy**, **MaxBy**, **MinBy**, **DistinctBy** - statistics based on supplied operator functions
- * **IndexWhere**, **IndexWhere2** - lookup using predicate functions
+ * **IndexWhere**, **IndexWhere2** - find the index of the first match using a predicate function
+ * **LastIndexWhere**, **LastIndexWhere2** - find the index of the last match using a predicate function
 
-It adds:
+#### Comparable Methods
 
- * **Min**, **Max**
+If the element type is *comparable*, it adds:
+
+ * **Equals** - compare with another list
+ * **IndexOf**, **IndexOf2** - find the index of the first match
+ * **LastIndexOf**, **LastIndexOf2** - find the index of the last match
+ * **Contains**, **Count** - compare with a specified value
+ * **Distinct** - remove duplicates
+
+#### Numeric Methods
+
+If the element type is *numeric*, it adds:
+
+ * **Sum** - sum all elements
+ * **Sum** - compute the arithmetic mean
+
+#### Min and Max
+
+It always adds:
+
+ * **Min**, **Max** - find the minimum/maximum value
 
 but the implementation depends on whether the element type is ordered or not. For ordered elements, Min and Max use
 simple inequality operators '<' and '>'. Otherwise a comparison function must be supplied.
 
+#### Sorting
+
 Also in the case of *ordered* elements, the list implements sorting using the [standard Go api](https://golang.org/pkg/sort/)
 within these methods:
 
-* **Sort**, **IsSorted** - ascending order
-* **SortDesc**, **IsSortedDesc** - descending order
+* **Sort**, **IsSorted** - sort in ascending order
+* **SortDesc**, **IsSortedDesc** - sort in descending order
 
-If the element type is *comparable*, it adds:
-
- * **Equals** - comparison with another list
- * **IndexOf**, **IndexOf2** - finds the index of the first match
- * **Contains**, **Count** - comparison with a specified value
- * **Distinct** - removes duplicates
-
-If the element type is *numeric*, it adds:
-
- * **Sum**, **Mean**
+#### Optional Extremae
 
 Finally, if a companion option is present, it adds:
 
- * **HeadOption** - gets the first element if present
- * **TailOption** - gets the last element if present
+ * **HeadOption** - get the first element if present (similar to Head)
+ * **LastOption** - get the last element if present (similar to Last)
 
 ### List For Pointer Elements
 

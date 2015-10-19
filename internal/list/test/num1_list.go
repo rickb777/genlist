@@ -77,6 +77,45 @@ type Num1List []Num1
 
 //-------------------------------------------------------------------------------------------------
 
+// Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
+// panics if list is empty
+func (list Num1List) Head() Num1 {
+	return list[0]
+}
+
+// Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
+// panics if list is empty
+func (list Num1List) Last() Num1 {
+	return list[len(list)-1]
+}
+
+// Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
+// panics if list is empty
+func (list Num1List) Tail() Num1List {
+	return Num1List(list[1:])
+}
+
+// Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
+// panics if list is empty
+func (list Num1List) Init() Num1List {
+	return Num1List(list[:len(list)-1])
+}
+
+// IsEmpty tests whether Num1List is empty.
+func (list Num1List) IsEmpty() bool {
+	return len(list) == 0
+}
+
+// NonEmpty tests whether Num1List is empty.
+func (list Num1List) NonEmpty() bool {
+	return len(list) > 0
+}
+
+// ToList simply returns the list in this case, but is part of the Seq interface.
+func (list Num1List) ToList() Num1List {
+	return list
+}
+
 // Len returns the number of items in the list.
 // There is no Size() method; use Len() instead.
 // This is one of the three methods in the standard sort.Interface.
@@ -122,26 +161,6 @@ func (list Num1List) SortDesc() Num1List {
 // IsSortedDesc reports whether Num1List is reverse-sorted.
 func (list Num1List) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
-}
-
-// panics if list is empty
-func (list Num1List) Head() Num1 {
-	return list[0]
-}
-
-// IsEmpty tests whether Num1List is empty.
-func (list Num1List) IsEmpty() bool {
-	return len(list) == 0
-}
-
-// NonEmpty tests whether Num1List is empty.
-func (list Num1List) NonEmpty() bool {
-	return len(list) > 0
-}
-
-// ToList simply returns the list in this case, but is part of the Seq interface.
-func (list Num1List) ToList() Num1List {
-	return list
 }
 
 // Exists verifies that one or more elements of Num1List return true for the passed func.
@@ -370,6 +389,30 @@ func (list Num1List) IndexWhere(p func(Num1) bool) int {
 func (list Num1List) IndexWhere2(p func(Num1) bool, from int) int {
 	for i, v := range list {
 		if i >= from && p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// LastIndexWhere finds the index of the last element satisfying some predicate.
+// If none exists, -1 is returned.
+func (list Num1List) LastIndexWhere(p func(Num1) bool) int {
+	for i := len(list) - 1; i >= 0; i-- {
+		v := list[i]
+		if p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// If none exists, -1 is returned.
+func (list Num1List) LastIndexWhere2(p func(Num1) bool, before int) int {
+	for i := len(list) - 1; i >= 0; i-- {
+		v := list[i]
+		if i <= before && p(v) {
 			return i
 		}
 	}

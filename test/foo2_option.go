@@ -245,6 +245,45 @@ type Foo2List []Foo2
 
 //-------------------------------------------------------------------------------------------------
 
+// Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
+// panics if list is empty
+func (list Foo2List) Head() Foo2 {
+	return list[0]
+}
+
+// Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
+// panics if list is empty
+func (list Foo2List) Last() Foo2 {
+	return list[len(list)-1]
+}
+
+// Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
+// panics if list is empty
+func (list Foo2List) Tail() Foo2List {
+	return Foo2List(list[1:])
+}
+
+// Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
+// panics if list is empty
+func (list Foo2List) Init() Foo2List {
+	return Foo2List(list[:len(list)-1])
+}
+
+// IsEmpty tests whether Foo2List is empty.
+func (list Foo2List) IsEmpty() bool {
+	return len(list) == 0
+}
+
+// NonEmpty tests whether Foo2List is empty.
+func (list Foo2List) NonEmpty() bool {
+	return len(list) > 0
+}
+
+// ToList simply returns the list in this case, but is part of the Seq interface.
+func (list Foo2List) ToList() Foo2List {
+	return list
+}
+
 // Len returns the number of items in the list.
 // There is no Size() method; use Len() instead.
 // This is one of the three methods in the standard sort.Interface.
@@ -290,26 +329,6 @@ func (list Foo2List) SortDesc() Foo2List {
 // IsSortedDesc reports whether Foo2List is reverse-sorted.
 func (list Foo2List) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
-}
-
-// panics if list is empty
-func (list Foo2List) Head() Foo2 {
-	return list[0]
-}
-
-// IsEmpty tests whether Foo2List is empty.
-func (list Foo2List) IsEmpty() bool {
-	return len(list) == 0
-}
-
-// NonEmpty tests whether Foo2List is empty.
-func (list Foo2List) NonEmpty() bool {
-	return len(list) > 0
-}
-
-// ToList simply returns the list in this case, but is part of the Seq interface.
-func (list Foo2List) ToList() Foo2List {
-	return list
 }
 
 // Exists verifies that one or more elements of Foo2List return true for the passed func.
@@ -533,11 +552,35 @@ func (list Foo2List) IndexWhere(p func(Foo2) bool) int {
 	return -1
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate after or at some start index.
+// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list Foo2List) IndexWhere2(p func(Foo2) bool, from int) int {
 	for i, v := range list {
 		if i >= from && p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// LastIndexWhere finds the index of the last element satisfying some predicate.
+// If none exists, -1 is returned.
+func (list Foo2List) LastIndexWhere(p func(Foo2) bool) int {
+	for i := len(list) - 1; i >= 0; i-- {
+		v := list[i]
+		if p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// If none exists, -1 is returned.
+func (list Foo2List) LastIndexWhere2(p func(Foo2) bool, before int) int {
+	for i := len(list) - 1; i >= 0; i-- {
+		v := list[i]
+		if i <= before && p(v) {
 			return i
 		}
 	}
@@ -567,14 +610,33 @@ func (list Foo2List) Equals(other Foo2Seq) bool {
 
 // These methods require Foo2 be comparable.
 
+// IndexOf finds the index of the first element specified. If none exists, -1 is returned.
+func (list Foo2List) IndexOf(value Foo2) int {
+	for i, v := range list {
+		if v == value {
+			return i
+		}
+	}
+	return -1
+}
+
+// IndexOf2 finds the index of the first element specified at or after some start index.
+// If none exists, -1 is returned.
+func (list Foo2List) IndexOf2(value Foo2, from int) int {
+	for i, v := range list {
+		if i >= from && v == value {
+			return i
+		}
+	}
+	return -1
+}
+
 // Contains verifies that a given value is contained in Foo2List.
 func (list Foo2List) Contains(value Foo2) bool {
 	for _, v := range list {
-
 		if v == value {
 			return true
 		}
-
 	}
 	return false
 }
@@ -582,11 +644,9 @@ func (list Foo2List) Contains(value Foo2) bool {
 // Count gives the number elements of Foo2List that match a certain value.
 func (list Foo2List) Count(value Foo2) (result int) {
 	for _, v := range list {
-
 		if v == value {
 			result++
 		}
-
 	}
 	return
 }
@@ -596,12 +656,10 @@ func (list Foo2List) Distinct() Foo2Seq {
 	result := make(Foo2List, 0)
 	appended := make(map[Foo2]bool)
 	for _, v := range list {
-
 		if !appended[v] {
 			result = append(result, v)
 			appended[v] = true
 		}
-
 	}
 	return result
 }
@@ -688,7 +746,7 @@ func (list Foo2List) HeadOption() OptionalFoo2 {
 }
 
 // TailOption gets the last item in the list, provided there is one.
-func (list Foo2List) TailOption() OptionalFoo2 {
+func (list Foo2List) LastOption() OptionalFoo2 {
 	l := len(list)
 	if l > 0 {
 		return SomeFoo2(list[l-1])

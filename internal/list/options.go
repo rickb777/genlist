@@ -24,7 +24,7 @@ func (list {{.TName}}List) HeadOption() Optional{{.TName}} {
 }
 
 // TailOption gets the last item in the list, provided there is one.
-func (list {{.TName}}List) TailOption() Optional{{.TName}} {
+func (list {{.TName}}List) LastOption() Optional{{.TName}} {
 	l := len(list)
 	if l > 0 {
 		return Some{{.TName}}(list[l-1])

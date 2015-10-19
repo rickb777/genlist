@@ -45,25 +45,26 @@ func TestIndexWhere2Thing(t *testing.T) {
 		{"Fee", 1},
 		{"Fie", 2},
 		{"Foe", 3},
-		{"Foe", 4},
+		{"Boo", 4},
 		{"Boo", 5},
 		{"Bam", 6},
+		{"Bam", 7},
 	}
 
 	where1a := things.IndexWhere2(func(x Thing) bool {
-		return x.Name == "Foe"
-	}, 2)
+		return x.Name == "Boo"
+	}, 1)
 
-	if where1a != 2 {
-		t.Errorf("IndexWhere2 should be 2, got %v", where1a)
+	if where1a != 3 {
+		t.Errorf("IndexWhere2 should be 3, got %v", where1a)
 	}
 
 	where1b := things.IndexWhere2(func(x Thing) bool {
-		return x.Name == "Foe"
-	}, 3)
+		return x.Name == "Boo"
+	}, 4)
 
-	if where1b != 3 {
-		t.Errorf("IndexWhere2 should be 3, got %v", where1b)
+	if where1b != 4 {
+		t.Errorf("IndexWhere2 should be 4, got %v", where1b)
 	}
 
 	where2 := things.IndexWhere2(func(x Thing) bool {

@@ -75,22 +75,28 @@ type Foo3List []*Foo3
 
 //-------------------------------------------------------------------------------------------------
 
-// Len returns the number of items in the list.
-// There is no Size() method; use Len() instead.
-// This is one of the three methods in the standard sort.Interface.
-func (list Foo3List) Len() int {
-	return len(list)
-}
-
-// Swap exchanges two elements, which is neceessary during sorting etc.
-// This is one of the three methods in the standard sort.Interface.
-func (list Foo3List) Swap(i, j int) {
-	list[i], list[j] = list[j], list[i]
-}
-
+// Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // panics if list is empty
 func (list Foo3List) Head() *Foo3 {
 	return list[0]
+}
+
+// Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
+// panics if list is empty
+func (list Foo3List) Last() *Foo3 {
+	return list[len(list)-1]
+}
+
+// Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
+// panics if list is empty
+func (list Foo3List) Tail() Foo3List {
+	return Foo3List(list[1:])
+}
+
+// Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
+// panics if list is empty
+func (list Foo3List) Init() Foo3List {
+	return Foo3List(list[:len(list)-1])
 }
 
 // IsEmpty tests whether Foo3List is empty.
@@ -106,6 +112,19 @@ func (list Foo3List) NonEmpty() bool {
 // ToList simply returns the list in this case, but is part of the Seq interface.
 func (list Foo3List) ToList() Foo3List {
 	return list
+}
+
+// Len returns the number of items in the list.
+// There is no Size() method; use Len() instead.
+// This is one of the three methods in the standard sort.Interface.
+func (list Foo3List) Len() int {
+	return len(list)
+}
+
+// Swap exchanges two elements, which is neceessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
+func (list Foo3List) Swap(i, j int) {
+	list[i], list[j] = list[j], list[i]
 }
 
 // Exists verifies that one or more elements of Foo3List return true for the passed func.
@@ -329,11 +348,35 @@ func (list Foo3List) IndexWhere(p func(*Foo3) bool) int {
 	return -1
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate after or at some start index.
+// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list Foo3List) IndexWhere2(p func(*Foo3) bool, from int) int {
 	for i, v := range list {
 		if i >= from && p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// LastIndexWhere finds the index of the last element satisfying some predicate.
+// If none exists, -1 is returned.
+func (list Foo3List) LastIndexWhere(p func(*Foo3) bool) int {
+	for i := len(list) - 1; i >= 0; i-- {
+		v := list[i]
+		if p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// If none exists, -1 is returned.
+func (list Foo3List) LastIndexWhere2(p func(*Foo3) bool, before int) int {
+	for i := len(list) - 1; i >= 0; i-- {
+		v := list[i]
+		if i <= before && p(v) {
 			return i
 		}
 	}
@@ -363,14 +406,33 @@ func (list Foo3List) Equals(other Foo3Seq) bool {
 
 // These methods require *Foo3 be comparable.
 
+// IndexOf finds the index of the first element specified. If none exists, -1 is returned.
+func (list Foo3List) IndexOf(value *Foo3) int {
+	for i, v := range list {
+		if *v == *value {
+			return i
+		}
+	}
+	return -1
+}
+
+// IndexOf2 finds the index of the first element specified at or after some start index.
+// If none exists, -1 is returned.
+func (list Foo3List) IndexOf2(value *Foo3, from int) int {
+	for i, v := range list {
+		if i >= from && *v == *value {
+			return i
+		}
+	}
+	return -1
+}
+
 // Contains verifies that a given value is contained in Foo3List.
 func (list Foo3List) Contains(value *Foo3) bool {
 	for _, v := range list {
-
 		if *v == *value {
 			return true
 		}
-
 	}
 	return false
 }
@@ -378,11 +440,9 @@ func (list Foo3List) Contains(value *Foo3) bool {
 // Count gives the number elements of Foo3List that match a certain value.
 func (list Foo3List) Count(value *Foo3) (result int) {
 	for _, v := range list {
-
 		if *v == *value {
 			result++
 		}
-
 	}
 	return
 }
@@ -392,12 +452,10 @@ func (list Foo3List) Distinct() Foo3Seq {
 	result := make(Foo3List, 0)
 	appended := make(map[Foo3]bool)
 	for _, v := range list {
-
 		if !appended[*v] {
 			result = append(result, v)
 			appended[*v] = true
 		}
-
 	}
 	return result
 }
@@ -463,7 +521,7 @@ func (list Foo3List) HeadOption() OptionalFoo3 {
 }
 
 // TailOption gets the last item in the list, provided there is one.
-func (list Foo3List) TailOption() OptionalFoo3 {
+func (list Foo3List) LastOption() OptionalFoo3 {
 	l := len(list)
 	if l > 0 {
 		return SomeFoo3(list[l-1])

@@ -72,22 +72,28 @@ type ThingList []Thing
 
 //-------------------------------------------------------------------------------------------------
 
-// Len returns the number of items in the list.
-// There is no Size() method; use Len() instead.
-// This is one of the three methods in the standard sort.Interface.
-func (list ThingList) Len() int {
-	return len(list)
-}
-
-// Swap exchanges two elements, which is neceessary during sorting etc.
-// This is one of the three methods in the standard sort.Interface.
-func (list ThingList) Swap(i, j int) {
-	list[i], list[j] = list[j], list[i]
-}
-
+// Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
 // panics if list is empty
 func (list ThingList) Head() Thing {
 	return list[0]
+}
+
+// Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
+// panics if list is empty
+func (list ThingList) Last() Thing {
+	return list[len(list)-1]
+}
+
+// Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
+// panics if list is empty
+func (list ThingList) Tail() ThingList {
+	return ThingList(list[1:])
+}
+
+// Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
+// panics if list is empty
+func (list ThingList) Init() ThingList {
+	return ThingList(list[:len(list)-1])
 }
 
 // IsEmpty tests whether ThingList is empty.
@@ -103,6 +109,19 @@ func (list ThingList) NonEmpty() bool {
 // ToList simply returns the list in this case, but is part of the Seq interface.
 func (list ThingList) ToList() ThingList {
 	return list
+}
+
+// Len returns the number of items in the list.
+// There is no Size() method; use Len() instead.
+// This is one of the three methods in the standard sort.Interface.
+func (list ThingList) Len() int {
+	return len(list)
+}
+
+// Swap exchanges two elements, which is neceessary during sorting etc.
+// This is one of the three methods in the standard sort.Interface.
+func (list ThingList) Swap(i, j int) {
+	list[i], list[j] = list[j], list[i]
 }
 
 // Exists verifies that one or more elements of ThingList return true for the passed func.
@@ -331,6 +350,30 @@ func (list ThingList) IndexWhere(p func(Thing) bool) int {
 func (list ThingList) IndexWhere2(p func(Thing) bool, from int) int {
 	for i, v := range list {
 		if i >= from && p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// LastIndexWhere finds the index of the last element satisfying some predicate.
+// If none exists, -1 is returned.
+func (list ThingList) LastIndexWhere(p func(Thing) bool) int {
+	for i := len(list) - 1; i >= 0; i-- {
+		v := list[i]
+		if p(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// LastIndexWhere2 finds the index of the last element satisfying some predicate at or after some start index.
+// If none exists, -1 is returned.
+func (list ThingList) LastIndexWhere2(p func(Thing) bool, before int) int {
+	for i := len(list) - 1; i >= 0; i-- {
+		v := list[i]
+		if i <= before && p(v) {
 			return i
 		}
 	}

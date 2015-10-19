@@ -38,7 +38,9 @@ func TestIndexWhereThing(t *testing.T) {
 		{"Fie", 2},
 		{"Foe", 3},
 		{"Boo", 4},
-		{"Bam", 5},
+		{"Boo", 5},
+		{"Bam", 6},
+		{"Bam", 7},
 	}
 
 	where1 := things.IndexWhere(func(x Thing) bool {

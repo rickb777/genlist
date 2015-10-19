@@ -12,28 +12,7 @@ const List = sequence.Sequence + `
 type {{.TName}}List []{{.PName}}
 
 //-------------------------------------------------------------------------------------------------
-` + sortable + `
-
-// panics if list is empty
-func (list {{.TName}}List) Head() {{.PName}} {
-	return list[0]
-}
-
-// IsEmpty tests whether {{.TName}}List is empty.
-func (list {{.TName}}List) IsEmpty() bool {
-	return len(list) == 0
-}
-
-// NonEmpty tests whether {{.TName}}List is empty.
-func (list {{.TName}}List) NonEmpty() bool {
-	return len(list) > 0
-}
-
-// ToList simply returns the list in this case, but is part of the Seq interface.
-func (list {{.TName}}List) ToList() {{.TName}}List {
-	return list
-}
-` +
+` + headTail + sortable +
 iterationFunctions + takeDropFunctions + predicatedFunctions +
 equalsFunctions + comparableFunctions + numericFunctions + orderedFunctions +
 optionForList
@@ -41,6 +20,6 @@ optionForList
 
 // TODO diff
 // TODO PadTo,
-// TODO IndexOf, IndexWhere, LastIndexOf, LastIndexWhere
+// TODO LastIndexOf, LastIndexWhere
 // TODO MkString, Equals, StartsWith, EndsWith, IteratorChan
 // TODO FlatMap, Fold
