@@ -326,7 +326,7 @@ func (list ThingList) IndexWhere(p func(Thing) bool) int {
 	return -1
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate after or at some start index.
+// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list ThingList) IndexWhere2(p func(Thing) bool, from int) int {
 	for i, v := range list {
@@ -360,14 +360,33 @@ func (list ThingList) Equals(other ThingSeq) bool {
 
 // These methods require Thing be comparable.
 
+// IndexOf finds the index of the first element specified. If none exists, -1 is returned.
+func (list ThingList) IndexOf(value Thing) int {
+	for i, v := range list {
+		if v == value {
+			return i
+		}
+	}
+	return -1
+}
+
+// IndexOf2 finds the index of the first element specified at or after some start index.
+// If none exists, -1 is returned.
+func (list ThingList) IndexOf2(value Thing, from int) int {
+	for i, v := range list {
+		if i >= from && v == value {
+			return i
+		}
+	}
+	return -1
+}
+
 // Contains verifies that a given value is contained in ThingList.
 func (list ThingList) Contains(value Thing) bool {
 	for _, v := range list {
-
 		if v == value {
 			return true
 		}
-
 	}
 	return false
 }
@@ -375,11 +394,9 @@ func (list ThingList) Contains(value Thing) bool {
 // Count gives the number elements of ThingList that match a certain value.
 func (list ThingList) Count(value Thing) (result int) {
 	for _, v := range list {
-
 		if v == value {
 			result++
 		}
-
 	}
 	return
 }
@@ -389,12 +406,10 @@ func (list ThingList) Distinct() ThingSeq {
 	result := make(ThingList, 0)
 	appended := make(map[Thing]bool)
 	for _, v := range list {
-
 		if !appended[v] {
 			result = append(result, v)
 			appended[v] = true
 		}
-
 	}
 	return result
 }

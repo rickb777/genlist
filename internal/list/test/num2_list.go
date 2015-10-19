@@ -326,7 +326,7 @@ func (list Num2List) IndexWhere(p func(*Num2) bool) int {
 	return -1
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate after or at some start index.
+// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list Num2List) IndexWhere2(p func(*Num2) bool, from int) int {
 	for i, v := range list {
@@ -360,14 +360,33 @@ func (list Num2List) Equals(other Num2Seq) bool {
 
 // These methods require *Num2 be comparable.
 
+// IndexOf finds the index of the first element specified. If none exists, -1 is returned.
+func (list Num2List) IndexOf(value *Num2) int {
+	for i, v := range list {
+		if *v == *value {
+			return i
+		}
+	}
+	return -1
+}
+
+// IndexOf2 finds the index of the first element specified at or after some start index.
+// If none exists, -1 is returned.
+func (list Num2List) IndexOf2(value *Num2, from int) int {
+	for i, v := range list {
+		if i >= from && *v == *value {
+			return i
+		}
+	}
+	return -1
+}
+
 // Contains verifies that a given value is contained in Num2List.
 func (list Num2List) Contains(value *Num2) bool {
 	for _, v := range list {
-
 		if *v == *value {
 			return true
 		}
-
 	}
 	return false
 }
@@ -375,11 +394,9 @@ func (list Num2List) Contains(value *Num2) bool {
 // Count gives the number elements of Num2List that match a certain value.
 func (list Num2List) Count(value *Num2) (result int) {
 	for _, v := range list {
-
 		if *v == *value {
 			result++
 		}
-
 	}
 	return
 }
@@ -389,12 +406,10 @@ func (list Num2List) Distinct() Num2Seq {
 	result := make(Num2List, 0)
 	appended := make(map[Num2]bool)
 	for _, v := range list {
-
 		if !appended[*v] {
 			result = append(result, v)
 			appended[*v] = true
 		}
-
 	}
 	return result
 }

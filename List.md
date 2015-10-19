@@ -50,6 +50,7 @@ within these methods:
 If the element type is *comparable*, it adds:
 
  * **Equals** - comparison with another list
+ * **IndexOf**, **IndexOf2** - finds the index of the first match
  * **Contains**, **Count** - comparison with a specified value
  * **Distinct** - removes duplicates
 

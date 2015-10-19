@@ -102,7 +102,7 @@ func (list {{.TName}}List) IndexWhere(p func({{.PName}}) bool) int {
 	return -1
 }
 
-// IndexWhere2 finds the index of the first element satisfying some predicate after or at some start index.
+// IndexWhere2 finds the index of the first element satisfying some predicate at or after some start index.
 // If none exists, -1 is returned.
 func (list {{.TName}}List) IndexWhere2(p func({{.PName}}) bool, from int) int {
 	for i, v := range list {

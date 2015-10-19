@@ -4,18 +4,33 @@ const comparableFunctions = `
 {{if .Type.Comparable}}
 // These methods require {{.PName}} be comparable.
 
+// IndexOf finds the index of the first element specified. If none exists, -1 is returned.
+func (list {{.TName}}List) IndexOf(value {{.PName}}) int {
+	for i, v := range list {
+		if {{.Ptr}}v == {{.Ptr}}value {
+			return i
+		}
+	}
+	return -1
+}
+
+// IndexOf2 finds the index of the first element specified at or after some start index.
+// If none exists, -1 is returned.
+func (list {{.TName}}List) IndexOf2(value {{.PName}}, from int) int {
+	for i, v := range list {
+		if i >= from && {{.Ptr}}v == {{.Ptr}}value {
+			return i
+		}
+	}
+	return -1
+}
+
 // Contains verifies that a given value is contained in {{.TName}}List.
 func (list {{.TName}}List) Contains(value {{.PName}}) bool {
 	for _, v := range list {
-	    {{if .Type.Pointer}}
-		if *v == *value {
+		if {{.Ptr}}v == {{.Ptr}}value {
 			return true
 		}
-		{{else}}
-		if v == value {
-			return true
-		}
-		{{end}}
 	}
 	return false
 }
@@ -23,15 +38,9 @@ func (list {{.TName}}List) Contains(value {{.PName}}) bool {
 // Count gives the number elements of {{.TName}}List that match a certain value.
 func (list {{.TName}}List) Count(value {{.PName}}) (result int) {
 	for _, v := range list {
-	    {{if .Type.Pointer}}
-		if *v == *value {
+		if {{.Ptr}}v == {{.Ptr}}value {
 			result++
 		}
-		{{else}}
-		if v == value {
-			result++
-		}
-		{{end}}
 	}
 	return
 }
@@ -41,17 +50,10 @@ func (list {{.TName}}List) Distinct() {{.TName}}Seq {
 	result := make({{.TName}}List, 0)
 	appended := make(map[{{.TName}}]bool)
 	for _, v := range list {
-	    {{if .Type.Pointer}}
-		if !appended[*v] {
+		if !appended[{{.Ptr}}v] {
 			result = append(result, v)
-			appended[*v] = true
+			appended[{{.Ptr}}v] = true
 		}
-		{{else}}
-		if !appended[v] {
-			result = append(result, v)
-			appended[v] = true
-		}
-		{{end}}
 	}
 	return result
 }
