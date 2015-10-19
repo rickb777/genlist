@@ -144,3 +144,9 @@ type Example struct { ... }
  * **Lists**
  * [Options](Option.md)
  * [Joint Lists With Options](Unified.md)
+
+### Generated Examples
+
+ * [Num1 - a simple numeric type](internal/list/test/num1_list.go)
+ * [Num2 - a pointer numeric type](internal/list/test/num2_list.go)
+ 
