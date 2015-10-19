@@ -6,6 +6,16 @@ package main
 
 // OtherSeq is an interface for sequences of type Other, including lists and options (where present).
 type OtherSeq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() Other
 
@@ -18,15 +28,7 @@ type OtherSeq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() OtherSeq
 
-	// Len gets the size/length of the sequence.
-	Len() int
-
-	// IsEmpty returns true if the sequence is empty.
-	IsEmpty() bool
-
-	// NonEmpty returns true if the sequence is non-empty.
-	NonEmpty() bool
-
+	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the sequence that matches
 	// the predicate supplied.
 	Exists(predicate func(Other) bool) bool
@@ -37,6 +39,7 @@ type OtherSeq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Other))
 
+	//-------------------------------------------------------------------------
 	// Filter returns a new OtherSeq whose elements return true for a predicate function.
 	Filter(predicate func(Other) bool) (result OtherSeq)
 
@@ -46,9 +49,11 @@ type OtherSeq interface {
 	// original list.
 	Partition(p func(Other) bool) (matching OtherSeq, others OtherSeq)
 
+	//-------------------------------------------------------------------------
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Other) bool) OptionalOther
 
+	//-------------------------------------------------------------------------
 	// Tests whether this sequence has the same length and the same elements as another sequence.
 	// Omitted if Other is not comparable.
 	Equals(other OtherSeq) bool
@@ -61,9 +66,14 @@ type OtherSeq interface {
 	// Omitted if Other is not comparable.
 	Count(value Other) int
 
+	//-------------------------------------------------------------------------
 	// Sum sums Other elements.
 	// Omitted if Other is not numeric.
 	Sum() Other
+
+	// Mean computes the arithmetic mean of all elements.
+	// Panics if the list is empty.
+	Mean() Other
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -252,6 +262,15 @@ func (o OptionalOther) Sum() Other {
 	}
 	return *(o.x)
 
+}
+
+// Mean computes the arithmetic mean of all elements.
+// Panics if the list is empty.
+func (o OptionalOther) Mean() Other {
+	if o.IsEmpty() {
+		panic("Cannot compute the arithmetic mean of zero-length OptionalOther")
+	}
+	return o.Sum()
 }
 
 // MapToFoo transforms OptionalOther to OptionalFoo.

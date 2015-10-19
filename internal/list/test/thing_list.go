@@ -11,6 +11,16 @@ import (
 
 // ThingSeq is an interface for sequences of type Thing, including lists and options (where present).
 type ThingSeq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() Thing
 
@@ -23,15 +33,7 @@ type ThingSeq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() ThingSeq
 
-	// Len gets the size/length of the sequence.
-	Len() int
-
-	// IsEmpty returns true if the sequence is empty.
-	IsEmpty() bool
-
-	// NonEmpty returns true if the sequence is non-empty.
-	NonEmpty() bool
-
+	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the sequence that matches
 	// the predicate supplied.
 	Exists(predicate func(Thing) bool) bool
@@ -42,6 +44,7 @@ type ThingSeq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Thing))
 
+	//-------------------------------------------------------------------------
 	// Filter returns a new ThingSeq whose elements return true for a predicate function.
 	Filter(predicate func(Thing) bool) (result ThingSeq)
 
@@ -51,9 +54,10 @@ type ThingSeq interface {
 	// original list.
 	Partition(p func(Thing) bool) (matching ThingSeq, others ThingSeq)
 
-	// Converts the sequence to a list. For lists, this is merely a type conversion.
+	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() ThingList
 
+	//-------------------------------------------------------------------------
 	// Tests whether this sequence has the same length and the same elements as another sequence.
 	// Omitted if Thing is not comparable.
 	Equals(other ThingSeq) bool

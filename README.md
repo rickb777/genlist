@@ -45,10 +45,19 @@ value is a sequence of zero or one value, whilst a list is a sequence of zero or
 It looks like this:
 
 ```go
-// FooSeq is an interface for sequences of type Foo, including lists and options (where present).
-type FooSeq interface {
+// Foo1Seq is an interface for sequences of type Foo1, including lists and options (where present).
+type Foo1Seq interface {
 	// Gets the first element from the sequence. This panics if the sequence is empty.
-	Head() Foo
+	Head() Foo1
+
+	// Gets the last element from the sequence. This panics if the sequence is empty.
+	Last() Foo1
+
+	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
+	Tail() Foo1Seq
+
+	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
+	Init() Foo1Seq
 
 	// Len gets the size/length of the sequence.
 	Len() int
@@ -61,37 +70,48 @@ type FooSeq interface {
 
 	// Exists returns true if there exists at least one element in the sequence that matches
 	// the predicate supplied.
-	Exists(predicate func(Foo) bool) bool
+	Exists(predicate func(Foo1) bool) bool
 
 	// Forall returns true if every element in the sequence matches the predicate supplied.
-	Forall(predicate func(Foo) bool) bool
+	Forall(predicate func(Foo1) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
-	Foreach(fn func(Foo))
+	Foreach(fn func(Foo1))
 
-	// Filter returns a new FooSeq whose elements return true for a predicate function.
-	Filter(predicate func(Foo) bool) (result FooSeq)
+	// Filter returns a new Foo1Seq whose elements return true for a predicate function.
+	Filter(predicate func(Foo1) bool) (result Foo1Seq)
 
-	// Partition returns two new FooLists whose elements return true or false for the predicate, p.
+	// Partition returns two new Foo1Lists whose elements return true or false for the predicate, p.
 	// The first result consists of all elements that satisfy the predicate and the second result consists of
 	// all elements that don't. The relative order of the elements in the results is the same as in the
 	// original list.
-	Partition(p func(Foo) bool) (matching FooSeq, others FooSeq)
+	Partition(p func(Foo1) bool) (matching Foo1Seq, others Foo1Seq)
 
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
-	Find(predicate func(Foo) bool) OptionalFoo
+	Find(predicate func(Foo1) bool) OptionalFoo1
+
+	// Converts the sequence to a list. For lists, this is merely a type assertion.
+	ToList() Foo1List
 
 	// Tests whether this sequence has the same length and the same elements as another sequence.
-	// Omitted if Foo is not comparable.
-	Equals(other FooSeq) bool
+	// Omitted if Foo1 is not comparable.
+	Equals(other Foo1Seq) bool
 
 	// Contains tests whether a given value is present in the sequence.
-	// Omitted if Foo is not comparable.
-	Contains(value Foo) bool
+	// Omitted if Foo1 is not comparable.
+	Contains(value Foo1) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
-	// Omitted if Foo is not comparable.
-	Count(value Foo) int
+	// Omitted if Foo1 is not comparable.
+	Count(value Foo1) int
+
+	// Distinct returns a new Foo1Seq whose elements are all unique.
+	// Omitted if Foo1 is not comparable.
+	Distinct() Foo1Seq
+
+	// Sum sums Foo1 elements.
+	// Omitted if Foo1 is not numeric.
+	Sum() Foo1
 }
 ```
 

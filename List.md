@@ -28,7 +28,6 @@ The generated code is a list to hold `Example` values. It provides methods inclu
  * **Head**, **Tail** - get the first element and the rest
  * **Init**, **Last** - get the last element and the rest
  * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
- * **Swap** - get a new list with two elements swapped
  * **Exists**, **Forall** - test whether any or all elements match some specified condition
  * **Foreach** - apply a function to every element in turn, typically causing side-effects
  * **Reverse**, **Shuffle** - get a new list that is reversed or shuffled
@@ -54,7 +53,7 @@ If the element type is *comparable*, it adds:
 If the element type is *numeric*, it adds:
 
  * **Sum** - sum all elements
- * **Sum** - compute the arithmetic mean
+ * **Mean** - compute the arithmetic mean
 
 #### Min and Max
 
@@ -62,7 +61,7 @@ It always adds:
 
  * **Min**, **Max** - find the minimum/maximum value
 
-but the implementation depends on whether the element type is ordered or not. For ordered elements, Min and Max use
+but the implementation depends on whether the element type is *ordered* or not. For ordered elements, Min and Max use
 simple inequality operators '<' and '>'. Otherwise a comparison function must be supplied.
 
 #### Sorting

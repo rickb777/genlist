@@ -4,6 +4,16 @@ const Sequence = `
 {{if .Has.Sequence}}
 // {{.TName}}Seq is an interface for sequences of type {{.PName}}, including lists and options (where present).
 type {{.TName}}Seq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() {{.PName}}
 
@@ -16,15 +26,7 @@ type {{.TName}}Seq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() {{.TName}}Seq
 
-	// Len gets the size/length of the sequence.
-	Len() int
-
-	// IsEmpty returns true if the sequence is empty.
-	IsEmpty() bool
-
-	// NonEmpty returns true if the sequence is non-empty.
-	NonEmpty() bool
-
+	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the sequence that matches
 	// the predicate supplied.
 	Exists(predicate func({{.PName}}) bool) bool
@@ -35,6 +37,7 @@ type {{.TName}}Seq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func({{.PName}}))
 
+	//-------------------------------------------------------------------------
 	// Filter returns a new {{.TName}}Seq whose elements return true for a predicate function.
 	Filter(predicate func({{.PName}}) bool) (result {{.TName}}Seq)
 
@@ -45,16 +48,18 @@ type {{.TName}}Seq interface {
 	Partition(p func({{.PName}}) bool) (matching {{.TName}}Seq, others {{.TName}}Seq)
 
 {{if .Has.Option}}
+	//-------------------------------------------------------------------------
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func({{.PName}}) bool) Optional{{.TName}}
 {{end}}
 
 {{if .Has.List}}
-	// Converts the sequence to a list. For lists, this is merely a type conversion.
+	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() {{.TName}}List
 {{end}}
 
 {{if .Type.Comparable}}
+	//-------------------------------------------------------------------------
 	// Tests whether this sequence has the same length and the same elements as another sequence.
 	// Omitted if {{.TName}} is not comparable.
 	Equals(other {{.TName}}Seq) bool
@@ -75,9 +80,14 @@ type {{.TName}}Seq interface {
 {{end}}
 
 {{if .Type.Numeric}}
+	//-------------------------------------------------------------------------
 	// Sum sums {{.PName}} elements.
 	// Omitted if {{.TName}} is not numeric.
 	Sum() {{.PName}}
+
+	// Mean computes the arithmetic mean of all elements.
+	// Panics if the list is empty.
+	Mean() {{.PName}}
 {{end}}
 }
 

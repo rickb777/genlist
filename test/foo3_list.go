@@ -11,6 +11,16 @@ import (
 
 // Foo3Seq is an interface for sequences of type *Foo3, including lists and options (where present).
 type Foo3Seq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() *Foo3
 
@@ -23,15 +33,7 @@ type Foo3Seq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() Foo3Seq
 
-	// Len gets the size/length of the sequence.
-	Len() int
-
-	// IsEmpty returns true if the sequence is empty.
-	IsEmpty() bool
-
-	// NonEmpty returns true if the sequence is non-empty.
-	NonEmpty() bool
-
+	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the sequence that matches
 	// the predicate supplied.
 	Exists(predicate func(*Foo3) bool) bool
@@ -42,6 +44,7 @@ type Foo3Seq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Foo3))
 
+	//-------------------------------------------------------------------------
 	// Filter returns a new Foo3Seq whose elements return true for a predicate function.
 	Filter(predicate func(*Foo3) bool) (result Foo3Seq)
 
@@ -51,12 +54,14 @@ type Foo3Seq interface {
 	// original list.
 	Partition(p func(*Foo3) bool) (matching Foo3Seq, others Foo3Seq)
 
+	//-------------------------------------------------------------------------
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(*Foo3) bool) OptionalFoo3
 
-	// Converts the sequence to a list. For lists, this is merely a type conversion.
+	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Foo3List
 
+	//-------------------------------------------------------------------------
 	// Tests whether this sequence has the same length and the same elements as another sequence.
 	// Omitted if Foo3 is not comparable.
 	Equals(other Foo3Seq) bool

@@ -205,6 +205,15 @@ func (o Optional{{.TName}}) Sum() {{.PName}} {
 	{{end}}
 }
 
+// Mean computes the arithmetic mean of all elements.
+// Panics if the list is empty.
+func (o Optional{{.TName}}) Mean() {{.PName}} {
+	if o.IsEmpty() {
+		panic("Cannot compute the arithmetic mean of zero-length Optional{{.TName}}")
+	}
+	return o.Sum()
+}
+
 {{end}}
 {{if .Has.List}}
 func (o Optional{{.TName}}) ToList() {{.TName}}List {

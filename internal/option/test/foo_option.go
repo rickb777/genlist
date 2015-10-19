@@ -6,6 +6,16 @@ package main
 
 // FooSeq is an interface for sequences of type Foo, including lists and options (where present).
 type FooSeq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() Foo
 
@@ -18,15 +28,7 @@ type FooSeq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() FooSeq
 
-	// Len gets the size/length of the sequence.
-	Len() int
-
-	// IsEmpty returns true if the sequence is empty.
-	IsEmpty() bool
-
-	// NonEmpty returns true if the sequence is non-empty.
-	NonEmpty() bool
-
+	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the sequence that matches
 	// the predicate supplied.
 	Exists(predicate func(Foo) bool) bool
@@ -37,6 +39,7 @@ type FooSeq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo))
 
+	//-------------------------------------------------------------------------
 	// Filter returns a new FooSeq whose elements return true for a predicate function.
 	Filter(predicate func(Foo) bool) (result FooSeq)
 
@@ -46,9 +49,11 @@ type FooSeq interface {
 	// original list.
 	Partition(p func(Foo) bool) (matching FooSeq, others FooSeq)
 
+	//-------------------------------------------------------------------------
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Foo) bool) OptionalFoo
 
+	//-------------------------------------------------------------------------
 	// Tests whether this sequence has the same length and the same elements as another sequence.
 	// Omitted if Foo is not comparable.
 	Equals(other FooSeq) bool

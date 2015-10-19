@@ -12,6 +12,16 @@ import (
 
 // Foo2Seq is an interface for sequences of type Foo2, including lists and options (where present).
 type Foo2Seq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() Foo2
 
@@ -24,15 +34,7 @@ type Foo2Seq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() Foo2Seq
 
-	// Len gets the size/length of the sequence.
-	Len() int
-
-	// IsEmpty returns true if the sequence is empty.
-	IsEmpty() bool
-
-	// NonEmpty returns true if the sequence is non-empty.
-	NonEmpty() bool
-
+	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the sequence that matches
 	// the predicate supplied.
 	Exists(predicate func(Foo2) bool) bool
@@ -43,6 +45,7 @@ type Foo2Seq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo2))
 
+	//-------------------------------------------------------------------------
 	// Filter returns a new Foo2Seq whose elements return true for a predicate function.
 	Filter(predicate func(Foo2) bool) (result Foo2Seq)
 
@@ -52,12 +55,14 @@ type Foo2Seq interface {
 	// original list.
 	Partition(p func(Foo2) bool) (matching Foo2Seq, others Foo2Seq)
 
+	//-------------------------------------------------------------------------
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Foo2) bool) OptionalFoo2
 
-	// Converts the sequence to a list. For lists, this is merely a type conversion.
+	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Foo2List
 
+	//-------------------------------------------------------------------------
 	// Tests whether this sequence has the same length and the same elements as another sequence.
 	// Omitted if Foo2 is not comparable.
 	Equals(other Foo2Seq) bool
@@ -74,9 +79,14 @@ type Foo2Seq interface {
 	// Omitted if Foo2 is not comparable.
 	Distinct() Foo2Seq
 
+	//-------------------------------------------------------------------------
 	// Sum sums Foo2 elements.
 	// Omitted if Foo2 is not numeric.
 	Sum() Foo2
+
+	// Mean computes the arithmetic mean of all elements.
+	// Panics if the list is empty.
+	Mean() Foo2
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -265,6 +275,15 @@ func (o OptionalFoo2) Sum() Foo2 {
 	}
 	return *(o.x)
 
+}
+
+// Mean computes the arithmetic mean of all elements.
+// Panics if the list is empty.
+func (o OptionalFoo2) Mean() Foo2 {
+	if o.IsEmpty() {
+		panic("Cannot compute the arithmetic mean of zero-length OptionalFoo2")
+	}
+	return o.Sum()
 }
 
 func (o OptionalFoo2) ToList() Foo2List {
@@ -713,19 +732,14 @@ func (list Foo2List) Sum() (result Foo2) {
 	return
 }
 
-// Mean sums Foo2List over all elements and divides by len(Foo2List).
-func (list Foo2List) Mean() (Foo2, error) {
-	var result Foo2
-
+// Mean computes the arithmetic mean of all elements.
+// Panics if the list is empty.
+func (list Foo2List) Mean() Foo2 {
 	l := len(list)
 	if l == 0 {
-		return result, errors.New("cannot determine Mean of zero-length Foo2List")
+		panic("Cannot compute the arithmetic mean of zero-length Foo2List")
 	}
-	for _, v := range list {
-		result += v
-	}
-	result = result / Foo2(l)
-	return result, nil
+	return list.Sum() / Foo2(l)
 }
 
 // These methods require Foo2 be ordered.

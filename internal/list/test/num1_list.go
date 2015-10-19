@@ -12,6 +12,16 @@ import (
 
 // Num1Seq is an interface for sequences of type Num1, including lists and options (where present).
 type Num1Seq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() Num1
 
@@ -24,15 +34,7 @@ type Num1Seq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() Num1Seq
 
-	// Len gets the size/length of the sequence.
-	Len() int
-
-	// IsEmpty returns true if the sequence is empty.
-	IsEmpty() bool
-
-	// NonEmpty returns true if the sequence is non-empty.
-	NonEmpty() bool
-
+	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the sequence that matches
 	// the predicate supplied.
 	Exists(predicate func(Num1) bool) bool
@@ -43,6 +45,7 @@ type Num1Seq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Num1))
 
+	//-------------------------------------------------------------------------
 	// Filter returns a new Num1Seq whose elements return true for a predicate function.
 	Filter(predicate func(Num1) bool) (result Num1Seq)
 
@@ -52,9 +55,10 @@ type Num1Seq interface {
 	// original list.
 	Partition(p func(Num1) bool) (matching Num1Seq, others Num1Seq)
 
-	// Converts the sequence to a list. For lists, this is merely a type conversion.
+	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Num1List
 
+	//-------------------------------------------------------------------------
 	// Tests whether this sequence has the same length and the same elements as another sequence.
 	// Omitted if Num1 is not comparable.
 	Equals(other Num1Seq) bool
@@ -71,9 +75,14 @@ type Num1Seq interface {
 	// Omitted if Num1 is not comparable.
 	Distinct() Num1Seq
 
+	//-------------------------------------------------------------------------
 	// Sum sums Num1 elements.
 	// Omitted if Num1 is not numeric.
 	Sum() Num1
+
+	// Mean computes the arithmetic mean of all elements.
+	// Panics if the list is empty.
+	Mean() Num1
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -515,19 +524,14 @@ func (list Num1List) Sum() (result Num1) {
 	return
 }
 
-// Mean sums Num1List over all elements and divides by len(Num1List).
-func (list Num1List) Mean() (Num1, error) {
-	var result Num1
-
+// Mean computes the arithmetic mean of all elements.
+// Panics if the list is empty.
+func (list Num1List) Mean() Num1 {
 	l := len(list)
 	if l == 0 {
-		return result, errors.New("cannot determine Mean of zero-length Num1List")
+		panic("Cannot compute the arithmetic mean of zero-length Num1List")
 	}
-	for _, v := range list {
-		result += v
-	}
-	result = result / Num1(l)
-	return result, nil
+	return list.Sum() / Num1(l)
 }
 
 // These methods require Num1 be ordered.

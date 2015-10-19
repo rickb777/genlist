@@ -17,18 +17,31 @@ At it simplest, the annotation looks like:
 type Example struct { ... }
 ````
 
-This creates a optional example type `OptionalExample` to hold `Example` values. It provides methods including:
+#### Core methods
 
- * **Head**, **Get**, **GetOrElse**, **OrElse** - get the value, possibly supplying a default
+This creates a optional example type `OptionalExample` to hold `Example` values. It provides all the
+*T*Seq methods, including:
+
+ * **Head**, **Tail** - get the first element and the rest
+ * **Init**, **Last** - get the last element and the rest
  * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
- * **Exists**, **Forall** - tests whether any or all elements match some specified condition
- * **Foreach** - applies a function to every element in turn, typically causing side-effects
+ * **IsDefined** - an alias for NonEmpty
+ * **Exists**, **Forall** - test whether any or all elements match some specified condition
+ * **Foreach** - apply a function to every element in turn, typically causing side-effects
+ * **Reverse**, **Shuffle** - get a new list that is reversed or shuffled
+ * **Take**, **TakeWhile**, **DropLast** - get a new list without some trailing elements
+ * **Drop**, **DropWhile**, **TakeLast** - get a new list without some leading elements
+ * **Filter**, **Partition** - get a subset, or two disjoint subsets, of the list
+
+#### Comparable Methods
 
 If the element type is *comparable*, it adds:
 
- * **Equals** - comparison with another option
- * **Contains**, **Count** - comparison with a specified value
- * **Distinct** - removal of duplicates (clearly trivial in the case of options)
+ * **Equals** - compare with another list
+ * **IndexOf**, **IndexOf2** - find the index of the first match
+ * **LastIndexOf**, **LastIndexOf2** - find the index of the last match
+ * **Contains**, **Count** - compare with a specified value
+ * **Distinct** - remove duplicates
 
 ### Option For Pointer Elements
 

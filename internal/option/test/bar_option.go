@@ -6,6 +6,16 @@ package main
 
 // BarSeq is an interface for sequences of type *Bar, including lists and options (where present).
 type BarSeq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() *Bar
 
@@ -18,15 +28,7 @@ type BarSeq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() BarSeq
 
-	// Len gets the size/length of the sequence.
-	Len() int
-
-	// IsEmpty returns true if the sequence is empty.
-	IsEmpty() bool
-
-	// NonEmpty returns true if the sequence is non-empty.
-	NonEmpty() bool
-
+	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the sequence that matches
 	// the predicate supplied.
 	Exists(predicate func(*Bar) bool) bool
@@ -37,6 +39,7 @@ type BarSeq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Bar))
 
+	//-------------------------------------------------------------------------
 	// Filter returns a new BarSeq whose elements return true for a predicate function.
 	Filter(predicate func(*Bar) bool) (result BarSeq)
 
@@ -46,9 +49,11 @@ type BarSeq interface {
 	// original list.
 	Partition(p func(*Bar) bool) (matching BarSeq, others BarSeq)
 
+	//-------------------------------------------------------------------------
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(*Bar) bool) OptionalBar
 
+	//-------------------------------------------------------------------------
 	// Tests whether this sequence has the same length and the same elements as another sequence.
 	// Omitted if Bar is not comparable.
 	Equals(other BarSeq) bool

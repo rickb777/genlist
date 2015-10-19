@@ -12,19 +12,14 @@ func (list {{.TName}}List) Sum() (result {{.PName}}) {
 	return
 }
 
-// Mean sums {{.TName}}List over all elements and divides by len({{.TName}}List).
-func (list {{.TName}}List) Mean() ({{.PName}}, error) {
-	var result {{.PName}}
-
+// Mean computes the arithmetic mean of all elements.
+// Panics if the list is empty.
+func (list {{.TName}}List) Mean() {{.PName}} {
 	l := len(list)
 	if l == 0 {
-		return result, errors.New("cannot determine Mean of zero-length {{.TName}}List")
+		panic("Cannot compute the arithmetic mean of zero-length {{.TName}}List")
 	}
-	for _, v := range list {
-		result += v
-	}
-	result = result / {{.PName}}(l)
-	return result, nil
+	return list.Sum() / {{.PName}}(l)
 }
 {{end}}
 `

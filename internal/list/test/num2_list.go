@@ -11,6 +11,16 @@ import (
 
 // Num2Seq is an interface for sequences of type *Num2, including lists and options (where present).
 type Num2Seq interface {
+	// Len gets the size/length of the sequence.
+	Len() int
+
+	// IsEmpty returns true if the sequence is empty.
+	IsEmpty() bool
+
+	// NonEmpty returns true if the sequence is non-empty.
+	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
 	Head() *Num2
 
@@ -23,15 +33,7 @@ type Num2Seq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() Num2Seq
 
-	// Len gets the size/length of the sequence.
-	Len() int
-
-	// IsEmpty returns true if the sequence is empty.
-	IsEmpty() bool
-
-	// NonEmpty returns true if the sequence is non-empty.
-	NonEmpty() bool
-
+	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the sequence that matches
 	// the predicate supplied.
 	Exists(predicate func(*Num2) bool) bool
@@ -42,6 +44,7 @@ type Num2Seq interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Num2))
 
+	//-------------------------------------------------------------------------
 	// Filter returns a new Num2Seq whose elements return true for a predicate function.
 	Filter(predicate func(*Num2) bool) (result Num2Seq)
 
@@ -51,9 +54,10 @@ type Num2Seq interface {
 	// original list.
 	Partition(p func(*Num2) bool) (matching Num2Seq, others Num2Seq)
 
-	// Converts the sequence to a list. For lists, this is merely a type conversion.
+	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Num2List
 
+	//-------------------------------------------------------------------------
 	// Tests whether this sequence has the same length and the same elements as another sequence.
 	// Omitted if Num2 is not comparable.
 	Equals(other Num2Seq) bool
