@@ -7,8 +7,9 @@ import (
 
 type flags struct {
 	Sequence bool
-	Option   bool
 	List     bool
+	Option   bool
+	Set      bool
 }
 
 // a convenience for passing values into templates; in MVC it'd be called a view model

@@ -3,68 +3,99 @@ package golist
 import (
 	"io"
 	"github.com/rickb777/typewriter"
+	"fmt"
 )
 
 const listName = "List"
+const optionName = "Option"
+const setName = "Set"
 
 func init() {
 	err := typewriter.Register(NewListWriter())
 	if err != nil {
 		panic(err)
 	}
+	err = typewriter.Register(NewOptionWriter())
+	if err != nil {
+		panic(err)
+	}
+	//	err = typewriter.Register(NewSetWriter())
+	//	if err != nil {
+	//		panic(err)
+	//	}
 }
 
-type ListWriter struct{}
-
-func NewListWriter() *ListWriter {
-	return &ListWriter{}
+type xWriter struct {
+	name           string
+	coreTemplate   *typewriter.Template
+	otherTemplates typewriter.TemplateSlice
 }
 
-func (sw *ListWriter) Name() string {
-	return listName
+func NewListWriter() *xWriter {
+	return &xWriter{listName, coreListTemplate, otherListTemplates}
 }
 
-func (sw *ListWriter) Imports(typ typewriter.Type) (result []typewriter.ImportSpec) {
+func NewOptionWriter() *xWriter {
+	return &xWriter{optionName, coreOptionTemplate, optionTemplates}
+}
+
+func NewSetWriter() *xWriter {
+	return &xWriter{setName, nil, nil}
+}
+
+func (xw *xWriter) Name() string {
+	return xw.name
+}
+
+func (xw *xWriter) Imports(typ typewriter.Type) (result []typewriter.ImportSpec) {
 	// typewriter uses golang.org/x/tools/imports, depend on that
 	return
 }
 
-func (sw *ListWriter) Write(w io.Writer, typ typewriter.Type) error {
+func (xw *xWriter) Write(w io.Writer, typ typewriter.Type) error {
 	//	fmt.Printf("ListWriter.Write %s %+v\n", typ.String(), typ.Tags)
-	tag, found := typ.FindTag(sw.Name())
+	tag, found := typ.FindTag(xw.Name())
 
 	if !found {
 		return nil
 	}
 
-	flags := flags{List: true}
+	flags := setFlag(xw.name, &flags{})
 	for _, v := range tag.Values {
-		if v.Name == optionName {
-			flags.Option = true
-		}
+		flags = setFlag(v.Name, flags)
 	}
 
 	// start with the list template
-	if err := writeBasicTemplate(w, coreListTemplate, typ, flags); err != nil {
+	if err := writeBasicTemplate(w, xw.coreTemplate, typ, *flags); err != nil {
 		return err
 	}
 
 	for _, v := range tag.Values {
-		err := sw.writeForTag(w, typ, v, flags)
+		err := xw.writeForTag(w, typ, v, *flags)
 		if err != nil {
 			return err
 		}
 	}
 
+	fmt.Fprintf(w, "// %s flags: %+v\n", xw.name, *flags)
 	return nil
 }
 
-func (sw *ListWriter) writeForTag(w io.Writer, typ typewriter.Type, v typewriter.TagValue, flags flags) error {
-	tmpl, err := otherListTemplates.ByTagValue2(typ, v)
+func (xw *xWriter) writeForTag(w io.Writer, typ typewriter.Type, v typewriter.TagValue, flags flags) error {
+	tmpl, err := xw.otherTemplates.ByTagValue2(typ, v)
 
 	if err != nil {
 		return err
 	}
 
 	return writeTaggedTemplate(w, tmpl, typ, flags, v)
+}
+
+func setFlag(name string, flags *flags) *flags {
+	switch name {
+	case listName:   flags.List = true
+	case optionName: flags.Option = true
+	case setName:    flags.Set = true
+	}
+	return flags
 }

@@ -992,3 +992,5 @@ func quickSortThingList(list ThingList, less func(Thing, Thing) bool, a, b, maxD
 		insertionSortThingList(list, less, a, b)
 	}
 }
+
+// List flags: {Sequence:false List:true Option:false Set:false}

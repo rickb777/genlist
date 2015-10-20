@@ -856,3 +856,5 @@ func (list Foo2List) LastOption() OptionalFoo2 {
 		return NoFoo2()
 	}
 }
+
+// Option flags: {Sequence:false List:true Option:true Set:false}

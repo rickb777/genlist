@@ -778,3 +778,5 @@ func (o OptionalFoo3) MkString3(pfx, mid, sfx string) string {
 	}
 	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
+
+// List flags: {Sequence:false List:true Option:true Set:false}

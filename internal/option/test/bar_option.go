@@ -266,3 +266,5 @@ func (o OptionalBar) MkString3(pfx, mid, sfx string) string {
 	}
 	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
+
+// Option flags: {Sequence:false List:false Option:true Set:false}

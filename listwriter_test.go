@@ -7,7 +7,6 @@ import (
 	"go/token"
 	"testing"
 
-	"github.com/rickb777/golist/internal/list"
 	"github.com/rickb777/typewriter"
 )
 
@@ -28,7 +27,7 @@ func init() {
 		panic(err)
 	}
 
-	t1.Tags = typewriter.TagList{
+	t1.Tags = typewriter.TagSlice{
 		typewriter.Tag{
 			Name: "list",
 			Values: []typewriter.TagValue{
@@ -54,6 +53,24 @@ func TestListWrite(t *testing.T) {
 
 		fset := token.NewFileSet()
 		if _, err := parser.ParseFile(fset, "testwritelist.go", src, 0); err != nil {
+			t.Error(err)
+		}
+	}
+}
+
+func TestOptionWrite(t *testing.T) {
+	for _, typ := range pkg.Types {
+		var b bytes.Buffer
+
+		sw := NewOptionWriter()
+
+		b.WriteString(fmt.Sprintf("package %s\n\n", pkg.Name()))
+		sw.Write(&b, typ)
+
+		src := b.String()
+
+		fset := token.NewFileSet()
+		if _, err := parser.ParseFile(fset, "testwriteoption.go", src, 0); err != nil {
 			t.Error(err)
 		}
 	}

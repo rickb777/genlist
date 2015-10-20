@@ -599,3 +599,5 @@ func (list Num1List) MkString3(pfx, mid, sfx string) string {
 }
 
 // optionForList
+
+// List flags: {Sequence:false List:true Option:false Set:false}

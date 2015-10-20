@@ -20,6 +20,5 @@ mkstringFunctions + optionForList
 
 // TODO diff
 // TODO PadTo,
-// TODO LastIndexOf, LastIndexWhere
-// TODO MkString, Equals, StartsWith, EndsWith, IteratorChan
-// TODO FlatMap, Fold
+// TODO StartsWith, EndsWith, IteratorChan
+// TODO Fold
