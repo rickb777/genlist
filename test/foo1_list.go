@@ -12,16 +12,23 @@ import (
 	"sort"
 )
 
-// Foo1Seq is an interface for sequences of type Foo1, including lists and options (where present).
-type Foo1Seq interface {
-	// Len gets the size/length of the sequence.
-	Len() int
+// Foo1Collection is an interface for collections of type Foo1, including sets, lists and options (where present).
+type Foo1Collection interface {
+	// Size gets the size/length of the sequence.
+	Size() int
 
 	// IsEmpty returns true if the sequence is empty.
 	IsEmpty() bool
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+}
+
+// Foo1Seq is an interface for sequences of type Foo1, including lists and options (where present).
+type Foo1Seq interface {
+	Foo1Collection
+	// Len gets the size/length of the sequence - an alias for Size()
+	Len() int
 
 	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
@@ -140,8 +147,12 @@ func (list Foo1List) ToList() Foo1List {
 	return list
 }
 
-// Len returns the number of items in the list.
-// There is no Size() method; use Len() instead.
+// Size returns the number of items in the list - an alias of Len().
+func (list Foo1List) Size() int {
+	return len(list)
+}
+
+// Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list Foo1List) Len() int {
 	return len(list)
@@ -447,7 +458,7 @@ func (list Foo1List) LastIndexWhere2(p func(Foo1) bool, before int) int {
 
 // Equals verifies that one or more elements of Foo1List return true for the passed func.
 func (list Foo1List) Equals(other Foo1Seq) bool {
-	if len(list) != other.Len() {
+	if len(list) != other.Size() {
 		return false
 	}
 	eq := true
@@ -708,11 +719,15 @@ func (o OptionalFoo1) OrElse(alternative func() OptionalFoo1) OptionalFoo1 {
 
 //-------------------------------------------------------------------------------------------------
 
-func (o OptionalFoo1) Len() int {
+func (o OptionalFoo1) Size() int {
 	if o.IsEmpty() {
 		return 0
 	}
 	return 1
+}
+
+func (o OptionalFoo1) Len() int {
+	return o.Size()
 }
 
 func (o OptionalFoo1) IsEmpty() bool {
@@ -782,7 +797,7 @@ func (o OptionalFoo1) Equals(other Foo1Seq) bool {
 	if o.IsEmpty() {
 		return other.IsEmpty()
 	}
-	if other.IsEmpty() || other.Len() > 1 {
+	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
 	a := o.Head()
@@ -857,4 +872,4 @@ func (o OptionalFoo1) MkString3(pfx, mid, sfx string) string {
 	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
 
-// List flags: {Sequence:false List:true Option:true Set:false}
+// List flags: {Collection:false Sequence:false List:true Option:true Set:false}

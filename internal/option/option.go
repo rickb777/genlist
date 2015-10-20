@@ -2,7 +2,7 @@ package option
 
 import "github.com/rickb777/golist/internal/sequence"
 
-const Optional = sequence.Sequence + `
+const Optional = sequence.Collection + sequence.Sequence + `
 //-------------------------------------------------------------------------------------------------
 // Optional{{.TName}} is an optional of type {{.PName}}. Use it where you want to be explicit about
 // the presence or absence of data.
@@ -82,11 +82,15 @@ func (o Optional{{.TName}}) OrElse(alternative func() Optional{{.TName}}) Option
 
 //-------------------------------------------------------------------------------------------------
 
-func (o Optional{{.TName}}) Len() int {
+func (o Optional{{.TName}}) Size() int {
 	if o.IsEmpty() {
 		return 0
 	}
 	return 1
+}
+
+func (o Optional{{.TName}}) Len() int {
+	return o.Size()
 }
 
 func (o Optional{{.TName}}) IsEmpty() bool {
@@ -157,7 +161,7 @@ func (o Optional{{.TName}}) Equals(other {{.TName}}Seq) bool {
 	if o.IsEmpty() {
 		return other.IsEmpty()
 	}
-	if other.IsEmpty() || other.Len() > 1 {
+	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
 	a := o.Head()

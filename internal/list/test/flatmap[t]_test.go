@@ -20,7 +20,7 @@ func TestFlatMapToNum(t *testing.T) {
 	expected0 := Num1List{}
 
 	if !reflect.DeepEqual(r0, expected0) {
-		t.Errorf("FlatMapToNum1 should result in %#v, got %d %#v", expected0, r0.Len(), r0)
+		t.Errorf("FlatMapToNum1 should result in %#v, got %d %#v", expected0, r0.Size(), r0)
 	}
 
 	number1 := func(x Thing) Num1Seq {

@@ -11,16 +11,23 @@ import (
 	"math/rand"
 )
 
-// ThingSeq is an interface for sequences of type Thing, including lists and options (where present).
-type ThingSeq interface {
-	// Len gets the size/length of the sequence.
-	Len() int
+// ThingCollection is an interface for collections of type Thing, including sets, lists and options (where present).
+type ThingCollection interface {
+	// Size gets the size/length of the sequence.
+	Size() int
 
 	// IsEmpty returns true if the sequence is empty.
 	IsEmpty() bool
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+}
+
+// ThingSeq is an interface for sequences of type Thing, including lists and options (where present).
+type ThingSeq interface {
+	ThingCollection
+	// Len gets the size/length of the sequence - an alias for Size()
+	Len() int
 
 	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
@@ -126,8 +133,12 @@ func (list ThingList) ToList() ThingList {
 	return list
 }
 
-// Len returns the number of items in the list.
-// There is no Size() method; use Len() instead.
+// Size returns the number of items in the list - an alias of Len().
+func (list ThingList) Size() int {
+	return len(list)
+}
+
+// Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list ThingList) Len() int {
 	return len(list)
@@ -399,7 +410,7 @@ func (list ThingList) LastIndexWhere2(p func(Thing) bool, before int) int {
 
 // Equals verifies that one or more elements of ThingList return true for the passed func.
 func (list ThingList) Equals(other ThingSeq) bool {
-	if len(list) != other.Len() {
+	if len(list) != other.Size() {
 		return false
 	}
 	eq := true
@@ -993,4 +1004,4 @@ func quickSortThingList(list ThingList, less func(Thing, Thing) bool, a, b, maxD
 	}
 }
 
-// List flags: {Sequence:false List:true Option:false Set:false}
+// List flags: {Collection:false Sequence:false List:true Option:false Set:false}

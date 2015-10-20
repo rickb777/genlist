@@ -11,16 +11,23 @@ import (
 	"math/rand"
 )
 
-// Foo4Seq is an interface for sequences of type *Foo4, including lists and options (where present).
-type Foo4Seq interface {
-	// Len gets the size/length of the sequence.
-	Len() int
+// Foo4Collection is an interface for collections of type Foo4, including sets, lists and options (where present).
+type Foo4Collection interface {
+	// Size gets the size/length of the sequence.
+	Size() int
 
 	// IsEmpty returns true if the sequence is empty.
 	IsEmpty() bool
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+}
+
+// Foo4Seq is an interface for sequences of type *Foo4, including lists and options (where present).
+type Foo4Seq interface {
+	Foo4Collection
+	// Len gets the size/length of the sequence - an alias for Size()
+	Len() int
 
 	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
@@ -158,11 +165,15 @@ func (o OptionalFoo4) OrElse(alternative func() OptionalFoo4) OptionalFoo4 {
 
 //-------------------------------------------------------------------------------------------------
 
-func (o OptionalFoo4) Len() int {
+func (o OptionalFoo4) Size() int {
 	if o.IsEmpty() {
 		return 0
 	}
 	return 1
+}
+
+func (o OptionalFoo4) Len() int {
+	return o.Size()
 }
 
 func (o OptionalFoo4) IsEmpty() bool {
@@ -232,7 +243,7 @@ func (o OptionalFoo4) Equals(other Foo4Seq) bool {
 	if o.IsEmpty() {
 		return other.IsEmpty()
 	}
-	if other.IsEmpty() || other.Len() > 1 {
+	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
 	a := o.Head()
@@ -335,8 +346,12 @@ func (list Foo4List) ToList() Foo4List {
 	return list
 }
 
-// Len returns the number of items in the list.
-// There is no Size() method; use Len() instead.
+// Size returns the number of items in the list - an alias of Len().
+func (list Foo4List) Size() int {
+	return len(list)
+}
+
+// Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list Foo4List) Len() int {
 	return len(list)
@@ -608,7 +623,7 @@ func (list Foo4List) LastIndexWhere2(p func(*Foo4) bool, before int) int {
 
 // Equals verifies that one or more elements of Foo4List return true for the passed func.
 func (list Foo4List) Equals(other Foo4Seq) bool {
-	if len(list) != other.Len() {
+	if len(list) != other.Size() {
 		return false
 	}
 	eq := true
@@ -779,4 +794,4 @@ func (list Foo4List) LastOption() OptionalFoo4 {
 	}
 }
 
-// Option flags: {Sequence:false List:true Option:true Set:false}
+// Option flags: {Collection:false Sequence:false List:true Option:true Set:false}

@@ -19,28 +19,29 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	//	err = typewriter.Register(NewSetWriter())
-	//	if err != nil {
-	//		panic(err)
-	//	}
+	err = typewriter.Register(NewSetWriter())
+	if err != nil {
+		panic(err)
+	}
 }
 
 type xWriter struct {
 	name           string
+	sequence       bool
 	coreTemplate   *typewriter.Template
 	otherTemplates typewriter.TemplateSlice
 }
 
 func NewListWriter() *xWriter {
-	return &xWriter{listName, coreListTemplate, otherListTemplates}
+	return &xWriter{listName, true, coreListTemplate, otherListTemplates}
 }
 
 func NewOptionWriter() *xWriter {
-	return &xWriter{optionName, coreOptionTemplate, optionTemplates}
+	return &xWriter{optionName, true, coreOptionTemplate, optionTemplates}
 }
 
 func NewSetWriter() *xWriter {
-	return &xWriter{setName, nil, nil}
+	return &xWriter{setName, false, coreSetTemplate, otherSetTemplates}
 }
 
 func (xw *xWriter) Name() string {
@@ -66,10 +67,12 @@ func (xw *xWriter) Write(w io.Writer, typ typewriter.Type) error {
 	}
 
 	// start with the list template
+	flags.Sequence = xw.sequence
 	if err := writeBasicTemplate(w, xw.coreTemplate, typ, *flags); err != nil {
 		return err
 	}
 
+	flags.Sequence = false
 	for _, v := range tag.Values {
 		err := xw.writeForTag(w, typ, v, *flags)
 		if err != nil {

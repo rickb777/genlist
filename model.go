@@ -6,10 +6,11 @@ import (
 )
 
 type flags struct {
-	Sequence bool
-	List     bool
-	Option   bool
-	Set      bool
+	Collection bool
+	Sequence   bool
+	List       bool
+	Option     bool
+	Set        bool
 }
 
 // a convenience for passing values into templates; in MVC it'd be called a view model
@@ -47,7 +48,7 @@ func newModel(typ typewriter.Type, flags flags) model {
 }
 
 func writeBasicTemplate(w io.Writer, twTmpl *typewriter.Template, typ typewriter.Type, flags flags) error {
-	flags.Sequence = true
+	flags.Collection = true
 	m := newModel(typ, flags)
 	//	fmt.Printf("writeBasicTemplate\n  %+v\n", m)
 	return writeTextTemplate(w, twTmpl, m)

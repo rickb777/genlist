@@ -6,16 +6,23 @@ package main
 
 import "fmt"
 
-// OtherSeq is an interface for sequences of type Other, including lists and options (where present).
-type OtherSeq interface {
-	// Len gets the size/length of the sequence.
-	Len() int
+// OtherCollection is an interface for collections of type Other, including sets, lists and options (where present).
+type OtherCollection interface {
+	// Size gets the size/length of the sequence.
+	Size() int
 
 	// IsEmpty returns true if the sequence is empty.
 	IsEmpty() bool
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+}
+
+// OtherSeq is an interface for sequences of type Other, including lists and options (where present).
+type OtherSeq interface {
+	OtherCollection
+	// Len gets the size/length of the sequence - an alias for Size()
+	Len() int
 
 	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
@@ -152,11 +159,15 @@ func (o OptionalOther) OrElse(alternative func() OptionalOther) OptionalOther {
 
 //-------------------------------------------------------------------------------------------------
 
-func (o OptionalOther) Len() int {
+func (o OptionalOther) Size() int {
 	if o.IsEmpty() {
 		return 0
 	}
 	return 1
+}
+
+func (o OptionalOther) Len() int {
+	return o.Size()
 }
 
 func (o OptionalOther) IsEmpty() bool {
@@ -226,7 +237,7 @@ func (o OptionalOther) Equals(other OtherSeq) bool {
 	if o.IsEmpty() {
 		return other.IsEmpty()
 	}
-	if other.IsEmpty() || other.Len() > 1 {
+	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
 	a := o.Head()
@@ -319,4 +330,4 @@ func (o OptionalOther) FlatMapToFoo(fn func(Other) FooSeq) (result FooSeq) {
 	return SomeFoo(u.Head())
 }
 
-// Option flags: {Sequence:false List:false Option:true Set:false}
+// Option flags: {Collection:false Sequence:false List:false Option:true Set:false}

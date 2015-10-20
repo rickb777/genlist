@@ -6,16 +6,23 @@ package main
 
 import "fmt"
 
-// FooSeq is an interface for sequences of type Foo, including lists and options (where present).
-type FooSeq interface {
-	// Len gets the size/length of the sequence.
-	Len() int
+// FooCollection is an interface for collections of type Foo, including sets, lists and options (where present).
+type FooCollection interface {
+	// Size gets the size/length of the sequence.
+	Size() int
 
 	// IsEmpty returns true if the sequence is empty.
 	IsEmpty() bool
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+}
+
+// FooSeq is an interface for sequences of type Foo, including lists and options (where present).
+type FooSeq interface {
+	FooCollection
+	// Len gets the size/length of the sequence - an alias for Size()
+	Len() int
 
 	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
@@ -143,11 +150,15 @@ func (o OptionalFoo) OrElse(alternative func() OptionalFoo) OptionalFoo {
 
 //-------------------------------------------------------------------------------------------------
 
-func (o OptionalFoo) Len() int {
+func (o OptionalFoo) Size() int {
 	if o.IsEmpty() {
 		return 0
 	}
 	return 1
+}
+
+func (o OptionalFoo) Len() int {
+	return o.Size()
 }
 
 func (o OptionalFoo) IsEmpty() bool {
@@ -217,7 +228,7 @@ func (o OptionalFoo) Equals(other FooSeq) bool {
 	if o.IsEmpty() {
 		return other.IsEmpty()
 	}
-	if other.IsEmpty() || other.Len() > 1 {
+	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
 	a := o.Head()
@@ -264,4 +275,4 @@ func (o OptionalFoo) MkString3(pfx, mid, sfx string) string {
 	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
 
-// Option flags: {Sequence:false List:false Option:true Set:false}
+// Option flags: {Collection:false Sequence:false List:false Option:true Set:false}

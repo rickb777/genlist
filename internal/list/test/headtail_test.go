@@ -33,7 +33,7 @@ func TestHeadTailNum1(t *testing.T) {
 		t.Errorf("Head should be 13")
 	}
 
-	if t4.Len() != 0 {
+	if t4.Size() != 0 {
 		t.Errorf("Tail should be an empty list")
 	}
 }
@@ -69,7 +69,7 @@ func TestHeadTailNum2(t *testing.T) {
 		t.Errorf("Head should be 13")
 	}
 
-	if t4.Len() != 0 {
+	if t4.Size() != 0 {
 		t.Errorf("Tail should be an empty list")
 	}
 }
@@ -102,7 +102,7 @@ func TestHeadTailThing(t *testing.T) {
 		t.Errorf("Head should be 8")
 	}
 
-	if t3.Len() != 0 {
+	if t3.Size() != 0 {
 		t.Errorf("Tail should be an empty list")
 	}
 }

@@ -11,16 +11,23 @@ import (
 	"math/rand"
 )
 
-// Num2Seq is an interface for sequences of type *Num2, including lists and options (where present).
-type Num2Seq interface {
-	// Len gets the size/length of the sequence.
-	Len() int
+// Num2Collection is an interface for collections of type Num2, including sets, lists and options (where present).
+type Num2Collection interface {
+	// Size gets the size/length of the sequence.
+	Size() int
 
 	// IsEmpty returns true if the sequence is empty.
 	IsEmpty() bool
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+}
+
+// Num2Seq is an interface for sequences of type *Num2, including lists and options (where present).
+type Num2Seq interface {
+	Num2Collection
+	// Len gets the size/length of the sequence - an alias for Size()
+	Len() int
 
 	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
@@ -126,8 +133,12 @@ func (list Num2List) ToList() Num2List {
 	return list
 }
 
-// Len returns the number of items in the list.
-// There is no Size() method; use Len() instead.
+// Size returns the number of items in the list - an alias of Len().
+func (list Num2List) Size() int {
+	return len(list)
+}
+
+// Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list Num2List) Len() int {
 	return len(list)
@@ -399,7 +410,7 @@ func (list Num2List) LastIndexWhere2(p func(*Num2) bool, before int) int {
 
 // Equals verifies that one or more elements of Num2List return true for the passed func.
 func (list Num2List) Equals(other Num2Seq) bool {
-	if len(list) != other.Len() {
+	if len(list) != other.Size() {
 		return false
 	}
 	eq := true
@@ -540,4 +551,4 @@ func (list Num2List) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
-// List flags: {Sequence:false List:true Option:false Set:false}
+// List flags: {Collection:false Sequence:false List:true Option:false Set:false}

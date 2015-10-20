@@ -6,16 +6,23 @@ package main
 
 import "fmt"
 
-// BarSeq is an interface for sequences of type *Bar, including lists and options (where present).
-type BarSeq interface {
-	// Len gets the size/length of the sequence.
-	Len() int
+// BarCollection is an interface for collections of type Bar, including sets, lists and options (where present).
+type BarCollection interface {
+	// Size gets the size/length of the sequence.
+	Size() int
 
 	// IsEmpty returns true if the sequence is empty.
 	IsEmpty() bool
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+}
+
+// BarSeq is an interface for sequences of type *Bar, including lists and options (where present).
+type BarSeq interface {
+	BarCollection
+	// Len gets the size/length of the sequence - an alias for Size()
+	Len() int
 
 	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
@@ -146,11 +153,15 @@ func (o OptionalBar) OrElse(alternative func() OptionalBar) OptionalBar {
 
 //-------------------------------------------------------------------------------------------------
 
-func (o OptionalBar) Len() int {
+func (o OptionalBar) Size() int {
 	if o.IsEmpty() {
 		return 0
 	}
 	return 1
+}
+
+func (o OptionalBar) Len() int {
+	return o.Size()
 }
 
 func (o OptionalBar) IsEmpty() bool {
@@ -220,7 +231,7 @@ func (o OptionalBar) Equals(other BarSeq) bool {
 	if o.IsEmpty() {
 		return other.IsEmpty()
 	}
-	if other.IsEmpty() || other.Len() > 1 {
+	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
 	a := o.Head()
@@ -267,4 +278,4 @@ func (o OptionalBar) MkString3(pfx, mid, sfx string) string {
 	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
 
-// Option flags: {Sequence:false List:false Option:true Set:false}
+// Option flags: {Collection:false Sequence:false List:false Option:true Set:false}

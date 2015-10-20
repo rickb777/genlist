@@ -22,7 +22,7 @@ func TestFilterNum1(t *testing.T) {
 		return x == 1
 	})
 
-	if where2.Len() != 0 {
+	if where2.Size() != 0 {
 		t.Errorf("Filter should result in empty list, got %#v", where2)
 	}
 
@@ -30,7 +30,7 @@ func TestFilterNum1(t *testing.T) {
 		return true
 	})
 
-	if where3.Len() != 0 {
+	if where3.Size() != 0 {
 		t.Errorf("Filter should result in empty list, got %#v", where3)
 	}
 }
@@ -60,7 +60,7 @@ func TestFilterThing(t *testing.T) {
 		return x.Name == "Dummy"
 	})
 
-	if where2.Len() != 0 {
+	if where2.Size() != 0 {
 		t.Errorf("Filter should result in empty list, got %#v", where2)
 	}
 
@@ -68,7 +68,7 @@ func TestFilterThing(t *testing.T) {
 		return true
 	})
 
-	if where3.Len() != 0 {
+	if where3.Size() != 0 {
 		t.Errorf("Filter should result in empty list, got %#v", where3)
 	}
 }

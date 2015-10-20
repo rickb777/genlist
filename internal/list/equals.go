@@ -6,7 +6,7 @@ const equalsFunctions = `
 
 // Equals verifies that one or more elements of {{.TName}}List return true for the passed func.
 func (list {{.TName}}List) Equals(other {{.TName}}Seq) bool {
-	if len(list) != other.Len() {
+	if len(list) != other.Size() {
 		return false
 	}
 	eq := true

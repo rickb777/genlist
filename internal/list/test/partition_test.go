@@ -28,7 +28,7 @@ func TestPartitionNum(t *testing.T) {
 		return x == 1
 	})
 
-	if m2.Len() != 0 {
+	if m2.Size() != 0 {
 		t.Errorf("Partition should result in empty list, got %#v", m2)
 	}
 
@@ -40,11 +40,11 @@ func TestPartitionNum(t *testing.T) {
 		return true
 	})
 
-	if m3.Len() != 0 {
+	if m3.Size() != 0 {
 		t.Errorf("Partition should result in empty list, got %#v", m3)
 	}
 
-	if o3.Len() != 0 {
+	if o3.Size() != 0 {
 		t.Errorf("Partition should result in empty list, got %#v", o3)
 	}
 }
@@ -83,7 +83,7 @@ func TestPartitionThing(t *testing.T) {
 		return x.Name == "Dummy"
 	})
 
-	if m2.Len() != 0 {
+	if m2.Size() != 0 {
 		t.Errorf("Partition should result in empty list, got %#v", m2)
 	}
 
@@ -95,11 +95,11 @@ func TestPartitionThing(t *testing.T) {
 		return true
 	})
 
-	if m3.Len() != 0 {
+	if m3.Size() != 0 {
 		t.Errorf("Partition should result in empty list, got %#v", m3)
 	}
 
-	if o3.Len() != 0 {
+	if o3.Size() != 0 {
 		t.Errorf("Partition should result in empty list, got %#v", o3)
 	}
 }

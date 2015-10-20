@@ -2,8 +2,12 @@ package list
 
 const sortable = `
 
-// Len returns the number of items in the list.
-// There is no Size() method; use Len() instead.
+// Size returns the number of items in the list - an alias of Len().
+func (list {{.TName}}List) Size() int {
+	return len(list)
+}
+
+// Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list {{.TName}}List) Len() int {
 	return len(list)

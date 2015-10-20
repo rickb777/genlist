@@ -33,7 +33,7 @@ func TestInitLastNum1(t *testing.T) {
 		t.Errorf("Last should be 3")
 	}
 
-	if t4.Len() != 0 {
+	if t4.Size() != 0 {
 		t.Errorf("Init should be an empty list")
 	}
 }
@@ -69,7 +69,7 @@ func TestInitLastNum2(t *testing.T) {
 		t.Errorf("Last should be 3")
 	}
 
-	if t4.Len() != 0 {
+	if t4.Size() != 0 {
 		t.Errorf("Init should be an empty list")
 	}
 }
@@ -102,7 +102,7 @@ func TestInitLastThing(t *testing.T) {
 		t.Errorf("Last should be 2")
 	}
 
-	if t3.Len() != 0 {
+	if t3.Size() != 0 {
 		t.Errorf("Init should be an empty list")
 	}
 }

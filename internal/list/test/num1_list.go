@@ -12,16 +12,23 @@ import (
 	"sort"
 )
 
-// Num1Seq is an interface for sequences of type Num1, including lists and options (where present).
-type Num1Seq interface {
-	// Len gets the size/length of the sequence.
-	Len() int
+// Num1Collection is an interface for collections of type Num1, including sets, lists and options (where present).
+type Num1Collection interface {
+	// Size gets the size/length of the sequence.
+	Size() int
 
 	// IsEmpty returns true if the sequence is empty.
 	IsEmpty() bool
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+}
+
+// Num1Seq is an interface for sequences of type Num1, including lists and options (where present).
+type Num1Seq interface {
+	Num1Collection
+	// Len gets the size/length of the sequence - an alias for Size()
+	Len() int
 
 	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.
@@ -136,8 +143,12 @@ func (list Num1List) ToList() Num1List {
 	return list
 }
 
-// Len returns the number of items in the list.
-// There is no Size() method; use Len() instead.
+// Size returns the number of items in the list - an alias of Len().
+func (list Num1List) Size() int {
+	return len(list)
+}
+
+// Len returns the number of items in the list - an alias of Size().
 // This is one of the three methods in the standard sort.Interface.
 func (list Num1List) Len() int {
 	return len(list)
@@ -443,7 +454,7 @@ func (list Num1List) LastIndexWhere2(p func(Num1) bool, before int) int {
 
 // Equals verifies that one or more elements of Num1List return true for the passed func.
 func (list Num1List) Equals(other Num1Seq) bool {
-	if len(list) != other.Len() {
+	if len(list) != other.Size() {
 		return false
 	}
 	eq := true
@@ -600,4 +611,4 @@ func (list Num1List) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
-// List flags: {Sequence:false List:true Option:false Set:false}
+// List flags: {Collection:false Sequence:false List:true Option:false Set:false}

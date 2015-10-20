@@ -4,14 +4,9 @@ const Sequence = `
 {{if .Has.Sequence}}
 // {{.TName}}Seq is an interface for sequences of type {{.PName}}, including lists and options (where present).
 type {{.TName}}Seq interface {
-	// Len gets the size/length of the sequence.
+	{{.TName}}Collection
+	// Len gets the size/length of the sequence - an alias for Size()
 	Len() int
-
-	// IsEmpty returns true if the sequence is empty.
-	IsEmpty() bool
-
-	// NonEmpty returns true if the sequence is non-empty.
-	NonEmpty() bool
 
 	//-------------------------------------------------------------------------
 	// Gets the first element from the sequence. This panics if the sequence is empty.

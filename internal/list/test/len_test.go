@@ -5,7 +5,7 @@ import "testing"
 func TestLenNum(t *testing.T) {
 	things := Num1List{60, -20, 100}
 
-	if things.Len() != 3 {
+	if things.Size() != 3 {
 		t.Errorf("Size should be 3")
 	}
 
@@ -17,13 +17,13 @@ func TestLenNum(t *testing.T) {
 		t.Errorf("NonEmpty should be true")
 	}
 
-	if things.ToList().Len() != 3 {
+	if things.ToList().Size() != 3 {
 		t.Errorf("Size should be 3")
 	}
 
 	noThings := Num1List{}
 
-	if noThings.Len() != 0 {
+	if noThings.Size() != 0 {
 		t.Errorf("Size should be 0")
 	}
 
@@ -35,7 +35,7 @@ func TestLenNum(t *testing.T) {
 		t.Errorf("NonEmpty should be false")
 	}
 
-	if noThings.ToList().Len() != 0 {
+	if noThings.ToList().Size() != 0 {
 		t.Errorf("Size should be 0")
 	}
 }
@@ -47,7 +47,7 @@ func TestLenThing(t *testing.T) {
 		{"Third", 100},
 	}
 
-	if things.Len() != 3 {
+	if things.Size() != 3 {
 		t.Errorf("Size should be 3")
 	}
 
@@ -59,13 +59,13 @@ func TestLenThing(t *testing.T) {
 		t.Errorf("NonEmpty should be true")
 	}
 
-	if things.ToList().Len() != 3 {
+	if things.ToList().Size() != 3 {
 		t.Errorf("Size should be 3")
 	}
 
 	noThings := ThingList{}
 
-	if noThings.Len() != 0 {
+	if noThings.Size() != 0 {
 		t.Errorf("Size should be 0")
 	}
 
@@ -77,7 +77,7 @@ func TestLenThing(t *testing.T) {
 		t.Errorf("NonEmpty should be false")
 	}
 
-	if noThings.ToList().Len() != 0 {
+	if noThings.ToList().Size() != 0 {
 		t.Errorf("Size should be 0")
 	}
 }

@@ -7,13 +7,13 @@ import (
 
 func TestLen(t *testing.T) {
 	someThing := SomeOther(60)
-	if someThing.Len() != 1 {
-		t.Errorf("Len should be 1")
+	if someThing.Size() != 1 {
+		t.Errorf("Size should be 1")
 	}
 
 	noThing := NoOther()
-	if noThing.Len() != 0 {
-		t.Errorf("Len should be 0")
+	if noThing.Size() != 0 {
+		t.Errorf("Size should be 0")
 	}
 }
 
@@ -233,7 +233,7 @@ func TestCount(t *testing.T) {
 
 func TestDistinct(t *testing.T) {
 	someThing := SomeOther(60)
-	if someThing.Distinct().Len() != 1 {
+	if someThing.Distinct().Size() != 1 {
 		t.Errorf("Should be length 1")
 	}
 
