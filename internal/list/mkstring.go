@@ -1,6 +1,11 @@
 package list
 
 const mkstringFunctions = `
+// String implements the Stringer interface to render the list as a comma-separated array.
+func (list {{.TName}}List) String() string {
+	return list.MkString3("[", ",", "]")
+}
+
 // MkString concatenates the values as a string.
 func (list {{.TName}}List) MkString(sep string) string {
 	return list.MkString3("", sep, "")

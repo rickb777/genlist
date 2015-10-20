@@ -16,6 +16,11 @@ func TestMkStringNum1(t *testing.T) {
 	if s2 != "[1, 2, 3, 5, 8, 13]" {
 		t.Errorf("MkString got %q", s2)
 	}
+
+	s3 := things.String()
+	if s3 != "[1,2,3,5,8,13]" {
+		t.Errorf("MkString got %q", s3)
+	}
 }
 
 func TestMkStringNum2(t *testing.T) {
@@ -29,5 +34,10 @@ func TestMkStringNum2(t *testing.T) {
 	s2 := things.MkString3("[", ", ", "]")
 	if s2 != "[1, 2, 3, 5, 8, 13]" {
 		t.Errorf("MkString got %q", s2)
+	}
+
+	s3 := things.String()
+	if s3 != "[1,2,3,5,8,13]" {
+		t.Errorf("MkString got %q", s3)
 	}
 }

@@ -570,6 +570,11 @@ func (list Num1List) Max() (result Num1, err error) {
 	return
 }
 
+// String implements the Stringer interface to render the list as a comma-separated array.
+func (list Num1List) String() string {
+	return list.MkString3("[", ",", "]")
+}
+
 // MkString concatenates the values as a string.
 func (list Num1List) MkString(sep string) string {
 	return list.MkString3("", sep, "")

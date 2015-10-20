@@ -510,6 +510,11 @@ func (list Num2List) Max(less func(*Num2, *Num2) bool) (result *Num2, err error)
 	return
 }
 
+// String implements the Stringer interface to render the list as a comma-separated array.
+func (list Num2List) String() string {
+	return list.MkString3("[", ",", "]")
+}
+
 // MkString concatenates the values as a string.
 func (list Num2List) MkString(sep string) string {
 	return list.MkString3("", sep, "")

@@ -510,6 +510,11 @@ func (list ThingList) Max(less func(Thing, Thing) bool) (result Thing, err error
 	return
 }
 
+// String implements the Stringer interface to render the list as a comma-separated array.
+func (list ThingList) String() string {
+	return list.MkString3("[", ",", "]")
+}
+
 // MkString concatenates the values as a string.
 func (list ThingList) MkString(sep string) string {
 	return list.MkString3("", sep, "")

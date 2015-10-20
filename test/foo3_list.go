@@ -514,6 +514,11 @@ func (list Foo3List) Max(less func(*Foo3, *Foo3) bool) (result *Foo3, err error)
 	return
 }
 
+// String implements the Stringer interface to render the list as a comma-separated array.
+func (list Foo3List) String() string {
+	return list.MkString3("[", ",", "]")
+}
+
 // MkString concatenates the values as a string.
 func (list Foo3List) MkString(sep string) string {
 	return list.MkString3("", sep, "")
@@ -753,4 +758,23 @@ func (o OptionalFoo3) ToList() Foo3List {
 		return Foo3List{}
 	}
 	return Foo3List{o.x}
+}
+
+//-------------------------------------------------------------------------------------------------
+// String implements the Stringer interface to render the option as an array of one element.
+func (o OptionalFoo3) String() string {
+	return o.MkString(",")
+}
+
+// MkString concatenates the values as a string.
+func (o OptionalFoo3) MkString(sep string) string {
+	return o.MkString3("[", sep, "]")
+}
+
+// MkString3 concatenates the values as a string.
+func (o OptionalFoo3) MkString3(pfx, mid, sfx string) string {
+	if o.IsEmpty() {
+		return fmt.Sprintf("%s%s", pfx, sfx)
+	}
+	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }

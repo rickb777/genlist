@@ -4,6 +4,8 @@
 
 package main
 
+import "fmt"
+
 // BarSeq is an interface for sequences of type *Bar, including lists and options (where present).
 type BarSeq interface {
 	// Len gets the size/length of the sequence.
@@ -244,4 +246,23 @@ func (o OptionalBar) Count(value *Bar) int {
 // Omitted if Bar is not comparable.
 func (o OptionalBar) Distinct() BarSeq {
 	return o
+}
+
+//-------------------------------------------------------------------------------------------------
+// String implements the Stringer interface to render the option as an array of one element.
+func (o OptionalBar) String() string {
+	return o.MkString(",")
+}
+
+// MkString concatenates the values as a string.
+func (o OptionalBar) MkString(sep string) string {
+	return o.MkString3("[", sep, "]")
+}
+
+// MkString3 concatenates the values as a string.
+func (o OptionalBar) MkString3(pfx, mid, sfx string) string {
+	if o.IsEmpty() {
+		return fmt.Sprintf("%s%s", pfx, sfx)
+	}
+	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }

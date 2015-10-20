@@ -268,3 +268,22 @@ func TestMapTo(t *testing.T) {
 		t.Errorf("MapToFoo should be absent but got %+v", m2)
 	}
 }
+
+func TestMkString1(t *testing.T) {
+	someThing := SomeOther(123)
+
+	s1 := someThing.MkString3("[", ", ", "]")
+	if s1 != "[123]" {
+		t.Errorf("MkString got %q", s1)
+	}
+
+	s2 := someThing.MkString(", ")
+	if s2 != "[123]" {
+		t.Errorf("MkString got %q", s2)
+	}
+
+	s3 := someThing.String()
+	if s3 != "[123]" {
+		t.Errorf("MkString got %q", s3)
+	}
+}

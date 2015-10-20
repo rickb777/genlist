@@ -296,6 +296,25 @@ func (o OptionalFoo2) ToList() Foo2List {
 }
 
 //-------------------------------------------------------------------------------------------------
+// String implements the Stringer interface to render the option as an array of one element.
+func (o OptionalFoo2) String() string {
+	return o.MkString(",")
+}
+
+// MkString concatenates the values as a string.
+func (o OptionalFoo2) MkString(sep string) string {
+	return o.MkString3("[", sep, "]")
+}
+
+// MkString3 concatenates the values as a string.
+func (o OptionalFoo2) MkString3(pfx, mid, sfx string) string {
+	if o.IsEmpty() {
+		return fmt.Sprintf("%s%s", pfx, sfx)
+	}
+	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
+}
+
+//-------------------------------------------------------------------------------------------------
 // Foo2List is a slice of type Foo2. Use it where you would use []Foo2.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
@@ -776,6 +795,11 @@ func (list Foo2List) Max() (result Foo2, err error) {
 		}
 	}
 	return
+}
+
+// String implements the Stringer interface to render the list as a comma-separated array.
+func (list Foo2List) String() string {
+	return list.MkString3("[", ",", "]")
 }
 
 // MkString concatenates the values as a string.

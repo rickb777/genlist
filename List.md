@@ -149,5 +149,5 @@ type Example struct { ... }
 
  * [Num1: a simple numeric type](internal/list/test/other.go) generates [Num1List](internal/list/test/num1_list.go)
  * [Num2: a pointer numeric type](internal/list/test/other.go) generates [Num2List](internal/list/test/num2_list.go)
- * [Thing: a struct type](internal/list/test/thing.go) generates [ThingList - a struct type](internal/list/test/thing_list.go) 
+ * [Thing: a struct type](internal/list/test/thing.go) generates [ThingList](internal/list/test/thing_list.go) 
 

@@ -4,6 +4,8 @@
 
 package main
 
+import "fmt"
+
 // OtherSeq is an interface for sequences of type Other, including lists and options (where present).
 type OtherSeq interface {
 	// Len gets the size/length of the sequence.
@@ -271,6 +273,25 @@ func (o OptionalOther) Mean() Other {
 		panic("Cannot compute the arithmetic mean of zero-length OptionalOther")
 	}
 	return o.Sum()
+}
+
+//-------------------------------------------------------------------------------------------------
+// String implements the Stringer interface to render the option as an array of one element.
+func (o OptionalOther) String() string {
+	return o.MkString(",")
+}
+
+// MkString concatenates the values as a string.
+func (o OptionalOther) MkString(sep string) string {
+	return o.MkString3("[", sep, "]")
+}
+
+// MkString3 concatenates the values as a string.
+func (o OptionalOther) MkString3(pfx, mid, sfx string) string {
+	if o.IsEmpty() {
+		return fmt.Sprintf("%s%s", pfx, sfx)
+	}
+	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
 
 // MapToFoo transforms OptionalOther to OptionalFoo.
