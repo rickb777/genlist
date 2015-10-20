@@ -15,7 +15,7 @@ func TestFilterNum1(t *testing.T) {
 	expected1 := Num1List{20, 20}
 
 	if !reflect.DeepEqual(where1, expected1) {
-		t.Errorf("Filter should result in %v, got %v", expected1, where1)
+		t.Errorf("Filter should result in %#v, got %#v", expected1, where1)
 	}
 
 	where2 := things.Filter(func(x Num1) bool {
@@ -23,7 +23,7 @@ func TestFilterNum1(t *testing.T) {
 	})
 
 	if where2.Len() != 0 {
-		t.Errorf("Filter should result in empty list, got %v", where2)
+		t.Errorf("Filter should result in empty list, got %#v", where2)
 	}
 
 	where3 := Num1List{}.Filter(func(x Num1) bool {
@@ -31,7 +31,7 @@ func TestFilterNum1(t *testing.T) {
 	})
 
 	if where3.Len() != 0 {
-		t.Errorf("Filter should result in empty list, got %v", where3)
+		t.Errorf("Filter should result in empty list, got %#v", where3)
 	}
 }
 
@@ -53,7 +53,7 @@ func TestFilterThing(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(where1, expected1) {
-		t.Errorf("Filter should result in %v, got %v", expected1, where1)
+		t.Errorf("Filter should result in %#v, got %#v", expected1, where1)
 	}
 
 	where2 := things.Filter(func(x Thing) bool {
@@ -61,7 +61,7 @@ func TestFilterThing(t *testing.T) {
 	})
 
 	if where2.Len() != 0 {
-		t.Errorf("Filter should result in empty list, got %v", where2)
+		t.Errorf("Filter should result in empty list, got %#v", where2)
 	}
 
 	where3 := ThingList{}.Filter(func(x Thing) bool {
@@ -69,6 +69,6 @@ func TestFilterThing(t *testing.T) {
 	})
 
 	if where3.Len() != 0 {
-		t.Errorf("Filter should result in empty list, got %v", where3)
+		t.Errorf("Filter should result in empty list, got %#v", where3)
 	}
 }

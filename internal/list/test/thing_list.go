@@ -541,23 +541,49 @@ func (list ThingList) MkString3(pfx, mid, sfx string) string {
 // optionForList
 
 // MapToNum1 transforms ThingList to Num1List.
-func (list ThingList) MapToNum1(fn func(Thing) Num1) (result Num1List) {
+func (list ThingList) MapToNum1(fn func(Thing) Num1) Num1Seq {
+	result := make(Num1List, 0, len(list))
 	for _, v := range list {
-
-		result = append(result, fn(v))
-
+		u := fn(v)
+		result = append(result, u)
 	}
-	return
+	return result
+}
+
+// FlatMapToNum1 transforms ThingList to Num1List, by repeatedly
+// calling the supplied function and concatenating the results as a single flat list.
+func (list ThingList) FlatMapToNum1(fn func(Thing) Num1Seq) Num1Seq {
+	result := make(Num1List, 0, len(list))
+	for _, v := range list {
+		u := fn(v)
+		if u.NonEmpty() {
+			result = append(result, (u.ToList())...)
+		}
+	}
+	return result
 }
 
 // MapToNum2 transforms ThingList to Num2List.
-func (list ThingList) MapToNum2(fn func(Thing) *Num2) (result Num2List) {
+func (list ThingList) MapToNum2(fn func(Thing) *Num2) Num2Seq {
+	result := make(Num2List, 0, len(list))
 	for _, v := range list {
-
-		result = append(result, fn(v))
-
+		u := fn(v)
+		result = append(result, u)
 	}
-	return
+	return result
+}
+
+// FlatMapToNum2 transforms ThingList to Num2List, by repeatedly
+// calling the supplied function and concatenating the results as a single flat list.
+func (list ThingList) FlatMapToNum2(fn func(Thing) Num2Seq) Num2Seq {
+	result := make(Num2List, 0, len(list))
+	for _, v := range list {
+		u := fn(v)
+		if u.NonEmpty() {
+			result = append(result, (u.ToList())...)
+		}
+	}
+	return result
 }
 
 // FoldLeftNum1 applies a binary operator to a start value and all elements of this list, going left to right.

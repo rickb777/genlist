@@ -20,7 +20,7 @@ func TestFoldLeftNum1(t *testing.T) {
 	expected1 := Num1(145)
 
 	if aggregate1 != expected1 {
-		t.Errorf("FoldLeftNum1 should be %v, got %v", expected1, aggregate1)
+		t.Errorf("FoldLeftNum1 should be %#v, got %#v", expected1, aggregate1)
 	}
 }
 
@@ -39,7 +39,7 @@ func TestFoldLeftColour(t *testing.T) {
 	expected1 := Colour("red:60:-20:100")
 
 	if aggregate1 != expected1 {
-		t.Errorf("FoldLeftColour should be %v, got %v", expected1, aggregate1)
+		t.Errorf("FoldLeftColour should be %#v, got %#v", expected1, aggregate1)
 	}
 }
 
@@ -58,7 +58,7 @@ func TestFoldRightNum1(t *testing.T) {
 	expected1 := Num1(145)
 
 	if aggregate1 != expected1 {
-		t.Errorf("FoldRightNum1 should be %v, got %v", expected1, aggregate1)
+		t.Errorf("FoldRightNum1 should be %#v, got %#v", expected1, aggregate1)
 	}
 }
 
@@ -77,6 +77,6 @@ func TestFoldRightColour(t *testing.T) {
 	expected1 := Colour("red:100:-20:60")
 
 	if aggregate1 != expected1 {
-		t.Errorf("FoldRightColour should be %v, got %v", expected1, aggregate1)
+		t.Errorf("FoldRightColour should be %#v, got %#v", expected1, aggregate1)
 	}
 }

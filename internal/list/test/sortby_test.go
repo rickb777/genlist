@@ -44,7 +44,7 @@ func TestSortBy(t *testing.T) {
 	sorted1 := ThingList{first, fourth, second, third, anotherThird}
 
 	if !reflect.DeepEqual(sort1, ThingList{first, fourth, second, third, anotherThird}) {
-		t.Errorf("SortWith name should be %v, got %v", sorted1, sort1)
+		t.Errorf("SortWith name should be %#v, got %#v", sorted1, sort1)
 	}
 
 	if !sort1.IsSortedWith(name) {
@@ -60,11 +60,11 @@ func TestSortBy(t *testing.T) {
 	sorted2 := ThingList{anotherThird, third, second, fourth, first}
 
 	if !reflect.DeepEqual(sort2, sorted2) {
-		t.Errorf("SortWithDesc name should be %v, got %v", sorted2, sort2)
+		t.Errorf("SortWithDesc name should be %#v, got %#v", sorted2, sort2)
 	}
 
 	if !sort2.IsSortedWithDesc(name) {
-		t.Errorf("IsSortedWithDesc name should be true %v", sort2)
+		t.Errorf("IsSortedWithDesc name should be true %#v", sort2)
 	}
 
 	if things.IsSortedWithDesc(name) {
@@ -77,7 +77,7 @@ func TestSortBy(t *testing.T) {
 	sorted3 := ThingList{eighth, fifth, first, fourth, second, seventh, sixth, third}
 
 	if !reflect.DeepEqual(sort3, sorted3) {
-		t.Errorf("Sort name should be %v, got %v", sorted3, sort3)
+		t.Errorf("Sort name should be %#v, got %#v", sorted3, sort3)
 	}
 
 	// intended to hit threshold to invoke medianOfThree (40)
@@ -101,7 +101,7 @@ func TestSortBy(t *testing.T) {
 	sorted4 = append(sorted4, appendMany(third, 6)...)
 
 	if !reflect.DeepEqual(sort4, sorted4) {
-		t.Errorf("Sort name should be %v, got %v", sorted3, sort3)
+		t.Errorf("Sort name should be %#v, got %#v", sorted3, sort3)
 	}
 }
 

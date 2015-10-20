@@ -16,6 +16,6 @@ func TestSumNum(t *testing.T) {
 	sum1 := things.SumNum1(number)
 
 	if sum1 != 140 {
-		t.Errorf("SumNum should result in %v, got %v", 340, sum1)
+		t.Errorf("SumNum should result in %#v, got %#v", 340, sum1)
 	}
 }

@@ -3,16 +3,26 @@ package list
 const ListMapToParamFunctions = `
 
 // MapTo{{.TypeParameter.LongName}} transforms {{.TName}}List to {{.TypeParameter.Name}}List.
-func (list {{.TName}}List) MapTo{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.TypeParameter.Name}}List) {
+func (list {{.TName}}List) MapTo{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) {{.TypeParameter.Name}}Seq {
+	result := make({{.TypeParameter.Name}}List, 0, len(list))
 	for _, v := range list {
-	    {{if .Type.Pointer}}
 		u := fn(v)
-		result = append(result, &u)
-		{{else}}
-		result = append(result, fn(v))
-		{{end}}
+		result = append(result, {{.Addr}}u)
 	}
-	return
+	return result
+}
+
+// FlatMapTo{{.TypeParameter.LongName}} transforms {{.TName}}List to {{.TypeParameter.Name}}List, by repeatedly
+// calling the supplied function and concatenating the results as a single flat list.
+func (list {{.TName}}List) FlatMapTo{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter.Name}}Seq) {{.TypeParameter.Name}}Seq {
+	result := make({{.TypeParameter.Name}}List, 0, len(list))
+	for _, v := range list {
+		u := fn(v)
+		if u.NonEmpty() {
+			result = append(result, (u.ToList())...)
+		}
+	}
+	return result
 }
 
 `

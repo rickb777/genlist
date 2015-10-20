@@ -257,13 +257,36 @@ func TestSum(t *testing.T) {
 
 func TestMapTo(t *testing.T) {
 	someThing := SomeOther(60)
-	m1 := someThing.MapToFoo(func(o Other) Foo { return Foo(fmt.Sprintf("%d", o)) }).Get()
-	if m1 != "60" {
+	fn1 := func(o Other) Foo { return Foo(fmt.Sprintf("%d", o)) }
+	m1 := someThing.MapToFoo(fn1)
+	if m1.Head() != "60" {
 		t.Errorf("MapToFoo should be '60' but got %q", m1)
 	}
 
 	noThing := NoOther()
-	m2 := noThing.MapToFoo(func(o Other) Foo { return Foo(fmt.Sprintf("%d", o)) })
+	m2 := noThing.MapToFoo(fn1)
+	if m2.NonEmpty() {
+		t.Errorf("MapToFoo should be absent but got %+v", m2)
+	}
+}
+
+func TestFlatMapTo(t *testing.T) {
+	someThing := SomeOther(60)
+	fn0 := func(o Other) FooSeq { return NoFoo() }
+	fn1 := func(o Other) FooSeq { return SomeFoo(Foo(fmt.Sprintf("%d", o))) }
+
+	m0 := someThing.FlatMapToFoo(fn0)
+	if m0.NonEmpty() {
+		t.Errorf("MapToFoo should be absent but got %q", m0)
+	}
+
+	m1 := someThing.FlatMapToFoo(fn1)
+	if m1.Head() != "60" {
+		t.Errorf("MapToFoo should be '60' but got %q", m1)
+	}
+
+	noThing := NoOther()
+	m2 := noThing.FlatMapToFoo(fn1)
 	if m2.NonEmpty() {
 		t.Errorf("MapToFoo should be absent but got %+v", m2)
 	}

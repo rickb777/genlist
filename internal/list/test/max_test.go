@@ -13,7 +13,7 @@ func TestMaxOrdered(t *testing.T) {
 	}
 
 	if max1 != m1 {
-		t.Errorf("Max should return %v, got %v", m1, max1)
+		t.Errorf("Max should return %#v, got %#v", m1, max1)
 	}
 
 	max2, err := Num1List{}.Max()
@@ -43,7 +43,7 @@ func TestMaxNotOrdered(t *testing.T) {
 	expected1 := Thing{"Third", 100}
 
 	if max1 != expected1 {
-		t.Errorf("Max Number should return %v, got %v", expected1, max1)
+		t.Errorf("Max Number should return %#v, got %#v", expected1, max1)
 	}
 
 	_, err2 := ThingList{}.Max(func(a, b Thing) bool {

@@ -12,7 +12,7 @@ func TestIndexWhereNum(t *testing.T) {
 	})
 
 	if where1 != 2 {
-		t.Errorf("IndexWhere should be 2, got %v", where1)
+		t.Errorf("IndexWhere should be 2, got %#v", where1)
 	}
 
 	where2 := things.IndexWhere(func(x Num1) bool {
@@ -20,7 +20,7 @@ func TestIndexWhereNum(t *testing.T) {
 	})
 
 	if where2 != -1 {
-		t.Errorf("IndexWhere should be -1, got %v", where2)
+		t.Errorf("IndexWhere should be -1, got %#v", where2)
 	}
 
 	where3 := Num1List{}.IndexWhere(func(x Num1) bool {
@@ -28,7 +28,7 @@ func TestIndexWhereNum(t *testing.T) {
 	})
 
 	if where3 != -1 {
-		t.Errorf("IndexWhere should be -1, got %v", where3)
+		t.Errorf("IndexWhere should be -1, got %#v", where3)
 	}
 }
 
@@ -48,7 +48,7 @@ func TestIndexWhereThing(t *testing.T) {
 	})
 
 	if where1 != 3 {
-		t.Errorf("IndexWhere should be 3, got %v", where1)
+		t.Errorf("IndexWhere should be 3, got %#v", where1)
 	}
 
 	where2 := things.IndexWhere(func(x Thing) bool {
@@ -56,7 +56,7 @@ func TestIndexWhereThing(t *testing.T) {
 	})
 
 	if where2 != -1 {
-		t.Errorf("IndexWhere should be -1, got %v", where2)
+		t.Errorf("IndexWhere should be -1, got %#v", where2)
 	}
 
 	where3 := ThingList{}.IndexWhere(func(x Thing) bool {
@@ -64,6 +64,6 @@ func TestIndexWhereThing(t *testing.T) {
 	})
 
 	if where3 != -1 {
-		t.Errorf("IndexWhere should be -1, got %v", where3)
+		t.Errorf("IndexWhere should be -1, got %#v", where3)
 	}
 }

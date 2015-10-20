@@ -24,7 +24,7 @@ func TestMinByNum1(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(min1, expected1)  {
-		t.Errorf("MaxByNum1 should be %v, got %v", expected1, min1)
+		t.Errorf("MaxByNum1 should be %#v, got %#v", expected1, min1)
 	}
 
 	_, err = ThingList{}.MinByNum1(number)
@@ -55,7 +55,7 @@ func TestMinByColour(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(min1, expected1)  {
-		t.Errorf("MinColour should be %v, got %v", expected1, min1)
+		t.Errorf("MinColour should be %#v, got %#v", expected1, min1)
 	}
 
 	_, err = ThingList{}.MinByColour(number)

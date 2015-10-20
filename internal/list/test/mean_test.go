@@ -10,6 +10,6 @@ func TestMean(t *testing.T) {
 	avg1 := Num1(60)
 
 	if mean1 != avg1 {
-		t.Errorf("Mean should be %v, got %v", avg1, mean1)
+		t.Errorf("Mean should be %#v, got %#v", avg1, mean1)
 	}
 }

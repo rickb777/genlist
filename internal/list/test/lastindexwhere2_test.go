@@ -12,7 +12,7 @@ func TestLastIndexWhere2Num(t *testing.T) {
 	}, 10)
 
 	if where1 != 5 {
-		t.Errorf("LastIndexWhere2 should be 5, got %v", where1)
+		t.Errorf("LastIndexWhere2 should be 5, got %#v", where1)
 	}
 
 	where2 := things.LastIndexWhere2(func(x Num1) bool {
@@ -20,7 +20,7 @@ func TestLastIndexWhere2Num(t *testing.T) {
 	}, 4)
 
 	if where2 != -1 {
-		t.Errorf("LastIndexWhere2 should be -1, got %v", where2)
+		t.Errorf("LastIndexWhere2 should be -1, got %#v", where2)
 	}
 
 	where3 := Num1List{}.LastIndexWhere2(func(x Num1) bool {
@@ -28,7 +28,7 @@ func TestLastIndexWhere2Num(t *testing.T) {
 	}, 10)
 
 	if where3 != -1 {
-		t.Errorf("LastIndexWhere2 should be -1, got %v", where3)
+		t.Errorf("LastIndexWhere2 should be -1, got %#v", where3)
 	}
 }
 
@@ -48,7 +48,7 @@ func TestLastIndexWhere2Thing(t *testing.T) {
 	}, 10)
 
 	if where1a != 4 {
-		t.Errorf("LastIndexWhere2 should be 4, got %v", where1a)
+		t.Errorf("LastIndexWhere2 should be 4, got %#v", where1a)
 	}
 
 	where1b := things.LastIndexWhere2(func(x Thing) bool {
@@ -56,7 +56,7 @@ func TestLastIndexWhere2Thing(t *testing.T) {
 	}, 3)
 
 	if where1b != 3 {
-		t.Errorf("LastIndexWhere2 should be 3, got %v", where1b)
+		t.Errorf("LastIndexWhere2 should be 3, got %#v", where1b)
 	}
 
 	where2 := things.LastIndexWhere2(func(x Thing) bool {
@@ -64,7 +64,7 @@ func TestLastIndexWhere2Thing(t *testing.T) {
 	}, 10)
 
 	if where2 != -1 {
-		t.Errorf("LastIndexWhere2 should be -1, got %v", where2)
+		t.Errorf("LastIndexWhere2 should be -1, got %#v", where2)
 	}
 
 	where3 := ThingList{}.LastIndexWhere2(func(x Thing) bool {
@@ -72,6 +72,6 @@ func TestLastIndexWhere2Thing(t *testing.T) {
 	}, 10)
 
 	if where3 != -1 {
-		t.Errorf("LastIndexWhere2 should be -1, got %v", where3)
+		t.Errorf("LastIndexWhere2 should be -1, got %#v", where3)
 	}
 }

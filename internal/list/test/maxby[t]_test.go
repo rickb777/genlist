@@ -24,7 +24,7 @@ func TestMaxByNum1(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(max1, expected1)  {
-		t.Errorf("MaxByNum1 should be %v, got %v", expected1, max1)
+		t.Errorf("MaxByNum1 should be %#v, got %#v", expected1, max1)
 	}
 
 	_, err = ThingList{}.MaxByNum1(number)
@@ -55,7 +55,7 @@ func TestMaxByColour(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(max1, expected1)  {
-		t.Errorf("MaxColour should be %v, got %v", expected1, max1)
+		t.Errorf("MaxColour should be %#v, got %#v", expected1, max1)
 	}
 
 	_, err = ThingList{}.MaxByColour(number)

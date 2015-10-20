@@ -15,7 +15,7 @@ func TestTakeWhileNum(t *testing.T) {
 	expected1 := Num1List{1, 3, 17, 5}
 
 	if !reflect.DeepEqual(where1, expected1) {
-		t.Errorf("TakeWhile should result in %v, got %v", expected1, where1)
+		t.Errorf("TakeWhile should result in %#v, got %#v", expected1, where1)
 	}
 
 	where2 := things.TakeWhile(func(x Num1) bool {
@@ -23,7 +23,7 @@ func TestTakeWhileNum(t *testing.T) {
 	})
 
 	if len(where2) != 0 {
-		t.Errorf("TakeWhile should result in empty list, got %v", where2)
+		t.Errorf("TakeWhile should result in empty list, got %#v", where2)
 	}
 
 	where3 := things.TakeWhile(func(x Num1) bool {
@@ -31,7 +31,7 @@ func TestTakeWhileNum(t *testing.T) {
 	})
 
 	if !reflect.DeepEqual(where3, things) {
-		t.Errorf("TakeWhile should result in %v, got %v", things, where3)
+		t.Errorf("TakeWhile should result in %#v, got %#v", things, where3)
 	}
 
 	where4 := Num1List{}.TakeWhile(func(x Num1) bool {
@@ -39,7 +39,7 @@ func TestTakeWhileNum(t *testing.T) {
 	})
 
 	if len(where4) != 0 {
-		t.Errorf("TakeWhile should result in empty list, got %v", where4)
+		t.Errorf("TakeWhile should result in empty list, got %#v", where4)
 	}
 }
 
@@ -63,7 +63,7 @@ func TestTakeWhileThing(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(where1, expected1) {
-		t.Errorf("TakeWhile should result in %v, got %v", expected1, where1)
+		t.Errorf("TakeWhile should result in %#v, got %#v", expected1, where1)
 	}
 
 	where2 := things.TakeWhile(func(x Thing) bool {
@@ -71,7 +71,7 @@ func TestTakeWhileThing(t *testing.T) {
 	})
 
 	if len(where2) != 0 {
-		t.Errorf("TakeWhile should result in empty list, got %v", where2)
+		t.Errorf("TakeWhile should result in empty list, got %#v", where2)
 	}
 
 	where3 := things.TakeWhile(func(x Thing) bool {
@@ -79,7 +79,7 @@ func TestTakeWhileThing(t *testing.T) {
 	})
 
 	if !reflect.DeepEqual(where3, things) {
-		t.Errorf("TakeWhile should result in %v, got %v", things, where3)
+		t.Errorf("TakeWhile should result in %#v, got %#v", things, where3)
 	}
 
 	where4 := ThingList{}.TakeWhile(func(x Thing) bool {
@@ -87,6 +87,6 @@ func TestTakeWhileThing(t *testing.T) {
 	})
 
 	if len(where4) != 0 {
-		t.Errorf("TakeWhile should result in empty list, got %v", where4)
+		t.Errorf("TakeWhile should result in empty list, got %#v", where4)
 	}
 }

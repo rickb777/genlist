@@ -14,7 +14,7 @@ func TestMinByNum(t *testing.T) {
 	}
 
 	if min1 != -20 {
-		t.Errorf("MinBy Number should return %v, got %v", -20, min1)
+		t.Errorf("MinBy Number should return %#v, got %#v", -20, min1)
 	}
 
 	_, err2 := Num1List{}.MinBy(func(a, b Num1) bool {
@@ -43,7 +43,7 @@ func TestMinByThing(t *testing.T) {
 
 	expected1 := Thing{"Second", -20}
 	if min1 != expected1 {
-		t.Errorf("MinBy Number should return %v, got %v", expected1, min1)
+		t.Errorf("MinBy Number should return %#v, got %#v", expected1, min1)
 	}
 
 	_, err2 := ThingList{}.MinBy(func(a, b Thing) bool {

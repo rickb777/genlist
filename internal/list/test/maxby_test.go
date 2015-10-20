@@ -14,7 +14,7 @@ func TestMaxByNum(t *testing.T) {
 	}
 
 	if min1 != 100 {
-		t.Errorf("MaxBy Number should return %v, got %v", 100, min1)
+		t.Errorf("MaxBy Number should return %#v, got %#v", 100, min1)
 	}
 
 	_, err2 := Num1List{}.MaxBy(func(a, b Num1) bool {
@@ -43,7 +43,7 @@ func TestMaxByThing(t *testing.T) {
 
 	expected1 := Thing{"Third", 100}
 	if min1 != expected1 {
-		t.Errorf("MaxBy Number should return %v, got %v", expected1, min1)
+		t.Errorf("MaxBy Number should return %#v, got %#v", expected1, min1)
 	}
 
 	_, err2 := ThingList{}.MaxBy(func(a, b Thing) bool {

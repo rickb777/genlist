@@ -8,6 +8,6 @@ func TestSum(t *testing.T) {
 	sum := others.Sum()
 
 	if sum != 365 {
-		t.Errorf("Sum should result in %v, got %v", 365, sum)
+		t.Errorf("Sum should result in %#v, got %#v", 365, sum)
 	}
 }

@@ -12,7 +12,7 @@ func TestIndexWhere2Num(t *testing.T) {
 	}, 2)
 
 	if where1a != 2 {
-		t.Errorf("IndexWhere2 should be 2, got %v", where1a)
+		t.Errorf("IndexWhere2 should be 2, got %#v", where1a)
 	}
 
 	where1b := things.IndexWhere2(func(x Num1) bool {
@@ -20,7 +20,7 @@ func TestIndexWhere2Num(t *testing.T) {
 	}, 3)
 
 	if where1b != 5 {
-		t.Errorf("IndexWhere2 should be 5, got %v", where1b)
+		t.Errorf("IndexWhere2 should be 5, got %#v", where1b)
 	}
 
 	where2 := things.IndexWhere2(func(x Num1) bool {
@@ -28,7 +28,7 @@ func TestIndexWhere2Num(t *testing.T) {
 	}, 1)
 
 	if where2 != -1 {
-		t.Errorf("IndexWhere2 should be -1, got %v", where2)
+		t.Errorf("IndexWhere2 should be -1, got %#v", where2)
 	}
 
 	where3 := Num1List{}.IndexWhere2(func(x Num1) bool {
@@ -36,7 +36,7 @@ func TestIndexWhere2Num(t *testing.T) {
 	}, 0)
 
 	if where3 != -1 {
-		t.Errorf("IndexWhere2 should be -1, got %v", where3)
+		t.Errorf("IndexWhere2 should be -1, got %#v", where3)
 	}
 }
 
@@ -56,7 +56,7 @@ func TestIndexWhere2Thing(t *testing.T) {
 	}, 1)
 
 	if where1a != 3 {
-		t.Errorf("IndexWhere2 should be 3, got %v", where1a)
+		t.Errorf("IndexWhere2 should be 3, got %#v", where1a)
 	}
 
 	where1b := things.IndexWhere2(func(x Thing) bool {
@@ -64,7 +64,7 @@ func TestIndexWhere2Thing(t *testing.T) {
 	}, 4)
 
 	if where1b != 4 {
-		t.Errorf("IndexWhere2 should be 4, got %v", where1b)
+		t.Errorf("IndexWhere2 should be 4, got %#v", where1b)
 	}
 
 	where2 := things.IndexWhere2(func(x Thing) bool {
@@ -72,7 +72,7 @@ func TestIndexWhere2Thing(t *testing.T) {
 	}, 0)
 
 	if where2 != -1 {
-		t.Errorf("IndexWhere2 should be -1, got %v", where2)
+		t.Errorf("IndexWhere2 should be -1, got %#v", where2)
 	}
 
 	where3 := ThingList{}.IndexWhere2(func(x Thing) bool {
@@ -80,6 +80,6 @@ func TestIndexWhere2Thing(t *testing.T) {
 	}, 0)
 
 	if where3 != -1 {
-		t.Errorf("IndexWhere2 should be -1, got %v", where3)
+		t.Errorf("IndexWhere2 should be -1, got %#v", where3)
 	}
 }

@@ -295,7 +295,7 @@ func (o OptionalOther) MkString3(pfx, mid, sfx string) string {
 }
 
 // MapToFoo transforms OptionalOther to OptionalFoo.
-func (o OptionalOther) MapToFoo(fn func(Other) Foo) OptionalFoo {
+func (o OptionalOther) MapToFoo(fn func(Other) Foo) FooSeq {
 	if o.IsEmpty() {
 		return NoFoo()
 	}
@@ -303,4 +303,18 @@ func (o OptionalOther) MapToFoo(fn func(Other) Foo) OptionalFoo {
 	u := fn(*(o.x))
 
 	return SomeFoo(u)
+}
+
+// FlatMapToFoo transforms OptionalOther to OptionalFoo, by
+// calling the supplied function on the enclosed instance, if any, and returning an option.
+// The result is only defined if *both* the receiver is defined and the function returns a non-empty sequence.
+func (o OptionalOther) FlatMapToFoo(fn func(Other) FooSeq) (result FooSeq) {
+	if o.IsEmpty() {
+		return NoFoo()
+	}
+	u := fn(*(o.x))
+	if u.IsEmpty() {
+		return NoFoo()
+	}
+	return SomeFoo(u.Head())
 }

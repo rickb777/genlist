@@ -12,7 +12,7 @@ func TestReverseNum(t *testing.T) {
 	rev1 := others.Reverse()
 
 	if !reflect.DeepEqual(rev1, expected) {
-		t.Errorf("Reverse should return %v, got %v", expected, rev1)
+		t.Errorf("Reverse should return %#v, got %#v", expected, rev1)
 	}
 
 	rev2 := Num1List{}.Reverse()
@@ -39,7 +39,7 @@ func TestReverseThing(t *testing.T) {
 	rev1 := things.Reverse()
 
 	if !reflect.DeepEqual(rev1, expected) {
-		t.Errorf("Reverse should return %v, got %v", expected, rev1)
+		t.Errorf("Reverse should return %#v, got %#v", expected, rev1)
 	}
 
 	rev2 := Num1List{}.Reverse()

@@ -22,7 +22,7 @@ func TestMeanNum(t *testing.T) {
 	expected1 := Num1(50)
 
 	if mean1 != expected1 {
-		t.Errorf("Mean should be %v, got %v", expected1, mean1)
+		t.Errorf("Mean should be %#v, got %#v", expected1, mean1)
 	}
 
 	mean2, err := ThingList{}.MeanNum1(number)

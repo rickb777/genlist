@@ -17,11 +17,11 @@ func TestPartitionNum(t *testing.T) {
 	others1 := Num1List{-20, -10}
 
 	if !reflect.DeepEqual(m1, expected1) {
-		t.Errorf("Partition should result in %v, got %v", expected1, m1)
+		t.Errorf("Partition should result in %#v, got %#v", expected1, m1)
 	}
 
 	if !reflect.DeepEqual(o1, others1) {
-		t.Errorf("Partition should result in %v, got %v", others1, o1)
+		t.Errorf("Partition should result in %#v, got %#v", others1, o1)
 	}
 
 	m2, o2 := things.Partition(func(x Num1) bool {
@@ -29,11 +29,11 @@ func TestPartitionNum(t *testing.T) {
 	})
 
 	if m2.Len() != 0 {
-		t.Errorf("Partition should result in empty list, got %v", m2)
+		t.Errorf("Partition should result in empty list, got %#v", m2)
 	}
 
 	if !reflect.DeepEqual(o2, things) {
-		t.Errorf("Partition should result in %v, got %v", things, o2)
+		t.Errorf("Partition should result in %#v, got %#v", things, o2)
 	}
 
 	m3, o3 := Num1List{}.Partition(func(x Num1) bool {
@@ -41,11 +41,11 @@ func TestPartitionNum(t *testing.T) {
 	})
 
 	if m3.Len() != 0 {
-		t.Errorf("Partition should result in empty list, got %v", m3)
+		t.Errorf("Partition should result in empty list, got %#v", m3)
 	}
 
 	if o3.Len() != 0 {
-		t.Errorf("Partition should result in empty list, got %v", o3)
+		t.Errorf("Partition should result in empty list, got %#v", o3)
 	}
 }
 
@@ -72,11 +72,11 @@ func TestPartitionThing(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(m1, expected1) {
-		t.Errorf("Partition should result in %v, got %v", expected1, m1)
+		t.Errorf("Partition should result in %#v, got %#v", expected1, m1)
 	}
 
 	if !reflect.DeepEqual(o1, others1) {
-		t.Errorf("Partition should result in %v, got %v", others1, o1)
+		t.Errorf("Partition should result in %#v, got %#v", others1, o1)
 	}
 
 	m2, o2 := things.Partition(func(x Thing) bool {
@@ -84,11 +84,11 @@ func TestPartitionThing(t *testing.T) {
 	})
 
 	if m2.Len() != 0 {
-		t.Errorf("Partition should result in empty list, got %v", m2)
+		t.Errorf("Partition should result in empty list, got %#v", m2)
 	}
 
 	if !reflect.DeepEqual(o2, things) {
-		t.Errorf("Partition should result in %v, got %v", things, o2)
+		t.Errorf("Partition should result in %#v, got %#v", things, o2)
 	}
 
 	m3, o3 := ThingList{}.Partition(func(x Thing) bool {
@@ -96,10 +96,10 @@ func TestPartitionThing(t *testing.T) {
 	})
 
 	if m3.Len() != 0 {
-		t.Errorf("Partition should result in empty list, got %v", m3)
+		t.Errorf("Partition should result in empty list, got %#v", m3)
 	}
 
 	if o3.Len() != 0 {
-		t.Errorf("Partition should result in empty list, got %v", o3)
+		t.Errorf("Partition should result in empty list, got %#v", o3)
 	}
 }

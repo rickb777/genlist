@@ -15,7 +15,7 @@ func TestDistinctByNum1(t *testing.T) {
 	})
 
 	if !reflect.DeepEqual(distinctby1, expected) {
-		t.Errorf("DistinctBy should be %v, but got %v", expected, distinctby1)
+		t.Errorf("DistinctBy should be %#v, but got %#v", expected, distinctby1)
 	}
 }
 
@@ -29,7 +29,7 @@ func TestDistinctByNum2(t *testing.T) {
 	})
 
 	if !reflect.DeepEqual(distinctby1, expected) {
-		t.Errorf("DistinctBy should be %v, but got %v", expected, distinctby1)
+		t.Errorf("DistinctBy should be %#v, but got %#v", expected, distinctby1)
 	}
 }
 
@@ -55,6 +55,6 @@ func TestDistinctByThing(t *testing.T) {
 	})
 
 	if !reflect.DeepEqual(distinctby1, expected) {
-		t.Errorf("DistinctBy should be %v, but got %v", expected, distinctby1)
+		t.Errorf("DistinctBy should be %#v, but got %#v", expected, distinctby1)
 	}
 }

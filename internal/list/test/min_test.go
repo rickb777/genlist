@@ -13,7 +13,7 @@ func TestMinOrdered(t *testing.T) {
 	}
 
 	if min1 != m1 {
-		t.Errorf("Min should return %v, got %v", m1, min1)
+		t.Errorf("Min should return %#v, got %#v", m1, min1)
 	}
 
 	min2, err := Num1List{}.Min()
@@ -43,7 +43,7 @@ func TestMinNotOrdered(t *testing.T) {
 	expected1 := Thing{"Second", -20}
 
 	if max1 != expected1 {
-		t.Errorf("Min Number should return %v, got %v", expected1, max1)
+		t.Errorf("Min Number should return %#v, got %#v", expected1, max1)
 	}
 
 	_, err2 := ThingList{}.Min(func(a, b Thing) bool {

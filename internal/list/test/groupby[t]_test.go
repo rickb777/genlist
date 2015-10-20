@@ -30,7 +30,7 @@ func TestGroupByNum1(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(groupby1, expected1) {
-		t.Errorf("GroupByNum should be %v, got %v", expected1, groupby1)
+		t.Errorf("GroupByNum should be %#v, got %#v", expected1, groupby1)
 	}
 }
 
@@ -63,6 +63,6 @@ func TestGroupByColour(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(groupby1, expected1) {
-		t.Errorf("GroupByNum should be %v, got %v", expected1, groupby1)
+		t.Errorf("GroupByNum should be %#v, got %#v", expected1, groupby1)
 	}
 }

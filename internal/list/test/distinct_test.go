@@ -13,7 +13,7 @@ func TestDistinctNum1(t *testing.T) {
 	distinct1 := things.Distinct()
 
 	if !reflect.DeepEqual(distinct1, should) {
-		t.Errorf("Distinct should exclude be %v, but found %v", should, distinct1)
+		t.Errorf("Distinct should exclude be %#v, but found %#v", should, distinct1)
 	}
 }
 
@@ -25,7 +25,7 @@ func TestDistinctNum2(t *testing.T) {
 	distinct1 := things.Distinct()
 
 	if !reflect.DeepEqual(distinct1, should) {
-		t.Errorf("Distinct should exclude be %v, but found %v", should, distinct1)
+		t.Errorf("Distinct should exclude be %#v, but found %#v", should, distinct1)
 	}
 }
 
@@ -46,6 +46,6 @@ func TestDistinctThing(t *testing.T) {
 	distinct1 := things.Distinct()
 
 	if !reflect.DeepEqual(distinct1, should) {
-		t.Errorf("Distinct should exclude be %v, but found %v", should, distinct1)
+		t.Errorf("Distinct should exclude be %#v, but found %#v", should, distinct1)
 	}
 }

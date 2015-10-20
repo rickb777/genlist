@@ -18,6 +18,7 @@ type model struct {
 	PName         string
 	Ptr           string
 	Deref         string
+	Addr          string
 	// these templates only ever happen to use one type parameter
 	TypeParameter typewriter.Type
 	typewriter.TagValue
@@ -27,9 +28,11 @@ type model struct {
 func newModel(typ typewriter.Type, flags flags) model {
 	p := ""
 	d := "*"
+	a := ""
 	if typ.Pointer {
 		p = "*"
 		d = ""
+		a = "&"
 	}
 	return model{
 		Type:  typ,
@@ -37,6 +40,7 @@ func newModel(typ typewriter.Type, flags flags) model {
 		PName: typ.String(),
 		Ptr:   p,
 		Deref: d,
+		Addr:  a,
 		Has:   flags,
 	}
 }
