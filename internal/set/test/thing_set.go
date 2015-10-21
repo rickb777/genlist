@@ -78,12 +78,7 @@ func (set ThingSet) ContainsAll(i ...Thing) bool {
 	return true
 }
 
-// Equals determines if two sets are equal to each other.
-// They are considered equal if both are the same size and both have the same items.
-func (set ThingSet) Equals(other ThingSet) bool {
-	if set.Size() != other.Size() {
-		return false
-	}
+func (set ThingSet) actualSubset(other ThingSet) bool {
 	for item := range set {
 		if !other.Contains(item) {
 			return false
@@ -92,14 +87,21 @@ func (set ThingSet) Equals(other ThingSet) bool {
 	return true
 }
 
+// Equals determines if two sets are equal to each other.
+// They are considered equal if both are the same size and both have the same items.
+func (set ThingSet) Equals(other ThingSet) bool {
+	return set.Size() == other.Size() && set.actualSubset(other)
+}
+
 // IsSubset determines if every item in the other set is in this set.
 func (set ThingSet) IsSubset(other ThingSet) bool {
-	for item := range set {
-		if !other.Contains(item) {
-			return false
-		}
-	}
-	return true
+	return set.Size() <= other.Size() && set.actualSubset(other)
+}
+
+// IsProperSubset determines if every item in the other set is in this set and this set is
+// smaller than the other.
+func (set ThingSet) IsProperSubset(other ThingSet) bool {
+	return set.Size() < other.Size() && set.actualSubset(other)
 }
 
 // IsSuperset determines if every item of this set is in the other set.
@@ -119,8 +121,8 @@ func (set ThingSet) Union(other ThingSet) ThingSet {
 	return union
 }
 
-// Intersect returns a new set with items that exist only in both sets.
-func (set ThingSet) Intersect(other ThingSet) ThingSet {
+// Intersection returns a new set with items that exist only in both sets.
+func (set ThingSet) Intersection(other ThingSet) ThingSet {
 	intersection := NewThingSet()
 	// loop over the smaller set
 	if set.Size() < other.Size() {
@@ -151,6 +153,7 @@ func (set ThingSet) Difference(other ThingSet) ThingSet {
 }
 
 // Add creates a new set with elements added. This is similar to Union, but takes a slice of extra values.
+// The receiver is not modified.
 func (set ThingSet) Add(others ...Thing) ThingSet {
 	added := NewThingSet()
 	for item := range set {
@@ -163,6 +166,7 @@ func (set ThingSet) Add(others ...Thing) ThingSet {
 }
 
 // Remove creates a new set with elements removed. This is similar to Difference, but takes a slice of unwanted values.
+// The receiver is not modified.
 func (set ThingSet) Remove(unwanted ...Thing) ThingSet {
 	removed := NewThingSet()
 	for item := range set {
@@ -324,4 +328,4 @@ func (set ThingSet) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// Set flags: {Collection:false Sequence:false List:false Option:false Set:true}
+// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[]}

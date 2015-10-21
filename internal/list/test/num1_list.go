@@ -611,4 +611,4 @@ func (list Num1List) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
-// List flags: {Collection:false Sequence:false List:true Option:false Set:false}
+// List flags: {Collection:false Sequence:false List:true Option:false Set:false Tag:map[]}

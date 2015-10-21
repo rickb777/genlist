@@ -11,6 +11,23 @@ type flags struct {
 	List       bool
 	Option     bool
 	Set        bool
+	Tag        map[string]bool
+}
+
+func newFlags() flags {
+	flags := flags{}
+	flags.Tag = make(map[string]bool)
+	return flags
+}
+
+func (f flags) setFlag(name string) flags {
+	switch name {
+	case listName:   f.List = true
+	case optionName: f.Option = true
+	case setName:    f.Set = true
+	default:         f.Tag[name] = true
+	}
+	return f
 }
 
 // a convenience for passing values into templates; in MVC it'd be called a view model
@@ -45,13 +62,6 @@ func newModel(typ typewriter.Type, flags flags) model {
 		Addr:  a,
 		Has:   flags,
 	}
-}
-
-func writeBasicTemplate(w io.Writer, twTmpl *typewriter.Template, typ typewriter.Type, flags flags) error {
-	flags.Collection = true
-	m := newModel(typ, flags)
-	//	fmt.Printf("writeBasicTemplate\n  %+v\n", m)
-	return writeTextTemplate(w, twTmpl, m)
 }
 
 func writeTaggedTemplate(w io.Writer, twTmpl *typewriter.Template, typ typewriter.Type, flags flags, tv typewriter.TagValue) error {

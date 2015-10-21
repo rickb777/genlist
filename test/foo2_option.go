@@ -872,4 +872,4 @@ func (list Foo2List) LastOption() OptionalFoo2 {
 	}
 }
 
-// Option flags: {Collection:false Sequence:false List:true Option:true Set:false}
+// Option flags: {Collection:false Sequence:false List:true Option:true Set:false Tag:map[]}

@@ -872,4 +872,4 @@ func (o OptionalFoo1) MkString3(pfx, mid, sfx string) string {
 	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
 
-// List flags: {Collection:false Sequence:false List:true Option:true Set:false}
+// List flags: {Collection:false Sequence:false List:true Option:true Set:false Tag:map[]}

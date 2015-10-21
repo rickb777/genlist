@@ -61,26 +61,34 @@ func (xw *xWriter) Write(w io.Writer, typ typewriter.Type) error {
 		return nil
 	}
 
-	flags := setFlag(xw.name, &flags{})
+	flags := newFlags().setFlag(xw.name)
 	for _, v := range tag.Values {
-		flags = setFlag(v.Name, flags)
+		flags = flags.setFlag(v.Name)
 	}
 
-	// start with the list template
+	// enable collection and (possibly) sequence for the core template
+	flags.Collection = true
 	flags.Sequence = xw.sequence
-	if err := writeBasicTemplate(w, xw.coreTemplate, typ, *flags); err != nil {
+
+	// start with the core template
+	model := newModel(typ, flags)
+	//	fmt.Printf("writeBasicTemplate\n  %+v\n", m)
+	if err := writeTextTemplate(w, xw.coreTemplate, model); err != nil {
 		return err
 	}
 
+	// only want to include collection and sequence once, so turn them off before processing tags
+	flags.Collection = false
 	flags.Sequence = false
+
 	for _, v := range tag.Values {
-		err := xw.writeForTag(w, typ, v, *flags)
+		err := xw.writeForTag(w, typ, v, flags)
 		if err != nil {
 			return err
 		}
 	}
 
-	fmt.Fprintf(w, "// %s flags: %+v\n", xw.name, *flags)
+	fmt.Fprintf(w, "// %s flags: %+v\n", xw.name, flags)
 	return nil
 }
 
@@ -92,13 +100,4 @@ func (xw *xWriter) writeForTag(w io.Writer, typ typewriter.Type, v typewriter.Ta
 	}
 
 	return writeTaggedTemplate(w, tmpl, typ, flags, v)
-}
-
-func setFlag(name string, flags *flags) *flags {
-	switch name {
-	case listName:   flags.List = true
-	case optionName: flags.Option = true
-	case setName:    flags.Set = true
-	}
-	return flags
 }

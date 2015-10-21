@@ -43,4 +43,4 @@ func (set {{.TName}}Set) ToSlice() []{{.TName}} {
 	return slice
 }
 
-` + setAlgebra + iterationFunctions + predicatedFunctions + mkstringFunctions
+` + setAlgebra + addRemoveFunctions + iterationFunctions + predicatedFunctions + mkstringFunctions

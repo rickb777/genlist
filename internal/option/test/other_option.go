@@ -330,4 +330,4 @@ func (o OptionalOther) FlatMapToFoo(fn func(Other) FooSeq) (result FooSeq) {
 	return SomeFoo(u.Head())
 }
 
-// Option flags: {Collection:false Sequence:false List:false Option:true Set:false}
+// Option flags: {Collection:false Sequence:false List:false Option:true Set:false Tag:map[With:true]}

@@ -78,12 +78,7 @@ func (set Num1Set) ContainsAll(i ...Num1) bool {
 	return true
 }
 
-// Equals determines if two sets are equal to each other.
-// They are considered equal if both are the same size and both have the same items.
-func (set Num1Set) Equals(other Num1Set) bool {
-	if set.Size() != other.Size() {
-		return false
-	}
+func (set Num1Set) actualSubset(other Num1Set) bool {
 	for item := range set {
 		if !other.Contains(item) {
 			return false
@@ -92,14 +87,21 @@ func (set Num1Set) Equals(other Num1Set) bool {
 	return true
 }
 
+// Equals determines if two sets are equal to each other.
+// They are considered equal if both are the same size and both have the same items.
+func (set Num1Set) Equals(other Num1Set) bool {
+	return set.Size() == other.Size() && set.actualSubset(other)
+}
+
 // IsSubset determines if every item in the other set is in this set.
 func (set Num1Set) IsSubset(other Num1Set) bool {
-	for item := range set {
-		if !other.Contains(item) {
-			return false
-		}
-	}
-	return true
+	return set.Size() <= other.Size() && set.actualSubset(other)
+}
+
+// IsProperSubset determines if every item in the other set is in this set and this set is
+// smaller than the other.
+func (set Num1Set) IsProperSubset(other Num1Set) bool {
+	return set.Size() < other.Size() && set.actualSubset(other)
 }
 
 // IsSuperset determines if every item of this set is in the other set.
@@ -119,8 +121,8 @@ func (set Num1Set) Union(other Num1Set) Num1Set {
 	return union
 }
 
-// Intersect returns a new set with items that exist only in both sets.
-func (set Num1Set) Intersect(other Num1Set) Num1Set {
+// Intersection returns a new set with items that exist only in both sets.
+func (set Num1Set) Intersection(other Num1Set) Num1Set {
 	intersection := NewNum1Set()
 	// loop over the smaller set
 	if set.Size() < other.Size() {
@@ -151,6 +153,7 @@ func (set Num1Set) Difference(other Num1Set) Num1Set {
 }
 
 // Add creates a new set with elements added. This is similar to Union, but takes a slice of extra values.
+// The receiver is not modified.
 func (set Num1Set) Add(others ...Num1) Num1Set {
 	added := NewNum1Set()
 	for item := range set {
@@ -163,6 +166,7 @@ func (set Num1Set) Add(others ...Num1) Num1Set {
 }
 
 // Remove creates a new set with elements removed. This is similar to Difference, but takes a slice of unwanted values.
+// The receiver is not modified.
 func (set Num1Set) Remove(unwanted ...Num1) Num1Set {
 	removed := NewNum1Set()
 	for item := range set {
@@ -324,4 +328,4 @@ func (set Num1Set) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// Set flags: {Collection:false Sequence:false List:false Option:false Set:true}
+// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[]}

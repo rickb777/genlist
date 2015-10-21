@@ -16,3 +16,5 @@ type {{.TName}}Collection interface {
 
 {{end}}
 `
+
+// TODO queue functions: PopHead, PopLast, PushHead, PushLast

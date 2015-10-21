@@ -78,12 +78,7 @@ func (set BarSet) ContainsAll(i ...Bar) bool {
 	return true
 }
 
-// Equals determines if two sets are equal to each other.
-// They are considered equal if both are the same size and both have the same items.
-func (set BarSet) Equals(other BarSet) bool {
-	if set.Size() != other.Size() {
-		return false
-	}
+func (set BarSet) actualSubset(other BarSet) bool {
 	for item := range set {
 		if !other.Contains(item) {
 			return false
@@ -92,14 +87,21 @@ func (set BarSet) Equals(other BarSet) bool {
 	return true
 }
 
+// Equals determines if two sets are equal to each other.
+// They are considered equal if both are the same size and both have the same items.
+func (set BarSet) Equals(other BarSet) bool {
+	return set.Size() == other.Size() && set.actualSubset(other)
+}
+
 // IsSubset determines if every item in the other set is in this set.
 func (set BarSet) IsSubset(other BarSet) bool {
-	for item := range set {
-		if !other.Contains(item) {
-			return false
-		}
-	}
-	return true
+	return set.Size() <= other.Size() && set.actualSubset(other)
+}
+
+// IsProperSubset determines if every item in the other set is in this set and this set is
+// smaller than the other.
+func (set BarSet) IsProperSubset(other BarSet) bool {
+	return set.Size() < other.Size() && set.actualSubset(other)
 }
 
 // IsSuperset determines if every item of this set is in the other set.
@@ -119,8 +121,8 @@ func (set BarSet) Union(other BarSet) BarSet {
 	return union
 }
 
-// Intersect returns a new set with items that exist only in both sets.
-func (set BarSet) Intersect(other BarSet) BarSet {
+// Intersection returns a new set with items that exist only in both sets.
+func (set BarSet) Intersection(other BarSet) BarSet {
 	intersection := NewBarSet()
 	// loop over the smaller set
 	if set.Size() < other.Size() {
@@ -151,6 +153,7 @@ func (set BarSet) Difference(other BarSet) BarSet {
 }
 
 // Add creates a new set with elements added. This is similar to Union, but takes a slice of extra values.
+// The receiver is not modified.
 func (set BarSet) Add(others ...Bar) BarSet {
 	added := NewBarSet()
 	for item := range set {
@@ -163,6 +166,7 @@ func (set BarSet) Add(others ...Bar) BarSet {
 }
 
 // Remove creates a new set with elements removed. This is similar to Difference, but takes a slice of unwanted values.
+// The receiver is not modified.
 func (set BarSet) Remove(unwanted ...Bar) BarSet {
 	removed := NewBarSet()
 	for item := range set {
@@ -324,4 +328,4 @@ func (set BarSet) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// Set flags: {Collection:false Sequence:false List:false Option:false Set:true}
+// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[]}
