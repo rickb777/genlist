@@ -31,7 +31,9 @@ This creates a optional example type `OptionalExample` to hold `Example` values.
  * **Reverse**, **Shuffle** - get a new list that is reversed or shuffled
  * **Take**, **TakeWhile**, **DropLast** - get a new list without some trailing elements
  * **Drop**, **DropWhile**, **TakeLast** - get a new list without some leading elements
- * **Filter**, **Partition** - get a subset, or two disjoint subsets, of the list
+ * **Filter**, **Partition** - get a subset, or two disjoint subsets, of the option
+ * **Iter** - get a channel that supplies values in sequence
+ * **MkString**, **MkString3**, **String** - constructs a string representation of the option (like a list)
 
 #### Comparable Methods
 
@@ -71,10 +73,11 @@ type Example struct { ... }
 Each tag creates a corresponding `MapToFred`, `MapToJim` etc function. These functions return the corresponding
 `OptionalFred`, `OptionalJim` etc values.
 
-### Next: [Joint Lists With Options](Unified.md)
+### Next: [Sets](Set.md)
 #### Contents:
 
  * [Intro](README.md)
  * [Lists](List.md)
  * **Options**
+ * [Sets](Set.md)
  * [Using Lists and Options Together](Unified.md)

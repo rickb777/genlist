@@ -46,4 +46,5 @@ In addition, the listDocumentatio has the following extra methods:
  * [Intro](README.md)
  * [Lists](List.md)
  * [Options](Option.md)
+ * [Sets](Set.md)
  * **Joint Lists With Options**

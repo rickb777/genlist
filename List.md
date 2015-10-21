@@ -34,10 +34,11 @@ The generated code is a list to hold `Example` values. It provides methods inclu
  * **Take**, **TakeWhile**, **DropLast** - get a new list without some trailing elements
  * **Drop**, **DropWhile**, **TakeLast** - get a new list without some leading elements
  * **Filter**, **Partition** - get a subset, or two disjoint subsets, of the list
+ * **Iter** - get a channel that supplies values in sequence
  * **CountBy**, **MaxBy**, **MinBy**, **DistinctBy** - statistics based on supplied operator functions
  * **IndexWhere**, **IndexWhere2** - find the index of the first match using a predicate function
  * **LastIndexWhere**, **LastIndexWhere2** - find the index of the last match using a predicate function
- * **MkString**, **MkString3** - constructs a string representation of the list
+ * **MkString**, **MkString3**, **String** - constructs a string representation of the list
 
 #### Comparable Methods
 
@@ -143,6 +144,7 @@ type Example struct { ... }
  * [Intro](README.md)
  * **Lists**
  * [Options](Option.md)
+ * [Sets](Set.md)
  * [Joint Lists With Options](Unified.md)
 
 ### Generated Examples
