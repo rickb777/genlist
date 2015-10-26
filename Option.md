@@ -60,6 +60,14 @@ This creates a methods that access the contained element as a `*Example` pointer
 
 Extra tags can be included to add more features. You can include a comma-separated list of as many tags as you need.
 
+#### `List` and `Set` Tags
+
+`List` adds list implementation on the same type (e.g. `Example`). Some additional methods are provided to convert
+between options and lists.
+
+`Set` adds set implementation on the same type (e.g. `Example`).  Some additional methods are provided to convert
+between options and sets.
+
 #### `MapTo` Tag
 
 `MapTo[T]` adds code to transform the original option to a new 

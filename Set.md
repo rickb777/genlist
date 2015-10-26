@@ -27,6 +27,11 @@ Set methods include:
 
 Extra tags can be included to add more features. You can include a comma-separated list of as many tags as you need.
 
+#### `List` Tag
+
+`List` adds list implementation on the same type (e.g. `Example`). Some additional methods are provided to convert
+between sets and lists.
+
 #### `MapTo` Tag
 
 `MapTo[T]` adds code to transform the original set to a new 
