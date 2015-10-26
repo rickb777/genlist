@@ -21,6 +21,42 @@ type Foo4Collection interface {
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predicate supplied.
+	Exists(predicate func(*Foo4) bool) bool
+
+	// Forall returns true if every element in the sequence matches the predicate supplied.
+	Forall(predicate func(*Foo4) bool) bool
+
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func(*Foo4))
+
+	// Iter sends all elements along a channel of type Foo4.
+	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
+	// it will give the same order each subsequent time it is used.
+	Iter() <-chan *Foo4
+
+	//-------------------------------------------------------------------------
+	// Filter returns a new Foo4Collection whose elements return true for a predicate function.
+	Filter(predicate func(*Foo4) bool) (result Foo4Collection)
+
+	// Partition returns two new Foo4Collections whose elements return true or false for the predicate, p.
+	// The first consists of all elements that satisfy the predicate and the second consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original collection.
+	Partition(p func(*Foo4) bool) (matching Foo4Collection, others Foo4Collection)
+
+	//-------------------------------------------------------------------------
+	// These methods require Foo4 be comparable.
+
+	// Equals verifies that one or more elements of Foo4Collection return true for the passed func.
+	Equals(other Foo4Collection) bool
+
+	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Foo4 is not comparable.
+	Contains(value *Foo4) bool
 }
 
 // Foo4Seq is an interface for sequences of type *Foo4, including lists and options (where present).
@@ -44,41 +80,11 @@ type Foo4Seq interface {
 	Init() Foo4Seq
 
 	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predicate supplied.
-	Exists(predicate func(*Foo4) bool) bool
-
-	// Forall returns true if every element in the sequence matches the predicate supplied.
-	Forall(predicate func(*Foo4) bool) bool
-
-	// Foreach iterates over every element, executing a supplied function against each.
-	Foreach(fn func(*Foo4))
-
-	//-------------------------------------------------------------------------
-	// Filter returns a new Foo4Seq whose elements return true for a predicate function.
-	Filter(predicate func(*Foo4) bool) (result Foo4Seq)
-
-	// Partition returns two new Foo4Lists whose elements return true or false for the predicate, p.
-	// The first result consists of all elements that satisfy the predicate and the second result consists of
-	// all elements that don't. The relative order of the elements in the results is the same as in the
-	// original list.
-	Partition(p func(*Foo4) bool) (matching Foo4Seq, others Foo4Seq)
-
-	//-------------------------------------------------------------------------
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(*Foo4) bool) OptionalFoo4
 
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Foo4List
-
-	//-------------------------------------------------------------------------
-	// Tests whether this sequence has the same length and the same elements as another sequence.
-	// Omitted if Foo4 is not comparable.
-	Equals(other Foo4Seq) bool
-
-	// Contains tests whether a given value is present in the sequence.
-	// Omitted if Foo4 is not comparable.
-	Contains(value *Foo4) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Foo4 is not comparable.
@@ -222,11 +228,23 @@ func (o OptionalFoo4) Foreach(fn func(*Foo4)) {
 	}
 }
 
-func (o OptionalFoo4) Filter(predicate func(*Foo4) bool) Foo4Seq {
+// Iter gets a channel that will send all the elements in order.
+func (o OptionalFoo4) Iter() <-chan *Foo4 {
+	ch := make(chan *Foo4)
+	go func() {
+		if o.NonEmpty() {
+			ch <- o.x
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+func (o OptionalFoo4) Filter(predicate func(*Foo4) bool) Foo4Collection {
 	return o.Find(predicate)
 }
 
-func (o OptionalFoo4) Partition(predicate func(*Foo4) bool) (Foo4Seq, Foo4Seq) {
+func (o OptionalFoo4) Partition(predicate func(*Foo4) bool) (Foo4Collection, Foo4Collection) {
 	if o.IsEmpty() {
 		return o, o
 	}
@@ -240,7 +258,7 @@ func (o OptionalFoo4) Partition(predicate func(*Foo4) bool) (Foo4Seq, Foo4Seq) {
 // These methods require *Foo4 be comparable.
 
 // Equals verifies that one or more elements of Foo4List return true for the passed func.
-func (o OptionalFoo4) Equals(other Foo4Seq) bool {
+func (o OptionalFoo4) Equals(other Foo4Collection) bool {
 	if o.IsEmpty() {
 		return other.IsEmpty()
 	}
@@ -248,7 +266,15 @@ func (o OptionalFoo4) Equals(other Foo4Seq) bool {
 		return false
 	}
 	a := o.Head()
-	b := other.Head()
+	var b *Foo4
+	otherSeq, isSeq := other.(Foo4Seq)
+	if isSeq {
+		b = otherSeq.Head()
+	} else {
+		o.Foreach(func(x *Foo4) {
+			b = x
+		})
+	}
 	return *a == *b
 }
 
@@ -391,6 +417,18 @@ func (list Foo4List) Foreach(fn func(*Foo4)) {
 	}
 }
 
+// Iter gets a channel that will send all the elements in order.
+func (list Foo4List) Iter() <-chan *Foo4 {
+	ch := make(chan *Foo4)
+	go func() {
+		for _, v := range list {
+			ch <- v
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 // Reverse returns a copy of Foo4List with all elements in the reverse order.
 func (list Foo4List) Reverse() Foo4List {
 	numItems := len(list)
@@ -486,7 +524,7 @@ func (list Foo4List) DropWhile(p func(*Foo4) bool) (result Foo4List) {
 }
 
 // Filter returns a new Foo4List whose elements return true for func.
-func (list Foo4List) Filter(fn func(*Foo4) bool) Foo4Seq {
+func (list Foo4List) Filter(fn func(*Foo4) bool) Foo4Collection {
 	result := make(Foo4List, 0, len(list)/2)
 	for _, v := range list {
 		if fn(v) {
@@ -500,7 +538,7 @@ func (list Foo4List) Filter(fn func(*Foo4) bool) Foo4Seq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list Foo4List) Partition(p func(*Foo4) bool) (Foo4Seq, Foo4Seq) {
+func (list Foo4List) Partition(p func(*Foo4) bool) (Foo4Collection, Foo4Collection) {
 	matching := make(Foo4List, 0, len(list)/2)
 	others := make(Foo4List, 0, len(list)/2)
 	for _, v := range list {
@@ -623,7 +661,7 @@ func (list Foo4List) LastIndexWhere2(p func(*Foo4) bool, before int) int {
 // These methods require *Foo4 be comparable.
 
 // Equals verifies that one or more elements of Foo4List return true for the passed func.
-func (list Foo4List) Equals(other Foo4Seq) bool {
+func (list Foo4List) Equals(other Foo4Collection) bool {
 	if len(list) != other.Size() {
 		return false
 	}

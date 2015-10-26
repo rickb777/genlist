@@ -22,6 +22,51 @@ type Foo2Collection interface {
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predicate supplied.
+	Exists(predicate func(Foo2) bool) bool
+
+	// Forall returns true if every element in the sequence matches the predicate supplied.
+	Forall(predicate func(Foo2) bool) bool
+
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func(Foo2))
+
+	// Iter sends all elements along a channel of type Foo2.
+	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
+	// it will give the same order each subsequent time it is used.
+	Iter() <-chan Foo2
+
+	//-------------------------------------------------------------------------
+	// Filter returns a new Foo2Collection whose elements return true for a predicate function.
+	Filter(predicate func(Foo2) bool) (result Foo2Collection)
+
+	// Partition returns two new Foo2Collections whose elements return true or false for the predicate, p.
+	// The first consists of all elements that satisfy the predicate and the second consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original collection.
+	Partition(p func(Foo2) bool) (matching Foo2Collection, others Foo2Collection)
+
+	//-------------------------------------------------------------------------
+	// These methods require Foo2 be comparable.
+
+	// Equals verifies that one or more elements of Foo2Collection return true for the passed func.
+	Equals(other Foo2Collection) bool
+
+	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Foo2 is not comparable.
+	Contains(value Foo2) bool
+
+	//-------------------------------------------------------------------------
+	// Sum sums Foo2 elements.
+	// Omitted if Foo2 is not numeric.
+	Sum() Foo2
+
+	// Mean computes the arithmetic mean of all elements.
+	// Panics if the list is empty.
+	Mean() Foo2
 }
 
 // Foo2Seq is an interface for sequences of type Foo2, including lists and options (where present).
@@ -45,41 +90,11 @@ type Foo2Seq interface {
 	Init() Foo2Seq
 
 	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predicate supplied.
-	Exists(predicate func(Foo2) bool) bool
-
-	// Forall returns true if every element in the sequence matches the predicate supplied.
-	Forall(predicate func(Foo2) bool) bool
-
-	// Foreach iterates over every element, executing a supplied function against each.
-	Foreach(fn func(Foo2))
-
-	//-------------------------------------------------------------------------
-	// Filter returns a new Foo2Seq whose elements return true for a predicate function.
-	Filter(predicate func(Foo2) bool) (result Foo2Seq)
-
-	// Partition returns two new Foo2Lists whose elements return true or false for the predicate, p.
-	// The first result consists of all elements that satisfy the predicate and the second result consists of
-	// all elements that don't. The relative order of the elements in the results is the same as in the
-	// original list.
-	Partition(p func(Foo2) bool) (matching Foo2Seq, others Foo2Seq)
-
-	//-------------------------------------------------------------------------
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Foo2) bool) OptionalFoo2
 
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Foo2List
-
-	//-------------------------------------------------------------------------
-	// Tests whether this sequence has the same length and the same elements as another sequence.
-	// Omitted if Foo2 is not comparable.
-	Equals(other Foo2Seq) bool
-
-	// Contains tests whether a given value is present in the sequence.
-	// Omitted if Foo2 is not comparable.
-	Contains(value Foo2) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Foo2 is not comparable.
@@ -88,15 +103,6 @@ type Foo2Seq interface {
 	// Distinct returns a new Foo2Seq whose elements are all unique.
 	// Omitted if Foo2 is not comparable.
 	Distinct() Foo2Seq
-
-	//-------------------------------------------------------------------------
-	// Sum sums Foo2 elements.
-	// Omitted if Foo2 is not numeric.
-	Sum() Foo2
-
-	// Mean computes the arithmetic mean of all elements.
-	// Panics if the list is empty.
-	Mean() Foo2
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -229,11 +235,23 @@ func (o OptionalFoo2) Foreach(fn func(Foo2)) {
 	}
 }
 
-func (o OptionalFoo2) Filter(predicate func(Foo2) bool) Foo2Seq {
+// Iter gets a channel that will send all the elements in order.
+func (o OptionalFoo2) Iter() <-chan Foo2 {
+	ch := make(chan Foo2)
+	go func() {
+		if o.NonEmpty() {
+			ch <- *o.x
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+func (o OptionalFoo2) Filter(predicate func(Foo2) bool) Foo2Collection {
 	return o.Find(predicate)
 }
 
-func (o OptionalFoo2) Partition(predicate func(Foo2) bool) (Foo2Seq, Foo2Seq) {
+func (o OptionalFoo2) Partition(predicate func(Foo2) bool) (Foo2Collection, Foo2Collection) {
 	if o.IsEmpty() {
 		return o, o
 	}
@@ -247,7 +265,7 @@ func (o OptionalFoo2) Partition(predicate func(Foo2) bool) (Foo2Seq, Foo2Seq) {
 // These methods require Foo2 be comparable.
 
 // Equals verifies that one or more elements of Foo2List return true for the passed func.
-func (o OptionalFoo2) Equals(other Foo2Seq) bool {
+func (o OptionalFoo2) Equals(other Foo2Collection) bool {
 	if o.IsEmpty() {
 		return other.IsEmpty()
 	}
@@ -255,7 +273,15 @@ func (o OptionalFoo2) Equals(other Foo2Seq) bool {
 		return false
 	}
 	a := o.Head()
-	b := other.Head()
+	var b Foo2
+	otherSeq, isSeq := other.(Foo2Seq)
+	if isSeq {
+		b = otherSeq.Head()
+	} else {
+		o.Foreach(func(x Foo2) {
+			b = x
+		})
+	}
 	return a == b
 }
 
@@ -453,6 +479,18 @@ func (list Foo2List) Foreach(fn func(Foo2)) {
 	}
 }
 
+// Iter gets a channel that will send all the elements in order.
+func (list Foo2List) Iter() <-chan Foo2 {
+	ch := make(chan Foo2)
+	go func() {
+		for _, v := range list {
+			ch <- v
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 // Reverse returns a copy of Foo2List with all elements in the reverse order.
 func (list Foo2List) Reverse() Foo2List {
 	numItems := len(list)
@@ -548,7 +586,7 @@ func (list Foo2List) DropWhile(p func(Foo2) bool) (result Foo2List) {
 }
 
 // Filter returns a new Foo2List whose elements return true for func.
-func (list Foo2List) Filter(fn func(Foo2) bool) Foo2Seq {
+func (list Foo2List) Filter(fn func(Foo2) bool) Foo2Collection {
 	result := make(Foo2List, 0, len(list)/2)
 	for _, v := range list {
 		if fn(v) {
@@ -562,7 +600,7 @@ func (list Foo2List) Filter(fn func(Foo2) bool) Foo2Seq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list Foo2List) Partition(p func(Foo2) bool) (Foo2Seq, Foo2Seq) {
+func (list Foo2List) Partition(p func(Foo2) bool) (Foo2Collection, Foo2Collection) {
 	matching := make(Foo2List, 0, len(list)/2)
 	others := make(Foo2List, 0, len(list)/2)
 	for _, v := range list {
@@ -685,7 +723,7 @@ func (list Foo2List) LastIndexWhere2(p func(Foo2) bool, before int) int {
 // These methods require Foo2 be comparable.
 
 // Equals verifies that one or more elements of Foo2List return true for the passed func.
-func (list Foo2List) Equals(other Foo2Seq) bool {
+func (list Foo2List) Equals(other Foo2Collection) bool {
 	if len(list) != other.Size() {
 		return false
 	}

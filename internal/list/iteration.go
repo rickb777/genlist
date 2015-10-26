@@ -28,6 +28,18 @@ func (list {{.TName}}List) Foreach(fn func({{.PName}})) {
 	}
 }
 
+// Iter gets a channel that will send all the elements in order.
+func (list {{.TName}}List) Iter() <-chan {{.PName}} {
+	ch := make(chan {{.PName}})
+	go func() {
+		for _, v := range list {
+			ch <- v
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 // Reverse returns a copy of {{.TName}}List with all elements in the reverse order.
 func (list {{.TName}}List) Reverse() {{.TName}}List {
     numItems := len(list)

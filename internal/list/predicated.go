@@ -3,7 +3,7 @@ package list
 const predicatedFunctions = `
 
 // Filter returns a new {{.TName}}List whose elements return true for func.
-func (list {{.TName}}List) Filter(fn func({{.PName}}) bool) {{.TName}}Seq {
+func (list {{.TName}}List) Filter(fn func({{.PName}}) bool) {{.TName}}Collection {
 	result := make({{.TName}}List, 0, len(list)/2)
 	for _, v := range list {
 		if fn(v) {
@@ -17,7 +17,7 @@ func (list {{.TName}}List) Filter(fn func({{.PName}}) bool) {{.TName}}Seq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list {{.TName}}List) Partition(p func({{.PName}}) bool) ({{.TName}}Seq, {{.TName}}Seq) {
+func (list {{.TName}}List) Partition(p func({{.PName}}) bool) ({{.TName}}Collection, {{.TName}}Collection) {
 	matching := make({{.TName}}List, 0, len(list)/2)
 	others := make({{.TName}}List, 0, len(list)/2)
 	for _, v := range list {

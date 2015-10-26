@@ -5,7 +5,7 @@ const equalsFunctions = `
 // These methods require {{.PName}} be comparable.
 
 // Equals verifies that one or more elements of {{.TName}}List return true for the passed func.
-func (list {{.TName}}List) Equals(other {{.TName}}Seq) bool {
+func (list {{.TName}}List) Equals(other {{.TName}}Collection) bool {
 	if len(list) != other.Size() {
 		return false
 	}

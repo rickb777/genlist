@@ -20,6 +20,42 @@ type ThingCollection interface {
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predicate supplied.
+	Exists(predicate func(Thing) bool) bool
+
+	// Forall returns true if every element in the sequence matches the predicate supplied.
+	Forall(predicate func(Thing) bool) bool
+
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func(Thing))
+
+	// Iter sends all elements along a channel of type Thing.
+	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
+	// it will give the same order each subsequent time it is used.
+	Iter() <-chan Thing
+
+	//-------------------------------------------------------------------------
+	// Filter returns a new ThingCollection whose elements return true for a predicate function.
+	Filter(predicate func(Thing) bool) (result ThingCollection)
+
+	// Partition returns two new ThingCollections whose elements return true or false for the predicate, p.
+	// The first consists of all elements that satisfy the predicate and the second consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original collection.
+	Partition(p func(Thing) bool) (matching ThingCollection, others ThingCollection)
+
+	//-------------------------------------------------------------------------
+	// These methods require Thing be comparable.
+
+	// Equals verifies that one or more elements of ThingCollection return true for the passed func.
+	Equals(other ThingCollection) bool
+
+	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Thing is not comparable.
+	Contains(value Thing) bool
 }
 
 //-------------------------------------------------------------------------------------------------

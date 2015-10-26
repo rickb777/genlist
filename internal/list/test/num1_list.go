@@ -22,6 +22,51 @@ type Num1Collection interface {
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predicate supplied.
+	Exists(predicate func(Num1) bool) bool
+
+	// Forall returns true if every element in the sequence matches the predicate supplied.
+	Forall(predicate func(Num1) bool) bool
+
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func(Num1))
+
+	// Iter sends all elements along a channel of type Num1.
+	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
+	// it will give the same order each subsequent time it is used.
+	Iter() <-chan Num1
+
+	//-------------------------------------------------------------------------
+	// Filter returns a new Num1Collection whose elements return true for a predicate function.
+	Filter(predicate func(Num1) bool) (result Num1Collection)
+
+	// Partition returns two new Num1Collections whose elements return true or false for the predicate, p.
+	// The first consists of all elements that satisfy the predicate and the second consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original collection.
+	Partition(p func(Num1) bool) (matching Num1Collection, others Num1Collection)
+
+	//-------------------------------------------------------------------------
+	// These methods require Num1 be comparable.
+
+	// Equals verifies that one or more elements of Num1Collection return true for the passed func.
+	Equals(other Num1Collection) bool
+
+	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Num1 is not comparable.
+	Contains(value Num1) bool
+
+	//-------------------------------------------------------------------------
+	// Sum sums Num1 elements.
+	// Omitted if Num1 is not numeric.
+	Sum() Num1
+
+	// Mean computes the arithmetic mean of all elements.
+	// Panics if the list is empty.
+	Mean() Num1
 }
 
 // Num1Seq is an interface for sequences of type Num1, including lists and options (where present).
@@ -44,38 +89,8 @@ type Num1Seq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() Num1Seq
 
-	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predicate supplied.
-	Exists(predicate func(Num1) bool) bool
-
-	// Forall returns true if every element in the sequence matches the predicate supplied.
-	Forall(predicate func(Num1) bool) bool
-
-	// Foreach iterates over every element, executing a supplied function against each.
-	Foreach(fn func(Num1))
-
-	//-------------------------------------------------------------------------
-	// Filter returns a new Num1Seq whose elements return true for a predicate function.
-	Filter(predicate func(Num1) bool) (result Num1Seq)
-
-	// Partition returns two new Num1Lists whose elements return true or false for the predicate, p.
-	// The first result consists of all elements that satisfy the predicate and the second result consists of
-	// all elements that don't. The relative order of the elements in the results is the same as in the
-	// original list.
-	Partition(p func(Num1) bool) (matching Num1Seq, others Num1Seq)
-
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Num1List
-
-	//-------------------------------------------------------------------------
-	// Tests whether this sequence has the same length and the same elements as another sequence.
-	// Omitted if Num1 is not comparable.
-	Equals(other Num1Seq) bool
-
-	// Contains tests whether a given value is present in the sequence.
-	// Omitted if Num1 is not comparable.
-	Contains(value Num1) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Num1 is not comparable.
@@ -84,15 +99,6 @@ type Num1Seq interface {
 	// Distinct returns a new Num1Seq whose elements are all unique.
 	// Omitted if Num1 is not comparable.
 	Distinct() Num1Seq
-
-	//-------------------------------------------------------------------------
-	// Sum sums Num1 elements.
-	// Omitted if Num1 is not numeric.
-	Sum() Num1
-
-	// Mean computes the arithmetic mean of all elements.
-	// Panics if the list is empty.
-	Mean() Num1
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -222,6 +228,18 @@ func (list Num1List) Foreach(fn func(Num1)) {
 	}
 }
 
+// Iter gets a channel that will send all the elements in order.
+func (list Num1List) Iter() <-chan Num1 {
+	ch := make(chan Num1)
+	go func() {
+		for _, v := range list {
+			ch <- v
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 // Reverse returns a copy of Num1List with all elements in the reverse order.
 func (list Num1List) Reverse() Num1List {
 	numItems := len(list)
@@ -317,7 +335,7 @@ func (list Num1List) DropWhile(p func(Num1) bool) (result Num1List) {
 }
 
 // Filter returns a new Num1List whose elements return true for func.
-func (list Num1List) Filter(fn func(Num1) bool) Num1Seq {
+func (list Num1List) Filter(fn func(Num1) bool) Num1Collection {
 	result := make(Num1List, 0, len(list)/2)
 	for _, v := range list {
 		if fn(v) {
@@ -331,7 +349,7 @@ func (list Num1List) Filter(fn func(Num1) bool) Num1Seq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list Num1List) Partition(p func(Num1) bool) (Num1Seq, Num1Seq) {
+func (list Num1List) Partition(p func(Num1) bool) (Num1Collection, Num1Collection) {
 	matching := make(Num1List, 0, len(list)/2)
 	others := make(Num1List, 0, len(list)/2)
 	for _, v := range list {
@@ -454,7 +472,7 @@ func (list Num1List) LastIndexWhere2(p func(Num1) bool, before int) int {
 // These methods require Num1 be comparable.
 
 // Equals verifies that one or more elements of Num1List return true for the passed func.
-func (list Num1List) Equals(other Num1Seq) bool {
+func (list Num1List) Equals(other Num1Collection) bool {
 	if len(list) != other.Size() {
 		return false
 	}

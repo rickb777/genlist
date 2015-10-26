@@ -20,6 +20,42 @@ type BarCollection interface {
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predicate supplied.
+	Exists(predicate func(*Bar) bool) bool
+
+	// Forall returns true if every element in the sequence matches the predicate supplied.
+	Forall(predicate func(*Bar) bool) bool
+
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func(*Bar))
+
+	// Iter sends all elements along a channel of type Bar.
+	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
+	// it will give the same order each subsequent time it is used.
+	Iter() <-chan *Bar
+
+	//-------------------------------------------------------------------------
+	// Filter returns a new BarCollection whose elements return true for a predicate function.
+	Filter(predicate func(*Bar) bool) (result BarCollection)
+
+	// Partition returns two new BarCollections whose elements return true or false for the predicate, p.
+	// The first consists of all elements that satisfy the predicate and the second consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original collection.
+	Partition(p func(*Bar) bool) (matching BarCollection, others BarCollection)
+
+	//-------------------------------------------------------------------------
+	// These methods require Bar be comparable.
+
+	// Equals verifies that one or more elements of BarCollection return true for the passed func.
+	Equals(other BarCollection) bool
+
+	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Bar is not comparable.
+	Contains(value *Bar) bool
 }
 
 //-------------------------------------------------------------------------------------------------

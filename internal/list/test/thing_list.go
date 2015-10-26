@@ -21,6 +21,42 @@ type ThingCollection interface {
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predicate supplied.
+	Exists(predicate func(Thing) bool) bool
+
+	// Forall returns true if every element in the sequence matches the predicate supplied.
+	Forall(predicate func(Thing) bool) bool
+
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func(Thing))
+
+	// Iter sends all elements along a channel of type Thing.
+	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
+	// it will give the same order each subsequent time it is used.
+	Iter() <-chan Thing
+
+	//-------------------------------------------------------------------------
+	// Filter returns a new ThingCollection whose elements return true for a predicate function.
+	Filter(predicate func(Thing) bool) (result ThingCollection)
+
+	// Partition returns two new ThingCollections whose elements return true or false for the predicate, p.
+	// The first consists of all elements that satisfy the predicate and the second consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original collection.
+	Partition(p func(Thing) bool) (matching ThingCollection, others ThingCollection)
+
+	//-------------------------------------------------------------------------
+	// These methods require Thing be comparable.
+
+	// Equals verifies that one or more elements of ThingCollection return true for the passed func.
+	Equals(other ThingCollection) bool
+
+	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Thing is not comparable.
+	Contains(value Thing) bool
 }
 
 // ThingSeq is an interface for sequences of type Thing, including lists and options (where present).
@@ -43,38 +79,8 @@ type ThingSeq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() ThingSeq
 
-	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predicate supplied.
-	Exists(predicate func(Thing) bool) bool
-
-	// Forall returns true if every element in the sequence matches the predicate supplied.
-	Forall(predicate func(Thing) bool) bool
-
-	// Foreach iterates over every element, executing a supplied function against each.
-	Foreach(fn func(Thing))
-
-	//-------------------------------------------------------------------------
-	// Filter returns a new ThingSeq whose elements return true for a predicate function.
-	Filter(predicate func(Thing) bool) (result ThingSeq)
-
-	// Partition returns two new ThingLists whose elements return true or false for the predicate, p.
-	// The first result consists of all elements that satisfy the predicate and the second result consists of
-	// all elements that don't. The relative order of the elements in the results is the same as in the
-	// original list.
-	Partition(p func(Thing) bool) (matching ThingSeq, others ThingSeq)
-
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() ThingList
-
-	//-------------------------------------------------------------------------
-	// Tests whether this sequence has the same length and the same elements as another sequence.
-	// Omitted if Thing is not comparable.
-	Equals(other ThingSeq) bool
-
-	// Contains tests whether a given value is present in the sequence.
-	// Omitted if Thing is not comparable.
-	Contains(value Thing) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Thing is not comparable.
@@ -178,6 +184,18 @@ func (list ThingList) Foreach(fn func(Thing)) {
 	}
 }
 
+// Iter gets a channel that will send all the elements in order.
+func (list ThingList) Iter() <-chan Thing {
+	ch := make(chan Thing)
+	go func() {
+		for _, v := range list {
+			ch <- v
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 // Reverse returns a copy of ThingList with all elements in the reverse order.
 func (list ThingList) Reverse() ThingList {
 	numItems := len(list)
@@ -273,7 +291,7 @@ func (list ThingList) DropWhile(p func(Thing) bool) (result ThingList) {
 }
 
 // Filter returns a new ThingList whose elements return true for func.
-func (list ThingList) Filter(fn func(Thing) bool) ThingSeq {
+func (list ThingList) Filter(fn func(Thing) bool) ThingCollection {
 	result := make(ThingList, 0, len(list)/2)
 	for _, v := range list {
 		if fn(v) {
@@ -287,7 +305,7 @@ func (list ThingList) Filter(fn func(Thing) bool) ThingSeq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list ThingList) Partition(p func(Thing) bool) (ThingSeq, ThingSeq) {
+func (list ThingList) Partition(p func(Thing) bool) (ThingCollection, ThingCollection) {
 	matching := make(ThingList, 0, len(list)/2)
 	others := make(ThingList, 0, len(list)/2)
 	for _, v := range list {
@@ -410,7 +428,7 @@ func (list ThingList) LastIndexWhere2(p func(Thing) bool, before int) int {
 // These methods require Thing be comparable.
 
 // Equals verifies that one or more elements of ThingList return true for the passed func.
-func (list ThingList) Equals(other ThingSeq) bool {
+func (list ThingList) Equals(other ThingCollection) bool {
 	if len(list) != other.Size() {
 		return false
 	}

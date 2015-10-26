@@ -138,11 +138,23 @@ func (o Optional{{.TName}}) Foreach(fn func({{.PName}})) {
 	}
 }
 
-func (o Optional{{.TName}}) Filter(predicate func({{.PName}}) bool) {{.TName}}Seq {
+// Iter gets a channel that will send all the elements in order.
+func (o Optional{{.TName}}) Iter() <-chan {{.PName}} {
+	ch := make(chan {{.PName}})
+	go func() {
+		if o.NonEmpty() {
+			ch <- {{.Deref}}o.x
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+func (o Optional{{.TName}}) Filter(predicate func({{.PName}}) bool) {{.TName}}Collection {
 	return o.Find(predicate)
 }
 
-func (o Optional{{.TName}}) Partition(predicate func({{.PName}}) bool) ({{.TName}}Seq, {{.TName}}Seq) {
+func (o Optional{{.TName}}) Partition(predicate func({{.PName}}) bool) ({{.TName}}Collection, {{.TName}}Collection) {
 	if o.IsEmpty() {
 		return o, o
 	}
@@ -157,7 +169,7 @@ func (o Optional{{.TName}}) Partition(predicate func({{.PName}}) bool) ({{.TName
 // These methods require {{.PName}} be comparable.
 
 // Equals verifies that one or more elements of {{.TName}}List return true for the passed func.
-func (o Optional{{.TName}}) Equals(other {{.TName}}Seq) bool {
+func (o Optional{{.TName}}) Equals(other {{.TName}}Collection) bool {
 	if o.IsEmpty() {
 		return other.IsEmpty()
 	}
@@ -165,7 +177,15 @@ func (o Optional{{.TName}}) Equals(other {{.TName}}Seq) bool {
 		return false
 	}
 	a := o.Head()
-	b := other.Head()
+	var b {{.PName}}
+	otherSeq, isSeq := other.({{.TName}}Seq)
+	if isSeq {
+		b = otherSeq.Head()
+	} else {
+		o.Foreach(func (x {{.PName}}) {
+			b = x
+		})
+	}
 	return {{.Ptr}}a == {{.Ptr}}b
 }
 

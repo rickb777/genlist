@@ -21,6 +21,42 @@ type Num2Collection interface {
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predicate supplied.
+	Exists(predicate func(*Num2) bool) bool
+
+	// Forall returns true if every element in the sequence matches the predicate supplied.
+	Forall(predicate func(*Num2) bool) bool
+
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func(*Num2))
+
+	// Iter sends all elements along a channel of type Num2.
+	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
+	// it will give the same order each subsequent time it is used.
+	Iter() <-chan *Num2
+
+	//-------------------------------------------------------------------------
+	// Filter returns a new Num2Collection whose elements return true for a predicate function.
+	Filter(predicate func(*Num2) bool) (result Num2Collection)
+
+	// Partition returns two new Num2Collections whose elements return true or false for the predicate, p.
+	// The first consists of all elements that satisfy the predicate and the second consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original collection.
+	Partition(p func(*Num2) bool) (matching Num2Collection, others Num2Collection)
+
+	//-------------------------------------------------------------------------
+	// These methods require Num2 be comparable.
+
+	// Equals verifies that one or more elements of Num2Collection return true for the passed func.
+	Equals(other Num2Collection) bool
+
+	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Num2 is not comparable.
+	Contains(value *Num2) bool
 }
 
 // Num2Seq is an interface for sequences of type *Num2, including lists and options (where present).
@@ -43,38 +79,8 @@ type Num2Seq interface {
 	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
 	Init() Num2Seq
 
-	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predicate supplied.
-	Exists(predicate func(*Num2) bool) bool
-
-	// Forall returns true if every element in the sequence matches the predicate supplied.
-	Forall(predicate func(*Num2) bool) bool
-
-	// Foreach iterates over every element, executing a supplied function against each.
-	Foreach(fn func(*Num2))
-
-	//-------------------------------------------------------------------------
-	// Filter returns a new Num2Seq whose elements return true for a predicate function.
-	Filter(predicate func(*Num2) bool) (result Num2Seq)
-
-	// Partition returns two new Num2Lists whose elements return true or false for the predicate, p.
-	// The first result consists of all elements that satisfy the predicate and the second result consists of
-	// all elements that don't. The relative order of the elements in the results is the same as in the
-	// original list.
-	Partition(p func(*Num2) bool) (matching Num2Seq, others Num2Seq)
-
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Num2List
-
-	//-------------------------------------------------------------------------
-	// Tests whether this sequence has the same length and the same elements as another sequence.
-	// Omitted if Num2 is not comparable.
-	Equals(other Num2Seq) bool
-
-	// Contains tests whether a given value is present in the sequence.
-	// Omitted if Num2 is not comparable.
-	Contains(value *Num2) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Num2 is not comparable.
@@ -178,6 +184,18 @@ func (list Num2List) Foreach(fn func(*Num2)) {
 	}
 }
 
+// Iter gets a channel that will send all the elements in order.
+func (list Num2List) Iter() <-chan *Num2 {
+	ch := make(chan *Num2)
+	go func() {
+		for _, v := range list {
+			ch <- v
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 // Reverse returns a copy of Num2List with all elements in the reverse order.
 func (list Num2List) Reverse() Num2List {
 	numItems := len(list)
@@ -273,7 +291,7 @@ func (list Num2List) DropWhile(p func(*Num2) bool) (result Num2List) {
 }
 
 // Filter returns a new Num2List whose elements return true for func.
-func (list Num2List) Filter(fn func(*Num2) bool) Num2Seq {
+func (list Num2List) Filter(fn func(*Num2) bool) Num2Collection {
 	result := make(Num2List, 0, len(list)/2)
 	for _, v := range list {
 		if fn(v) {
@@ -287,7 +305,7 @@ func (list Num2List) Filter(fn func(*Num2) bool) Num2Seq {
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original list.
-func (list Num2List) Partition(p func(*Num2) bool) (Num2Seq, Num2Seq) {
+func (list Num2List) Partition(p func(*Num2) bool) (Num2Collection, Num2Collection) {
 	matching := make(Num2List, 0, len(list)/2)
 	others := make(Num2List, 0, len(list)/2)
 	for _, v := range list {
@@ -410,7 +428,7 @@ func (list Num2List) LastIndexWhere2(p func(*Num2) bool, before int) int {
 // These methods require *Num2 be comparable.
 
 // Equals verifies that one or more elements of Num2List return true for the passed func.
-func (list Num2List) Equals(other Num2Seq) bool {
+func (list Num2List) Equals(other Num2Collection) bool {
 	if len(list) != other.Size() {
 		return false
 	}

@@ -16,6 +16,42 @@ type FooCollection interface {
 
 	// NonEmpty returns true if the sequence is non-empty.
 	NonEmpty() bool
+
+	//-------------------------------------------------------------------------
+	// Exists returns true if there exists at least one element in the sequence that matches
+	// the predicate supplied.
+	Exists(predicate func(Foo) bool) bool
+
+	// Forall returns true if every element in the sequence matches the predicate supplied.
+	Forall(predicate func(Foo) bool) bool
+
+	// Foreach iterates over every element, executing a supplied function against each.
+	Foreach(fn func(Foo))
+
+	// Iter sends all elements along a channel of type Foo.
+	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
+	// it will give the same order each subsequent time it is used.
+	Iter() <-chan Foo
+
+	//-------------------------------------------------------------------------
+	// Filter returns a new FooCollection whose elements return true for a predicate function.
+	Filter(predicate func(Foo) bool) (result FooCollection)
+
+	// Partition returns two new FooCollections whose elements return true or false for the predicate, p.
+	// The first consists of all elements that satisfy the predicate and the second consists of
+	// all elements that don't. The relative order of the elements in the results is the same as in the
+	// original collection.
+	Partition(p func(Foo) bool) (matching FooCollection, others FooCollection)
+
+	//-------------------------------------------------------------------------
+	// These methods require Foo be comparable.
+
+	// Equals verifies that one or more elements of FooCollection return true for the passed func.
+	Equals(other FooCollection) bool
+
+	// Contains tests whether a given value is present in the sequence.
+	// Omitted if Foo is not comparable.
+	Contains(value Foo) bool
 }
 
 // FooSeq is an interface for sequences of type Foo, including lists and options (where present).
@@ -39,38 +75,8 @@ type FooSeq interface {
 	Init() FooSeq
 
 	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
-	// the predicate supplied.
-	Exists(predicate func(Foo) bool) bool
-
-	// Forall returns true if every element in the sequence matches the predicate supplied.
-	Forall(predicate func(Foo) bool) bool
-
-	// Foreach iterates over every element, executing a supplied function against each.
-	Foreach(fn func(Foo))
-
-	//-------------------------------------------------------------------------
-	// Filter returns a new FooSeq whose elements return true for a predicate function.
-	Filter(predicate func(Foo) bool) (result FooSeq)
-
-	// Partition returns two new FooLists whose elements return true or false for the predicate, p.
-	// The first result consists of all elements that satisfy the predicate and the second result consists of
-	// all elements that don't. The relative order of the elements in the results is the same as in the
-	// original list.
-	Partition(p func(Foo) bool) (matching FooSeq, others FooSeq)
-
-	//-------------------------------------------------------------------------
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Foo) bool) OptionalFoo
-
-	//-------------------------------------------------------------------------
-	// Tests whether this sequence has the same length and the same elements as another sequence.
-	// Omitted if Foo is not comparable.
-	Equals(other FooSeq) bool
-
-	// Contains tests whether a given value is present in the sequence.
-	// Omitted if Foo is not comparable.
-	Contains(value Foo) bool
 
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Foo is not comparable.
@@ -207,11 +213,23 @@ func (o OptionalFoo) Foreach(fn func(Foo)) {
 	}
 }
 
-func (o OptionalFoo) Filter(predicate func(Foo) bool) FooSeq {
+// Iter gets a channel that will send all the elements in order.
+func (o OptionalFoo) Iter() <-chan Foo {
+	ch := make(chan Foo)
+	go func() {
+		if o.NonEmpty() {
+			ch <- *o.x
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+func (o OptionalFoo) Filter(predicate func(Foo) bool) FooCollection {
 	return o.Find(predicate)
 }
 
-func (o OptionalFoo) Partition(predicate func(Foo) bool) (FooSeq, FooSeq) {
+func (o OptionalFoo) Partition(predicate func(Foo) bool) (FooCollection, FooCollection) {
 	if o.IsEmpty() {
 		return o, o
 	}
@@ -225,7 +243,7 @@ func (o OptionalFoo) Partition(predicate func(Foo) bool) (FooSeq, FooSeq) {
 // These methods require Foo be comparable.
 
 // Equals verifies that one or more elements of FooList return true for the passed func.
-func (o OptionalFoo) Equals(other FooSeq) bool {
+func (o OptionalFoo) Equals(other FooCollection) bool {
 	if o.IsEmpty() {
 		return other.IsEmpty()
 	}
@@ -233,7 +251,15 @@ func (o OptionalFoo) Equals(other FooSeq) bool {
 		return false
 	}
 	a := o.Head()
-	b := other.Head()
+	var b Foo
+	otherSeq, isSeq := other.(FooSeq)
+	if isSeq {
+		b = otherSeq.Head()
+	} else {
+		o.Foreach(func(x Foo) {
+			b = x
+		})
+	}
 	return a == b
 }
 
