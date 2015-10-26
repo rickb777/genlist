@@ -12,6 +12,17 @@ const List = sequence.Collection + sequence.Sequence + `
 type {{.TName}}List []{{.PName}}
 
 //-------------------------------------------------------------------------------------------------
+// Build{{.TName}}ListFrom constructs a new {{.TName}}List from a channel that supplies values
+// until it is closed.
+func Build{{.TName}}ListFrom(source <-chan {{.PName}}) {{.TName}}List {
+	result := make({{.TName}}List, 0)
+	for v := range source {
+		result = append(result, v)
+	}
+	return result
+}
+
+//-------------------------------------------------------------------------------------------------
 ` + headTail + sortable +
 iterationFunctions + takeDropFunctions + predicatedFunctions +
 equalsFunctions + comparableFunctions + numericFunctions + orderedFunctions +

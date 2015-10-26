@@ -10,6 +10,7 @@ import (
 	"fmt"
 )
 
+//-------------------------------------------------------------------------------------------------
 // Num1Collection is an interface for collections of type Num1, including sets, lists and options (where present).
 type Num1Collection interface {
 	// Size gets the size/length of the sequence.
@@ -77,7 +78,7 @@ type Num1Collection interface {
 type Num1Set map[Num1]struct{}
 
 //-------------------------------------------------------------------------------------------------
-
+// NewNum1Set constructs a new set containing the supplied values, if any.
 func NewNum1Set(e ...Num1) Num1Set {
 	set := make(map[Num1]struct{})
 	for _, v := range e {
@@ -85,6 +86,18 @@ func NewNum1Set(e ...Num1) Num1Set {
 	}
 	return Num1Set(set)
 }
+
+// BuildNum1SetFrom constructs a new Num1Set from a channel that supplies values
+// until it is closed.
+func BuildNum1SetFrom(source <-chan Num1) Num1Set {
+	set := make(map[Num1]struct{})
+	for v := range source {
+		set[v] = struct{}{}
+	}
+	return Num1Set(set)
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (set Num1Set) Size() int {
 	return len(set)
@@ -98,7 +111,7 @@ func (set Num1Set) NonEmpty() bool {
 	return len(set) > 0
 }
 
-// ToSlice gets all the elements in Set in a slice.
+// ToSlice gets all the set's elements in a slice.
 func (set Num1Set) ToSlice() []Num1 {
 	slice := make([]Num1, 0, len(set))
 	for v := range set {

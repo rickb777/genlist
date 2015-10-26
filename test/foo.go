@@ -1,9 +1,9 @@
 package main
 
-// +test List:" Option "
+// +test List:" Option Set "
 type Foo1 Underlying
 
-// +test Option:" List "
+// +test Option:" List Set "
 type Foo2 Underlying
 
 // +test * List:" Option "

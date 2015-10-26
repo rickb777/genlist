@@ -16,6 +16,7 @@ var otherListTemplates = typewriter.TemplateSlice{
 	listWithT,
 //	list.OptionForList,
 	coreOptionTemplate,
+	coreSetTemplate,
 }
 
 var listSortWith = &typewriter.Template{

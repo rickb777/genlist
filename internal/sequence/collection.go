@@ -2,6 +2,7 @@ package sequence
 
 const Collection = `
 {{if .Has.Collection}}
+//-------------------------------------------------------------------------------------------------
 // {{.TName}}Collection is an interface for collections of type {{.TName}}, including sets, lists and options (where present).
 type {{.TName}}Collection interface {
 	// Size gets the size/length of the sequence.
@@ -63,6 +64,7 @@ type {{.TName}}Collection interface {
 
 {{end}}
 }
+
 
 {{end}}
 `

@@ -12,6 +12,7 @@ import (
 	"sort"
 )
 
+//-------------------------------------------------------------------------------------------------
 // Num1Collection is an interface for collections of type Num1, including sets, lists and options (where present).
 type Num1Collection interface {
 	// Size gets the size/length of the sequence.
@@ -69,6 +70,7 @@ type Num1Collection interface {
 	Mean() Num1
 }
 
+//-------------------------------------------------------------------------------------------------
 // Num1Seq is an interface for sequences of type Num1, including lists and options (where present).
 type Num1Seq interface {
 	Num1Collection
@@ -92,6 +94,7 @@ type Num1Seq interface {
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Num1List
 
+	//-------------------------------------------------------------------------
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Num1 is not comparable.
 	Count(value Num1) int
@@ -108,6 +111,17 @@ type Num1Seq interface {
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type Num1List []Num1
+
+//-------------------------------------------------------------------------------------------------
+// BuildNum1ListFrom constructs a new Num1List from a channel that supplies values
+// until it is closed.
+func BuildNum1ListFrom(source <-chan Num1) Num1List {
+	result := make(Num1List, 0)
+	for v := range source {
+		result = append(result, v)
+	}
+	return result
+}
 
 //-------------------------------------------------------------------------------------------------
 

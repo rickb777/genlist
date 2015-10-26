@@ -10,6 +10,7 @@ import (
 	"fmt"
 )
 
+//-------------------------------------------------------------------------------------------------
 // FooCollection is an interface for collections of type Foo, including sets, lists and options (where present).
 type FooCollection interface {
 	// Size gets the size/length of the sequence.
@@ -68,7 +69,7 @@ type FooCollection interface {
 type FooSet map[Foo]struct{}
 
 //-------------------------------------------------------------------------------------------------
-
+// NewFooSet constructs a new set containing the supplied values, if any.
 func NewFooSet(e ...Foo) FooSet {
 	set := make(map[Foo]struct{})
 	for _, v := range e {
@@ -76,6 +77,18 @@ func NewFooSet(e ...Foo) FooSet {
 	}
 	return FooSet(set)
 }
+
+// BuildFooSetFrom constructs a new FooSet from a channel that supplies values
+// until it is closed.
+func BuildFooSetFrom(source <-chan Foo) FooSet {
+	set := make(map[Foo]struct{})
+	for v := range source {
+		set[v] = struct{}{}
+	}
+	return FooSet(set)
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (set FooSet) Size() int {
 	return len(set)
@@ -89,7 +102,7 @@ func (set FooSet) NonEmpty() bool {
 	return len(set) > 0
 }
 
-// ToSlice gets all the elements in Set in a slice.
+// ToSlice gets all the set's elements in a slice.
 func (set FooSet) ToSlice() []Foo {
 	slice := make([]Foo, 0, len(set))
 	for v := range set {

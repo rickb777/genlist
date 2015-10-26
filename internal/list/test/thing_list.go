@@ -11,6 +11,7 @@ import (
 	"math/rand"
 )
 
+//-------------------------------------------------------------------------------------------------
 // ThingCollection is an interface for collections of type Thing, including sets, lists and options (where present).
 type ThingCollection interface {
 	// Size gets the size/length of the sequence.
@@ -59,6 +60,7 @@ type ThingCollection interface {
 	Contains(value Thing) bool
 }
 
+//-------------------------------------------------------------------------------------------------
 // ThingSeq is an interface for sequences of type Thing, including lists and options (where present).
 type ThingSeq interface {
 	ThingCollection
@@ -82,6 +84,7 @@ type ThingSeq interface {
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() ThingList
 
+	//-------------------------------------------------------------------------
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Thing is not comparable.
 	Count(value Thing) int
@@ -98,6 +101,17 @@ type ThingSeq interface {
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type ThingList []Thing
+
+//-------------------------------------------------------------------------------------------------
+// BuildThingListFrom constructs a new ThingList from a channel that supplies values
+// until it is closed.
+func BuildThingListFrom(source <-chan Thing) ThingList {
+	result := make(ThingList, 0)
+	for v := range source {
+		result = append(result, v)
+	}
+	return result
+}
 
 //-------------------------------------------------------------------------------------------------
 

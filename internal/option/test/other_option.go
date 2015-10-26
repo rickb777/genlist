@@ -6,6 +6,7 @@ package main
 
 import "fmt"
 
+//-------------------------------------------------------------------------------------------------
 // OtherCollection is an interface for collections of type Other, including sets, lists and options (where present).
 type OtherCollection interface {
 	// Size gets the size/length of the sequence.
@@ -63,6 +64,7 @@ type OtherCollection interface {
 	Mean() Other
 }
 
+//-------------------------------------------------------------------------------------------------
 // OtherSeq is an interface for sequences of type Other, including lists and options (where present).
 type OtherSeq interface {
 	OtherCollection
@@ -87,6 +89,7 @@ type OtherSeq interface {
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Other) bool) OptionalOther
 
+	//-------------------------------------------------------------------------
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Other is not comparable.
 	Count(value Other) int

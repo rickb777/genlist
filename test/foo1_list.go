@@ -12,6 +12,7 @@ import (
 	"sort"
 )
 
+//-------------------------------------------------------------------------------------------------
 // Foo1Collection is an interface for collections of type Foo1, including sets, lists and options (where present).
 type Foo1Collection interface {
 	// Size gets the size/length of the sequence.
@@ -69,6 +70,7 @@ type Foo1Collection interface {
 	Mean() Foo1
 }
 
+//-------------------------------------------------------------------------------------------------
 // Foo1Seq is an interface for sequences of type Foo1, including lists and options (where present).
 type Foo1Seq interface {
 	Foo1Collection
@@ -96,6 +98,7 @@ type Foo1Seq interface {
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Foo1List
 
+	//-------------------------------------------------------------------------
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Foo1 is not comparable.
 	Count(value Foo1) int
@@ -112,6 +115,17 @@ type Foo1Seq interface {
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type Foo1List []Foo1
+
+//-------------------------------------------------------------------------------------------------
+// BuildFoo1ListFrom constructs a new Foo1List from a channel that supplies values
+// until it is closed.
+func BuildFoo1ListFrom(source <-chan Foo1) Foo1List {
+	result := make(Foo1List, 0)
+	for v := range source {
+		result = append(result, v)
+	}
+	return result
+}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -664,6 +678,15 @@ func (list Foo1List) LastOption() OptionalFoo1 {
 	}
 }
 
+// ToSet gets all the list's elements in a Foo1Set.
+func (list Foo1List) ToSet() Foo1Set {
+	set := make(map[Foo1]struct{})
+	for _, v := range list {
+		set[v] = struct{}{}
+	}
+	return Foo1Set(set)
+}
+
 //-------------------------------------------------------------------------------------------------
 // OptionalFoo1 is an optional of type Foo1. Use it where you want to be explicit about
 // the presence or absence of data.
@@ -911,4 +934,322 @@ func (o OptionalFoo1) MkString3(pfx, mid, sfx string) string {
 	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
 
-// List flags: {Collection:false Sequence:false List:true Option:true Set:false Tag:map[]}
+//-------------------------------------------------------------------------------------------------
+// Foo1Set is a typesafe set of Foo1 items. Instances are essentially immutable.
+// The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
+// easily.
+//
+// The implementation is based on Go maps.
+
+type Foo1Set map[Foo1]struct{}
+
+//-------------------------------------------------------------------------------------------------
+// NewFoo1Set constructs a new set containing the supplied values, if any.
+func NewFoo1Set(e ...Foo1) Foo1Set {
+	set := make(map[Foo1]struct{})
+	for _, v := range e {
+		set[v] = struct{}{}
+	}
+	return Foo1Set(set)
+}
+
+// BuildFoo1SetFrom constructs a new Foo1Set from a channel that supplies values
+// until it is closed.
+func BuildFoo1SetFrom(source <-chan Foo1) Foo1Set {
+	set := make(map[Foo1]struct{})
+	for v := range source {
+		set[v] = struct{}{}
+	}
+	return Foo1Set(set)
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (set Foo1Set) Size() int {
+	return len(set)
+}
+
+func (set Foo1Set) IsEmpty() bool {
+	return len(set) == 0
+}
+
+func (set Foo1Set) NonEmpty() bool {
+	return len(set) > 0
+}
+
+// ToList gets all the set's elements in a in SetList.
+func (set Foo1Set) ToList() Foo1List {
+	slice := make([]Foo1, 0, len(set))
+	for v := range set {
+		slice = append(slice, v)
+	}
+	return Foo1List(slice)
+}
+
+// Contains tests whether an item is already in the Foo1Set.
+func (set Foo1Set) Contains(i Foo1) bool {
+	_, found := set[i]
+	return found
+}
+
+// ContainsAll tests whether many items are all in the Foo1Set.
+func (set Foo1Set) ContainsAll(i ...Foo1) bool {
+	for _, v := range i {
+		if !set.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
+func (set Foo1Set) actualSubset(other Foo1Set) bool {
+	for item := range set {
+		if !other.Contains(item) {
+			return false
+		}
+	}
+	return true
+}
+
+// Equals determines if two sets are equal to each other.
+// They are considered equal if both are the same size and both have the same items.
+func (set Foo1Set) Equals(other Foo1Set) bool {
+	return set.Size() == other.Size() && set.actualSubset(other)
+}
+
+// IsSubset determines if every item in the other set is in this set.
+func (set Foo1Set) IsSubset(other Foo1Set) bool {
+	return set.Size() <= other.Size() && set.actualSubset(other)
+}
+
+// IsProperSubset determines if every item in the other set is in this set and this set is
+// smaller than the other.
+func (set Foo1Set) IsProperSubset(other Foo1Set) bool {
+	return set.Size() < other.Size() && set.actualSubset(other)
+}
+
+// IsSuperset determines if every item of this set is in the other set.
+func (set Foo1Set) IsSuperset(other Foo1Set) bool {
+	return other.IsSubset(set)
+}
+
+// Union returns a new set with all items in both sets.
+func (set Foo1Set) Union(other Foo1Set) Foo1Set {
+	union := NewFoo1Set()
+	for item := range set {
+		union[item] = struct{}{}
+	}
+	for item := range other {
+		union[item] = struct{}{}
+	}
+	return union
+}
+
+// Intersection returns a new set with items that exist only in both sets.
+func (set Foo1Set) Intersection(other Foo1Set) Foo1Set {
+	intersection := NewFoo1Set()
+	// loop over the smaller set
+	if set.Size() < other.Size() {
+		for item := range set {
+			if other.Contains(item) {
+				intersection[item] = struct{}{}
+			}
+		}
+	} else {
+		for item := range other {
+			if set.Contains(item) {
+				intersection[item] = struct{}{}
+			}
+		}
+	}
+	return intersection
+}
+
+// Difference returns a new set with items in the current set but not in the other set
+func (set Foo1Set) Difference(other Foo1Set) Foo1Set {
+	diffs := NewFoo1Set()
+	for item := range set {
+		if !other.Contains(item) {
+			diffs[item] = struct{}{}
+		}
+	}
+	return diffs
+}
+
+// Add creates a new set with elements added. This is similar to Union, but takes a slice of extra values.
+// The receiver is not modified.
+func (set Foo1Set) Add(others ...Foo1) Foo1Set {
+	added := NewFoo1Set()
+	for item := range set {
+		added[item] = struct{}{}
+	}
+	for _, item := range others {
+		added[item] = struct{}{}
+	}
+	return added
+}
+
+// Remove creates a new set with elements removed. This is similar to Difference, but takes a slice of unwanted values.
+// The receiver is not modified.
+func (set Foo1Set) Remove(unwanted ...Foo1) Foo1Set {
+	removed := NewFoo1Set()
+	for item := range set {
+		removed[item] = struct{}{}
+	}
+	for _, item := range unwanted {
+		delete(removed, item)
+	}
+	return removed
+}
+
+// Exists verifies that one or more elements of Foo1Set return true for the passed func.
+func (set Foo1Set) Exists(fn func(Foo1) bool) bool {
+	for v := range set {
+		if fn(v) {
+			return true
+		}
+	}
+	return false
+}
+
+// Forall verifies that all elements of Foo1Set return true for the passed func.
+func (set Foo1Set) Forall(fn func(Foo1) bool) bool {
+	for v := range set {
+		if !fn(v) {
+			return false
+		}
+	}
+	return true
+}
+
+// Foreach iterates over Foo1Set and executes the passed func against each element.
+// The order of the elements is not well defined but is probably repeatably stable until the set is changed.
+func (set Foo1Set) Foreach(fn func(Foo1)) {
+	for v := range set {
+		fn(v)
+	}
+}
+
+// Iter sends all elements along a channel of type Foo1.
+// The order of the elements is not well defined but is probably repeatably stable until the set is changed.
+func (set Foo1Set) Iter() <-chan Foo1 {
+	ch := make(chan Foo1)
+	go func() {
+		for v := range set {
+			ch <- v
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+// Filter returns a new Foo1Set whose elements return true for func.
+func (set Foo1Set) Filter(fn func(Foo1) bool) Foo1Set {
+	result := make(map[Foo1]struct{})
+	for v := range set {
+		if fn(v) {
+			result[v] = struct{}{}
+		}
+	}
+	return result
+}
+
+// Partition returns two new Foo1Lists whose elements return true or false for the predicate, p.
+// The first result consists of all elements that satisfy the predicate and the second result consists of
+// all elements that don't. The relative order of the elements in the results is the same as in the
+// original set.
+func (set Foo1Set) Partition(p func(Foo1) bool) (Foo1Set, Foo1Set) {
+	matching := make(map[Foo1]struct{})
+	others := make(map[Foo1]struct{})
+	for v := range set {
+		if p(v) {
+			matching[v] = struct{}{}
+		} else {
+			others[v] = struct{}{}
+		}
+	}
+	return matching, others
+}
+
+// CountBy gives the number elements of Foo1Set that return true for the passed predicate.
+func (set Foo1Set) CountBy(predicate func(Foo1) bool) (result int) {
+	for v := range set {
+		if predicate(v) {
+			result++
+		}
+	}
+	return
+}
+
+// MinBy returns an element of Foo1Set containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Returns error if no elements.
+func (set Foo1Set) MinBy(less func(Foo1, Foo1) bool) (result Foo1, err error) {
+	l := len(set)
+	if l == 0 {
+		err = errors.New("Cannot determine the MinBy of an empty set.")
+		return
+	}
+	first := true
+	var min Foo1
+	for v := range set {
+		if first {
+			first = false
+			min = v
+		} else if less(min, v) {
+			min = v
+		}
+	}
+	return
+}
+
+// MaxBy returns an element of Foo1Set containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// element is returned. Returns error if no elements.
+func (set Foo1Set) MaxBy(less func(Foo1, Foo1) bool) (result Foo1, err error) {
+	l := len(set)
+	if l == 0 {
+		err = errors.New("Cannot determine the MinBy of an empty set.")
+		return
+	}
+	first := true
+	var max Foo1
+	for v := range set {
+		if first {
+			first = false
+			max = v
+		} else if less(v, max) {
+			max = v
+		}
+	}
+	return
+}
+
+// String implements the Stringer interface to render the set as a comma-separated array.
+func (set Foo1Set) String() string {
+	return set.MkString3("[", ",", "]")
+}
+
+// MkString concatenates the values as a string.
+func (set Foo1Set) MkString(sep string) string {
+	return set.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the values as a string.
+func (set Foo1Set) MkString3(pfx, mid, sfx string) string {
+	b := bytes.Buffer{}
+	b.WriteString(pfx)
+	l := len(set)
+	if l > 0 {
+		sep := ""
+		for v := range set {
+			b.WriteString(sep)
+			b.WriteString(fmt.Sprintf("%v", v))
+			sep = mid
+		}
+	}
+	b.WriteString(sfx)
+	return b.String()
+}
+
+// List flags: {Collection:false Sequence:false List:true Option:true Set:true Tag:map[]}

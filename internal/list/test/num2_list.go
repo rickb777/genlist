@@ -11,6 +11,7 @@ import (
 	"math/rand"
 )
 
+//-------------------------------------------------------------------------------------------------
 // Num2Collection is an interface for collections of type Num2, including sets, lists and options (where present).
 type Num2Collection interface {
 	// Size gets the size/length of the sequence.
@@ -59,6 +60,7 @@ type Num2Collection interface {
 	Contains(value *Num2) bool
 }
 
+//-------------------------------------------------------------------------------------------------
 // Num2Seq is an interface for sequences of type *Num2, including lists and options (where present).
 type Num2Seq interface {
 	Num2Collection
@@ -82,6 +84,7 @@ type Num2Seq interface {
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Num2List
 
+	//-------------------------------------------------------------------------
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Num2 is not comparable.
 	Count(value *Num2) int
@@ -98,6 +101,17 @@ type Num2Seq interface {
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type Num2List []*Num2
+
+//-------------------------------------------------------------------------------------------------
+// BuildNum2ListFrom constructs a new Num2List from a channel that supplies values
+// until it is closed.
+func BuildNum2ListFrom(source <-chan *Num2) Num2List {
+	result := make(Num2List, 0)
+	for v := range source {
+		result = append(result, v)
+	}
+	return result
+}
 
 //-------------------------------------------------------------------------------------------------
 

@@ -11,6 +11,7 @@ import (
 	"math/rand"
 )
 
+//-------------------------------------------------------------------------------------------------
 // Foo4Collection is an interface for collections of type Foo4, including sets, lists and options (where present).
 type Foo4Collection interface {
 	// Size gets the size/length of the sequence.
@@ -59,6 +60,7 @@ type Foo4Collection interface {
 	Contains(value *Foo4) bool
 }
 
+//-------------------------------------------------------------------------------------------------
 // Foo4Seq is an interface for sequences of type *Foo4, including lists and options (where present).
 type Foo4Seq interface {
 	Foo4Collection
@@ -86,6 +88,7 @@ type Foo4Seq interface {
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Foo4List
 
+	//-------------------------------------------------------------------------
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Foo4 is not comparable.
 	Count(value *Foo4) int
@@ -331,6 +334,17 @@ func (o OptionalFoo4) MkString3(pfx, mid, sfx string) string {
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type Foo4List []*Foo4
+
+//-------------------------------------------------------------------------------------------------
+// BuildFoo4ListFrom constructs a new Foo4List from a channel that supplies values
+// until it is closed.
+func BuildFoo4ListFrom(source <-chan *Foo4) Foo4List {
+	result := make(Foo4List, 0)
+	for v := range source {
+		result = append(result, v)
+	}
+	return result
+}
 
 //-------------------------------------------------------------------------------------------------
 

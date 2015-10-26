@@ -10,6 +10,7 @@ import (
 	"fmt"
 )
 
+//-------------------------------------------------------------------------------------------------
 // ThingCollection is an interface for collections of type Thing, including sets, lists and options (where present).
 type ThingCollection interface {
 	// Size gets the size/length of the sequence.
@@ -68,7 +69,7 @@ type ThingCollection interface {
 type ThingSet map[Thing]struct{}
 
 //-------------------------------------------------------------------------------------------------
-
+// NewThingSet constructs a new set containing the supplied values, if any.
 func NewThingSet(e ...Thing) ThingSet {
 	set := make(map[Thing]struct{})
 	for _, v := range e {
@@ -76,6 +77,18 @@ func NewThingSet(e ...Thing) ThingSet {
 	}
 	return ThingSet(set)
 }
+
+// BuildThingSetFrom constructs a new ThingSet from a channel that supplies values
+// until it is closed.
+func BuildThingSetFrom(source <-chan Thing) ThingSet {
+	set := make(map[Thing]struct{})
+	for v := range source {
+		set[v] = struct{}{}
+	}
+	return ThingSet(set)
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (set ThingSet) Size() int {
 	return len(set)
@@ -89,7 +102,7 @@ func (set ThingSet) NonEmpty() bool {
 	return len(set) > 0
 }
 
-// ToSlice gets all the elements in Set in a slice.
+// ToSlice gets all the set's elements in a slice.
 func (set ThingSet) ToSlice() []Thing {
 	slice := make([]Thing, 0, len(set))
 	for v := range set {

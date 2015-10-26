@@ -6,6 +6,7 @@ package main
 
 import "fmt"
 
+//-------------------------------------------------------------------------------------------------
 // FooCollection is an interface for collections of type Foo, including sets, lists and options (where present).
 type FooCollection interface {
 	// Size gets the size/length of the sequence.
@@ -54,6 +55,7 @@ type FooCollection interface {
 	Contains(value Foo) bool
 }
 
+//-------------------------------------------------------------------------------------------------
 // FooSeq is an interface for sequences of type Foo, including lists and options (where present).
 type FooSeq interface {
 	FooCollection
@@ -78,6 +80,7 @@ type FooSeq interface {
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(Foo) bool) OptionalFoo
 
+	//-------------------------------------------------------------------------
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Foo is not comparable.
 	Count(value Foo) int

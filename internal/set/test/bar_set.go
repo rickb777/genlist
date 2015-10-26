@@ -10,6 +10,7 @@ import (
 	"fmt"
 )
 
+//-------------------------------------------------------------------------------------------------
 // BarCollection is an interface for collections of type Bar, including sets, lists and options (where present).
 type BarCollection interface {
 	// Size gets the size/length of the sequence.
@@ -68,7 +69,7 @@ type BarCollection interface {
 type BarSet map[Bar]struct{}
 
 //-------------------------------------------------------------------------------------------------
-
+// NewBarSet constructs a new set containing the supplied values, if any.
 func NewBarSet(e ...Bar) BarSet {
 	set := make(map[Bar]struct{})
 	for _, v := range e {
@@ -76,6 +77,18 @@ func NewBarSet(e ...Bar) BarSet {
 	}
 	return BarSet(set)
 }
+
+// BuildBarSetFrom constructs a new BarSet from a channel that supplies values
+// until it is closed.
+func BuildBarSetFrom(source <-chan Bar) BarSet {
+	set := make(map[Bar]struct{})
+	for v := range source {
+		set[v] = struct{}{}
+	}
+	return BarSet(set)
+}
+
+//-------------------------------------------------------------------------------------------------
 
 func (set BarSet) Size() int {
 	return len(set)
@@ -89,7 +102,7 @@ func (set BarSet) NonEmpty() bool {
 	return len(set) > 0
 }
 
-// ToSlice gets all the elements in Set in a slice.
+// ToSlice gets all the set's elements in a slice.
 func (set BarSet) ToSlice() []Bar {
 	slice := make([]Bar, 0, len(set))
 	for v := range set {

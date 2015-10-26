@@ -12,7 +12,7 @@ var coreSetTemplate = &typewriter.Template{
 
 var otherSetTemplates = typewriter.TemplateSlice{
 	setMapToT,
-	coreSetTemplate,
+	coreListTemplate,
 }
 
 var setMapToT = &typewriter.Template{

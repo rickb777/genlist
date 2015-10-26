@@ -13,6 +13,7 @@ var coreOptionTemplate = &typewriter.Template{
 var optionTemplates = typewriter.TemplateSlice{
 	optionMapToT,
 	coreListTemplate,
+	coreSetTemplate,
 }
 
 var optionMapToT = &typewriter.Template{

@@ -11,6 +11,7 @@ import (
 	"math/rand"
 )
 
+//-------------------------------------------------------------------------------------------------
 // Foo3Collection is an interface for collections of type Foo3, including sets, lists and options (where present).
 type Foo3Collection interface {
 	// Size gets the size/length of the sequence.
@@ -59,6 +60,7 @@ type Foo3Collection interface {
 	Contains(value *Foo3) bool
 }
 
+//-------------------------------------------------------------------------------------------------
 // Foo3Seq is an interface for sequences of type *Foo3, including lists and options (where present).
 type Foo3Seq interface {
 	Foo3Collection
@@ -86,6 +88,7 @@ type Foo3Seq interface {
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Foo3List
 
+	//-------------------------------------------------------------------------
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Foo3 is not comparable.
 	Count(value *Foo3) int
@@ -102,6 +105,17 @@ type Foo3Seq interface {
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type Foo3List []*Foo3
+
+//-------------------------------------------------------------------------------------------------
+// BuildFoo3ListFrom constructs a new Foo3List from a channel that supplies values
+// until it is closed.
+func BuildFoo3ListFrom(source <-chan *Foo3) Foo3List {
+	result := make(Foo3List, 0)
+	for v := range source {
+		result = append(result, v)
+	}
+	return result
+}
 
 //-------------------------------------------------------------------------------------------------
 

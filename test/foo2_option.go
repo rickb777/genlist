@@ -12,6 +12,7 @@ import (
 	"sort"
 )
 
+//-------------------------------------------------------------------------------------------------
 // Foo2Collection is an interface for collections of type Foo2, including sets, lists and options (where present).
 type Foo2Collection interface {
 	// Size gets the size/length of the sequence.
@@ -69,6 +70,7 @@ type Foo2Collection interface {
 	Mean() Foo2
 }
 
+//-------------------------------------------------------------------------------------------------
 // Foo2Seq is an interface for sequences of type Foo2, including lists and options (where present).
 type Foo2Seq interface {
 	Foo2Collection
@@ -96,6 +98,7 @@ type Foo2Seq interface {
 	// Converts the sequence to a list. For lists, this is merely a type assertion.
 	ToList() Foo2List
 
+	//-------------------------------------------------------------------------
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Foo2 is not comparable.
 	Count(value Foo2) int
@@ -359,6 +362,17 @@ func (o OptionalFoo2) MkString3(pfx, mid, sfx string) string {
 // When a list needs mutating, use normal Go slice operations, e.g. *append()*.
 // For comparison with Scala, see e.g. http://www.scala-lang.org/api/2.11.7/#scala.collection.LinearSeq
 type Foo2List []Foo2
+
+//-------------------------------------------------------------------------------------------------
+// BuildFoo2ListFrom constructs a new Foo2List from a channel that supplies values
+// until it is closed.
+func BuildFoo2ListFrom(source <-chan Foo2) Foo2List {
+	result := make(Foo2List, 0)
+	for v := range source {
+		result = append(result, v)
+	}
+	return result
+}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -911,4 +925,331 @@ func (list Foo2List) LastOption() OptionalFoo2 {
 	}
 }
 
-// Option flags: {Collection:false Sequence:false List:true Option:true Set:false Tag:map[]}
+// ToSet gets all the list's elements in a Foo2Set.
+func (list Foo2List) ToSet() Foo2Set {
+	set := make(map[Foo2]struct{})
+	for _, v := range list {
+		set[v] = struct{}{}
+	}
+	return Foo2Set(set)
+}
+
+//-------------------------------------------------------------------------------------------------
+// Foo2Set is a typesafe set of Foo2 items. Instances are essentially immutable.
+// The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
+// easily.
+//
+// The implementation is based on Go maps.
+
+type Foo2Set map[Foo2]struct{}
+
+//-------------------------------------------------------------------------------------------------
+// NewFoo2Set constructs a new set containing the supplied values, if any.
+func NewFoo2Set(e ...Foo2) Foo2Set {
+	set := make(map[Foo2]struct{})
+	for _, v := range e {
+		set[v] = struct{}{}
+	}
+	return Foo2Set(set)
+}
+
+// BuildFoo2SetFrom constructs a new Foo2Set from a channel that supplies values
+// until it is closed.
+func BuildFoo2SetFrom(source <-chan Foo2) Foo2Set {
+	set := make(map[Foo2]struct{})
+	for v := range source {
+		set[v] = struct{}{}
+	}
+	return Foo2Set(set)
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (set Foo2Set) Size() int {
+	return len(set)
+}
+
+func (set Foo2Set) IsEmpty() bool {
+	return len(set) == 0
+}
+
+func (set Foo2Set) NonEmpty() bool {
+	return len(set) > 0
+}
+
+// ToList gets all the set's elements in a in SetList.
+func (set Foo2Set) ToList() Foo2List {
+	slice := make([]Foo2, 0, len(set))
+	for v := range set {
+		slice = append(slice, v)
+	}
+	return Foo2List(slice)
+}
+
+// Contains tests whether an item is already in the Foo2Set.
+func (set Foo2Set) Contains(i Foo2) bool {
+	_, found := set[i]
+	return found
+}
+
+// ContainsAll tests whether many items are all in the Foo2Set.
+func (set Foo2Set) ContainsAll(i ...Foo2) bool {
+	for _, v := range i {
+		if !set.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
+func (set Foo2Set) actualSubset(other Foo2Set) bool {
+	for item := range set {
+		if !other.Contains(item) {
+			return false
+		}
+	}
+	return true
+}
+
+// Equals determines if two sets are equal to each other.
+// They are considered equal if both are the same size and both have the same items.
+func (set Foo2Set) Equals(other Foo2Set) bool {
+	return set.Size() == other.Size() && set.actualSubset(other)
+}
+
+// IsSubset determines if every item in the other set is in this set.
+func (set Foo2Set) IsSubset(other Foo2Set) bool {
+	return set.Size() <= other.Size() && set.actualSubset(other)
+}
+
+// IsProperSubset determines if every item in the other set is in this set and this set is
+// smaller than the other.
+func (set Foo2Set) IsProperSubset(other Foo2Set) bool {
+	return set.Size() < other.Size() && set.actualSubset(other)
+}
+
+// IsSuperset determines if every item of this set is in the other set.
+func (set Foo2Set) IsSuperset(other Foo2Set) bool {
+	return other.IsSubset(set)
+}
+
+// Union returns a new set with all items in both sets.
+func (set Foo2Set) Union(other Foo2Set) Foo2Set {
+	union := NewFoo2Set()
+	for item := range set {
+		union[item] = struct{}{}
+	}
+	for item := range other {
+		union[item] = struct{}{}
+	}
+	return union
+}
+
+// Intersection returns a new set with items that exist only in both sets.
+func (set Foo2Set) Intersection(other Foo2Set) Foo2Set {
+	intersection := NewFoo2Set()
+	// loop over the smaller set
+	if set.Size() < other.Size() {
+		for item := range set {
+			if other.Contains(item) {
+				intersection[item] = struct{}{}
+			}
+		}
+	} else {
+		for item := range other {
+			if set.Contains(item) {
+				intersection[item] = struct{}{}
+			}
+		}
+	}
+	return intersection
+}
+
+// Difference returns a new set with items in the current set but not in the other set
+func (set Foo2Set) Difference(other Foo2Set) Foo2Set {
+	diffs := NewFoo2Set()
+	for item := range set {
+		if !other.Contains(item) {
+			diffs[item] = struct{}{}
+		}
+	}
+	return diffs
+}
+
+// Add creates a new set with elements added. This is similar to Union, but takes a slice of extra values.
+// The receiver is not modified.
+func (set Foo2Set) Add(others ...Foo2) Foo2Set {
+	added := NewFoo2Set()
+	for item := range set {
+		added[item] = struct{}{}
+	}
+	for _, item := range others {
+		added[item] = struct{}{}
+	}
+	return added
+}
+
+// Remove creates a new set with elements removed. This is similar to Difference, but takes a slice of unwanted values.
+// The receiver is not modified.
+func (set Foo2Set) Remove(unwanted ...Foo2) Foo2Set {
+	removed := NewFoo2Set()
+	for item := range set {
+		removed[item] = struct{}{}
+	}
+	for _, item := range unwanted {
+		delete(removed, item)
+	}
+	return removed
+}
+
+// Exists verifies that one or more elements of Foo2Set return true for the passed func.
+func (set Foo2Set) Exists(fn func(Foo2) bool) bool {
+	for v := range set {
+		if fn(v) {
+			return true
+		}
+	}
+	return false
+}
+
+// Forall verifies that all elements of Foo2Set return true for the passed func.
+func (set Foo2Set) Forall(fn func(Foo2) bool) bool {
+	for v := range set {
+		if !fn(v) {
+			return false
+		}
+	}
+	return true
+}
+
+// Foreach iterates over Foo2Set and executes the passed func against each element.
+// The order of the elements is not well defined but is probably repeatably stable until the set is changed.
+func (set Foo2Set) Foreach(fn func(Foo2)) {
+	for v := range set {
+		fn(v)
+	}
+}
+
+// Iter sends all elements along a channel of type Foo2.
+// The order of the elements is not well defined but is probably repeatably stable until the set is changed.
+func (set Foo2Set) Iter() <-chan Foo2 {
+	ch := make(chan Foo2)
+	go func() {
+		for v := range set {
+			ch <- v
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+// Filter returns a new Foo2Set whose elements return true for func.
+func (set Foo2Set) Filter(fn func(Foo2) bool) Foo2Set {
+	result := make(map[Foo2]struct{})
+	for v := range set {
+		if fn(v) {
+			result[v] = struct{}{}
+		}
+	}
+	return result
+}
+
+// Partition returns two new Foo2Lists whose elements return true or false for the predicate, p.
+// The first result consists of all elements that satisfy the predicate and the second result consists of
+// all elements that don't. The relative order of the elements in the results is the same as in the
+// original set.
+func (set Foo2Set) Partition(p func(Foo2) bool) (Foo2Set, Foo2Set) {
+	matching := make(map[Foo2]struct{})
+	others := make(map[Foo2]struct{})
+	for v := range set {
+		if p(v) {
+			matching[v] = struct{}{}
+		} else {
+			others[v] = struct{}{}
+		}
+	}
+	return matching, others
+}
+
+// CountBy gives the number elements of Foo2Set that return true for the passed predicate.
+func (set Foo2Set) CountBy(predicate func(Foo2) bool) (result int) {
+	for v := range set {
+		if predicate(v) {
+			result++
+		}
+	}
+	return
+}
+
+// MinBy returns an element of Foo2Set containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Returns error if no elements.
+func (set Foo2Set) MinBy(less func(Foo2, Foo2) bool) (result Foo2, err error) {
+	l := len(set)
+	if l == 0 {
+		err = errors.New("Cannot determine the MinBy of an empty set.")
+		return
+	}
+	first := true
+	var min Foo2
+	for v := range set {
+		if first {
+			first = false
+			min = v
+		} else if less(min, v) {
+			min = v
+		}
+	}
+	return
+}
+
+// MaxBy returns an element of Foo2Set containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// element is returned. Returns error if no elements.
+func (set Foo2Set) MaxBy(less func(Foo2, Foo2) bool) (result Foo2, err error) {
+	l := len(set)
+	if l == 0 {
+		err = errors.New("Cannot determine the MinBy of an empty set.")
+		return
+	}
+	first := true
+	var max Foo2
+	for v := range set {
+		if first {
+			first = false
+			max = v
+		} else if less(v, max) {
+			max = v
+		}
+	}
+	return
+}
+
+// String implements the Stringer interface to render the set as a comma-separated array.
+func (set Foo2Set) String() string {
+	return set.MkString3("[", ",", "]")
+}
+
+// MkString concatenates the values as a string.
+func (set Foo2Set) MkString(sep string) string {
+	return set.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the values as a string.
+func (set Foo2Set) MkString3(pfx, mid, sfx string) string {
+	b := bytes.Buffer{}
+	b.WriteString(pfx)
+	l := len(set)
+	if l > 0 {
+		sep := ""
+		for v := range set {
+			b.WriteString(sep)
+			b.WriteString(fmt.Sprintf("%v", v))
+			sep = mid
+		}
+	}
+	b.WriteString(sfx)
+	return b.String()
+}
+
+// Option flags: {Collection:false Sequence:false List:true Option:true Set:true Tag:map[]}

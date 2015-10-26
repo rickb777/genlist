@@ -6,6 +6,7 @@ package main
 
 import "fmt"
 
+//-------------------------------------------------------------------------------------------------
 // BarCollection is an interface for collections of type Bar, including sets, lists and options (where present).
 type BarCollection interface {
 	// Size gets the size/length of the sequence.
@@ -54,6 +55,7 @@ type BarCollection interface {
 	Contains(value *Bar) bool
 }
 
+//-------------------------------------------------------------------------------------------------
 // BarSeq is an interface for sequences of type *Bar, including lists and options (where present).
 type BarSeq interface {
 	BarCollection
@@ -78,6 +80,7 @@ type BarSeq interface {
 	// Find searches for the first value that matches a given predicate. It may or may not find one.
 	Find(predicate func(*Bar) bool) OptionalBar
 
+	//-------------------------------------------------------------------------
 	// Count counts the number of times a given value occurs in the sequence.
 	// Omitted if Bar is not comparable.
 	Count(value *Bar) int
