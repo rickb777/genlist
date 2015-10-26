@@ -1,7 +1,7 @@
 package main
 
 // methods where underlying type is ordered or numeric
-// +test Option:"With[Foo]"
+// +test Option:"MapTo[Foo]"
 type Other Underlying
 
 type Underlying int

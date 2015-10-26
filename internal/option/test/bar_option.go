@@ -21,6 +21,7 @@ type BarCollection interface {
 // BarSeq is an interface for sequences of type *Bar, including lists and options (where present).
 type BarSeq interface {
 	BarCollection
+
 	// Len gets the size/length of the sequence - an alias for Size()
 	Len() int
 

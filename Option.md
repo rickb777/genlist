@@ -73,6 +73,10 @@ type Example struct { ... }
 Each tag creates a corresponding `MapToFred`, `MapToJim` etc function. These functions return the corresponding
 `OptionalFred`, `OptionalJim` etc values.
 
+In addition, a corresponding `FlatMapToFred`, `FlatMapToJim` etc function is generated. These functions return the 
+corresponding `OptionalFred`, `OptionalJim` etc values. A mapping function transforms individual `Example` item to a
+sequence of its `Fred` equivalent. This sequence is added to the result set.
+
 ### Next: [Sets](Set.md)
 #### Contents:
 

@@ -21,6 +21,7 @@ type OtherCollection interface {
 // OtherSeq is an interface for sequences of type Other, including lists and options (where present).
 type OtherSeq interface {
 	OtherCollection
+
 	// Len gets the size/length of the sequence - an alias for Size()
 	Len() int
 
@@ -330,4 +331,4 @@ func (o OptionalOther) FlatMapToFoo(fn func(Other) FooSeq) (result FooSeq) {
 	return SomeFoo(u.Head())
 }
 
-// Option flags: {Collection:false Sequence:false List:false Option:true Set:false Tag:map[With:true]}
+// Option flags: {Collection:false Sequence:false List:false Option:true Set:false Tag:map[MapTo:true]}

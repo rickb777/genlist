@@ -23,6 +23,27 @@ Set methods include:
  * **CountBy**, **MaxBy**, **MinBy**, **DistinctBy** - statistics based on supplied operator functions
  * **MkString**, **MkString3**, **String** - constructs a string representation of the set (like a list)
 
+### Tags
+
+Extra tags can be included to add more features. You can include a comma-separated list of as many tags as you need.
+
+#### `MapTo` Tag
+
+`MapTo[T]` adds code to transform the original set to a new 
+set by transforming its element using a function you provide. `MapTo[T]` can be used more than once: 
+
+````go
+// +gen Option:"MapTo[Fred], MapTo[Jim]"
+type Example struct { ... }
+````
+
+Each tag creates a corresponding `MapToFred`, `MapToJim` etc function. These functions return the corresponding
+`FredSet`, `JimSet` etc values. A mapping function transforms individual `Example` item to its `Fred` equivalent.
+
+In addition, a corresponding `FlatMapToFred`, `FlatMapToJim` etc function is generated. These functions return the 
+corresponding `FredSet`, `JimSet` etc values. A mapping function transforms individual `Example` item to a
+sequence of its `Fred` equivalent. This sequence is added to the result set.
+
 ### Next: [Joint Lists With Options](Unified.md)
 #### Contents:
 

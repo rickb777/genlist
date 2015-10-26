@@ -26,6 +26,7 @@ type Num2Collection interface {
 // Num2Seq is an interface for sequences of type *Num2, including lists and options (where present).
 type Num2Seq interface {
 	Num2Collection
+
 	// Len gets the size/length of the sequence - an alias for Size()
 	Len() int
 

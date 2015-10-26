@@ -27,6 +27,7 @@ type Num1Collection interface {
 // Num1Seq is an interface for sequences of type Num1, including lists and options (where present).
 type Num1Seq interface {
 	Num1Collection
+
 	// Len gets the size/length of the sequence - an alias for Size()
 	Len() int
 

@@ -26,6 +26,7 @@ type Foo3Collection interface {
 // Foo3Seq is an interface for sequences of type *Foo3, including lists and options (where present).
 type Foo3Seq interface {
 	Foo3Collection
+
 	// Len gets the size/length of the sequence - an alias for Size()
 	Len() int
 

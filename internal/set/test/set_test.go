@@ -50,27 +50,40 @@ func TestLenNum1(t *testing.T) {
 	}
 }
 
-//func TestAddRemoveContains(t *testing.T) {
-//	a := NewNum1Set()
-//
-//	b := a.Add(71)
-//
-//	if !b.Contains(71) {
-//		t.Errorf("ContainsSet should contain 71")
-//	}
-//
-//	c := b.Remove(71)
-//
-//	if c.Contains(71) {
-//		t.Errorf("ContainsSet should not contain 71")
-//	}
-//
-//	d := c.Add(13, 7, 1)
-//
-//	if !(d.Contains(13) && d.Contains(7) && d.Contains(1)) {
-//		t.Errorf("ContainsSet should contain 13, 7, 1")
-//	}
-//}
+func TestToSlice(t *testing.T) {
+	a := NewNum1Set(1, 2, 3)
+	b := a.ToSlice()
+
+	if len(b) != 3 {
+		t.Errorf("Expected length 3 in %v", b)
+	}
+
+	if b[0] != 1 && b[0] != 2 && b[0] != 3 {
+		t.Errorf("Expected first element 1, 2 or 3 in %v", b)
+	}
+}
+
+func TestAddRemoveContains(t *testing.T) {
+	a := NewNum1Set()
+
+	b := a.Add(71)
+
+	if !b.Contains(71) {
+		t.Errorf("Contains should contain 71")
+	}
+
+	c := b.Remove(71)
+
+	if c.Contains(71) {
+		t.Errorf("Contains should not contain 71")
+	}
+
+	d := c.Add(13, 7, 1)
+
+	if !(d.Contains(13) && d.Contains(7) && d.Contains(1)) {
+		t.Errorf("Contains should contain 13, 7, 1")
+	}
+}
 
 func TestSetHasNoDuplicate(t *testing.T) {
 	a := NewNum1Set(3, 5, 8, 3)

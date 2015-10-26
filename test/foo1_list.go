@@ -27,6 +27,7 @@ type Foo1Collection interface {
 // Foo1Seq is an interface for sequences of type Foo1, including lists and options (where present).
 type Foo1Seq interface {
 	Foo1Collection
+
 	// Len gets the size/length of the sequence - an alias for Size()
 	Len() int
 

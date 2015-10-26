@@ -26,6 +26,7 @@ type ThingCollection interface {
 // ThingSeq is an interface for sequences of type Thing, including lists and options (where present).
 type ThingSeq interface {
 	ThingCollection
+
 	// Len gets the size/length of the sequence - an alias for Size()
 	Len() int
 

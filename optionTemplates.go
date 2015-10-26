@@ -11,12 +11,12 @@ var coreOptionTemplate = &typewriter.Template{
 }
 
 var optionTemplates = typewriter.TemplateSlice{
-	optionWithT,
+	optionMapToT,
 	coreListTemplate,
 }
 
-var optionWithT = &typewriter.Template{
-	Name: "With",
+var optionMapToT = &typewriter.Template{
+	Name: "MapTo",
 	Text: option.OptionMapToParamFunctions,
 	// exactly one type parameter is required, but no constraints on that type
 	TypeParameterConstraints: []typewriter.Constraint{{}},
