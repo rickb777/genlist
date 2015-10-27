@@ -49,14 +49,26 @@ type FooCollection interface {
 	Partition(p func(Foo) bool) (matching FooCollection, others FooCollection)
 
 	//-------------------------------------------------------------------------
-	// These methods require Foo be comparable.
 
-	// Equals verifies that one or more elements of FooCollection return true for the passed func.
+	// Equals verifies that another FooCollection has the same type, size and elements as this one.
+	// Omitted if Foo is not comparable.
 	Equals(other FooCollection) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Foo is not comparable.
 	Contains(value Foo) bool
+
+	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
+	// of the elements.
+	String() string
+
+	// MkString gets a string representation of the collection. "[" and "]" surround a list
+	// of the elements joined by the separator you provide.
+	MkString(sep string) string
+
+	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
+	// of the elements joined by the 'mid' separator you provide.
+	MkString3(pfx, mid, sfx string) string
 }
 
 //-------------------------------------------------------------------------------------------------

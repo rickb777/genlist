@@ -45,9 +45,9 @@ type OtherCollection interface {
 	Partition(p func(Other) bool) (matching OtherCollection, others OtherCollection)
 
 	//-------------------------------------------------------------------------
-	// These methods require Other be comparable.
 
-	// Equals verifies that one or more elements of OtherCollection return true for the passed func.
+	// Equals verifies that another OtherCollection has the same type, size and elements as this one.
+	// Omitted if Other is not comparable.
 	Equals(other OtherCollection) bool
 
 	// Contains tests whether a given value is present in the sequence.
@@ -59,9 +59,21 @@ type OtherCollection interface {
 	// Omitted if Other is not numeric.
 	Sum() Other
 
-	// Mean computes the arithmetic mean of all elements.
-	// Panics if the list is empty.
+	// Mean computes the arithmetic mean of all elements. Panics if the collection is empty.
+	// Omitted if Other is not numeric.
 	Mean() Other
+
+	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
+	// of the elements.
+	String() string
+
+	// MkString gets a string representation of the collection. "[" and "]" surround a list
+	// of the elements joined by the separator you provide.
+	MkString(sep string) string
+
+	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
+	// of the elements joined by the 'mid' separator you provide.
+	MkString3(pfx, mid, sfx string) string
 }
 
 //-------------------------------------------------------------------------------------------------

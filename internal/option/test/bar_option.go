@@ -45,14 +45,26 @@ type BarCollection interface {
 	Partition(p func(*Bar) bool) (matching BarCollection, others BarCollection)
 
 	//-------------------------------------------------------------------------
-	// These methods require Bar be comparable.
 
-	// Equals verifies that one or more elements of BarCollection return true for the passed func.
+	// Equals verifies that another BarCollection has the same type, size and elements as this one.
+	// Omitted if Bar is not comparable.
 	Equals(other BarCollection) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Bar is not comparable.
 	Contains(value *Bar) bool
+
+	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
+	// of the elements.
+	String() string
+
+	// MkString gets a string representation of the collection. "[" and "]" surround a list
+	// of the elements joined by the separator you provide.
+	MkString(sep string) string
+
+	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
+	// of the elements joined by the 'mid' separator you provide.
+	MkString3(pfx, mid, sfx string) string
 }
 
 //-------------------------------------------------------------------------------------------------

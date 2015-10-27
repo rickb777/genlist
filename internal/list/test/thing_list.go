@@ -50,14 +50,26 @@ type ThingCollection interface {
 	Partition(p func(Thing) bool) (matching ThingCollection, others ThingCollection)
 
 	//-------------------------------------------------------------------------
-	// These methods require Thing be comparable.
 
-	// Equals verifies that one or more elements of ThingCollection return true for the passed func.
+	// Equals verifies that another ThingCollection has the same type, size and elements as this one.
+	// Omitted if Thing is not comparable.
 	Equals(other ThingCollection) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Thing is not comparable.
 	Contains(value Thing) bool
+
+	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
+	// of the elements.
+	String() string
+
+	// MkString gets a string representation of the collection. "[" and "]" surround a list
+	// of the elements joined by the separator you provide.
+	MkString(sep string) string
+
+	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
+	// of the elements joined by the 'mid' separator you provide.
+	MkString3(pfx, mid, sfx string) string
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1037,4 +1049,4 @@ func quickSortThingList(list ThingList, less func(Thing, Thing) bool, a, b, maxD
 	}
 }
 
-// List flags: {Collection:false Sequence:false List:true Option:false Set:false Tag:map[MapTo:true With:true SortWith:true]}
+// List flags: {Collection:false Sequence:false List:true Option:false Set:false Tag:map[With:true SortWith:true MapTo:true]}

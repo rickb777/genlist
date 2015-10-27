@@ -51,9 +51,9 @@ type Foo1Collection interface {
 	Partition(p func(Foo1) bool) (matching Foo1Collection, others Foo1Collection)
 
 	//-------------------------------------------------------------------------
-	// These methods require Foo1 be comparable.
 
-	// Equals verifies that one or more elements of Foo1Collection return true for the passed func.
+	// Equals verifies that another Foo1Collection has the same type, size and elements as this one.
+	// Omitted if Foo1 is not comparable.
 	Equals(other Foo1Collection) bool
 
 	// Contains tests whether a given value is present in the sequence.
@@ -65,9 +65,21 @@ type Foo1Collection interface {
 	// Omitted if Foo1 is not numeric.
 	Sum() Foo1
 
-	// Mean computes the arithmetic mean of all elements.
-	// Panics if the list is empty.
+	// Mean computes the arithmetic mean of all elements. Panics if the collection is empty.
+	// Omitted if Foo1 is not numeric.
 	Mean() Foo1
+
+	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
+	// of the elements.
+	String() string
+
+	// MkString gets a string representation of the collection. "[" and "]" surround a list
+	// of the elements joined by the separator you provide.
+	MkString(sep string) string
+
+	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
+	// of the elements joined by the 'mid' separator you provide.
+	MkString3(pfx, mid, sfx string) string
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -51,9 +51,9 @@ type Num1Collection interface {
 	Partition(p func(Num1) bool) (matching Num1Collection, others Num1Collection)
 
 	//-------------------------------------------------------------------------
-	// These methods require Num1 be comparable.
 
-	// Equals verifies that one or more elements of Num1Collection return true for the passed func.
+	// Equals verifies that another Num1Collection has the same type, size and elements as this one.
+	// Omitted if Num1 is not comparable.
 	Equals(other Num1Collection) bool
 
 	// Contains tests whether a given value is present in the sequence.
@@ -65,9 +65,21 @@ type Num1Collection interface {
 	// Omitted if Num1 is not numeric.
 	Sum() Num1
 
-	// Mean computes the arithmetic mean of all elements.
-	// Panics if the list is empty.
+	// Mean computes the arithmetic mean of all elements. Panics if the collection is empty.
+	// Omitted if Num1 is not numeric.
 	Mean() Num1
+
+	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
+	// of the elements.
+	String() string
+
+	// MkString gets a string representation of the collection. "[" and "]" surround a list
+	// of the elements joined by the separator you provide.
+	MkString(sep string) string
+
+	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
+	// of the elements joined by the 'mid' separator you provide.
+	MkString3(pfx, mid, sfx string) string
 }
 
 //-------------------------------------------------------------------------------------------------

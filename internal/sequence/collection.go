@@ -42,9 +42,9 @@ type {{.TName}}Collection interface {
 
 {{if .Type.Comparable}}
 	//-------------------------------------------------------------------------
-	// These methods require {{.TName}} be comparable.
 
-	// Equals verifies that one or more elements of {{.TName}}Collection return true for the passed func.
+	// Equals verifies that another {{.TName}}Collection has the same type, size and elements as this one.
+	// Omitted if {{.TName}} is not comparable.
 	Equals(other {{.TName}}Collection) bool
 
 	// Contains tests whether a given value is present in the sequence.
@@ -58,11 +58,23 @@ type {{.TName}}Collection interface {
 	// Omitted if {{.TName}} is not numeric.
 	Sum() {{.PName}}
 
-	// Mean computes the arithmetic mean of all elements.
-	// Panics if the list is empty.
+	// Mean computes the arithmetic mean of all elements. Panics if the collection is empty.
+	// Omitted if {{.TName}} is not numeric.
 	Mean() {{.PName}}
 
 {{end}}
+	//-------------------------------------------------------------------------
+	// String gets a string representation of the collection. "[" and "]" surround
+	// a comma-separated list of the elements.
+	String() string
+
+	// MkString gets a string representation of the collection. "[" and "]" surround a list
+	// of the elements joined by the separator you provide.
+	MkString(sep string) string
+
+	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
+	// of the elements joined by the 'mid' separator you provide.
+	MkString3(pfx, mid, sfx string) string
 }
 
 

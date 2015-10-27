@@ -50,14 +50,26 @@ type Num2Collection interface {
 	Partition(p func(*Num2) bool) (matching Num2Collection, others Num2Collection)
 
 	//-------------------------------------------------------------------------
-	// These methods require Num2 be comparable.
 
-	// Equals verifies that one or more elements of Num2Collection return true for the passed func.
+	// Equals verifies that another Num2Collection has the same type, size and elements as this one.
+	// Omitted if Num2 is not comparable.
 	Equals(other Num2Collection) bool
 
 	// Contains tests whether a given value is present in the sequence.
 	// Omitted if Num2 is not comparable.
 	Contains(value *Num2) bool
+
+	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
+	// of the elements.
+	String() string
+
+	// MkString gets a string representation of the collection. "[" and "]" surround a list
+	// of the elements joined by the separator you provide.
+	MkString(sep string) string
+
+	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
+	// of the elements joined by the 'mid' separator you provide.
+	MkString3(pfx, mid, sfx string) string
 }
 
 //-------------------------------------------------------------------------------------------------
