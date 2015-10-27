@@ -31,11 +31,11 @@ func TestForallNum1(t *testing.T) {
 }
 
 func TestForallThing(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"First", 60},
+		Thing{"Second", -20},
+		Thing{"Third", 100},
+	)
 
 	all1 := things.Forall(func(x Thing) bool {
 		return x.Name == "First"

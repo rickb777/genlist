@@ -36,21 +36,21 @@ func TestFilterNum1(t *testing.T) {
 }
 
 func TestFilterThing(t *testing.T) {
-	things := ThingList{
-		{"First", 0},
-		{"Second", 0},
-		{"Third", 0},
-		{"Second", 10},
-	}
+	things := thingCollection(
+		Thing{"First", 0},
+		Thing{"Second", 0},
+		Thing{"Third", 0},
+		Thing{"Second", 10},
+	)
 
 	where1 := things.Filter(func(x Thing) bool {
 		return x.Name == "Second"
 	})
 
-	expected1 := ThingList{
-		{"Second", 0},
-		{"Second", 10},
-	}
+	expected1 := thingCollection(
+		Thing{"Second", 0},
+		Thing{"Second", 10},
+	)
 
 	if !reflect.DeepEqual(where1, expected1) {
 		t.Errorf("Filter should result in %#v, got %#v", expected1, where1)
@@ -64,7 +64,7 @@ func TestFilterThing(t *testing.T) {
 		t.Errorf("Filter should result in empty list, got %#v", where2)
 	}
 
-	where3 := ThingList{}.Filter(func(x Thing) bool {
+	where3 := thingCollection().Filter(func(x Thing) bool {
 		return true
 	})
 

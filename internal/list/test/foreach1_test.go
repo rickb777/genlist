@@ -16,11 +16,11 @@ func TestForeachNum1(t *testing.T) {
 }
 
 func TestForeachThing(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"First", 60},
+		Thing{"Second", -20},
+		Thing{"Third", 100},
+	)
 
 	concat := ""
 	things.Foreach(func(x Thing) {
