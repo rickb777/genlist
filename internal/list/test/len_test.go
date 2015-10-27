@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestLenNum(t *testing.T) {
-	things := Num1List{60, -20, 100}
+	things := num1Collection(60, -20, 100)
 
 	if things.Size() != 3 {
 		t.Errorf("Size should be 3")
@@ -21,7 +21,7 @@ func TestLenNum(t *testing.T) {
 		t.Errorf("Size should be 3")
 	}
 
-	noThings := Num1List{}
+	noThings := num1Collection()
 
 	if noThings.Size() != 0 {
 		t.Errorf("Size should be 0")

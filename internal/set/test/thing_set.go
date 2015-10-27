@@ -102,6 +102,14 @@ func (set ThingSet) NonEmpty() bool {
 	return len(set) > 0
 }
 
+// Any gets an arbitrary element.
+func (set ThingSet) Any() Thing {
+	for v := range set {
+		return v
+	}
+	panic("Set is empty")
+}
+
 // ToSlice gets all the set's elements in a slice.
 func (set ThingSet) ToSlice() []Thing {
 	slice := make([]Thing, 0, len(set))
@@ -138,8 +146,9 @@ func (set ThingSet) actualSubset(other ThingSet) bool {
 
 // Equals determines if two sets are equal to each other.
 // They are considered equal if both are the same size and both have the same items.
-func (set ThingSet) Equals(other ThingSet) bool {
-	return set.Size() == other.Size() && set.actualSubset(other)
+func (set ThingSet) Equals(other ThingCollection) bool {
+	otherSet, isSet := other.(ThingSet)
+	return isSet && set.Size() == other.Size() && set.actualSubset(otherSet)
 }
 
 // IsSubset determines if every item in the other set is in this set.
@@ -269,21 +278,21 @@ func (set ThingSet) Iter() <-chan Thing {
 }
 
 // Filter returns a new ThingSet whose elements return true for func.
-func (set ThingSet) Filter(fn func(Thing) bool) ThingSet {
+func (set ThingSet) Filter(fn func(Thing) bool) ThingCollection {
 	result := make(map[Thing]struct{})
 	for v := range set {
 		if fn(v) {
 			result[v] = struct{}{}
 		}
 	}
-	return result
+	return ThingSet(result)
 }
 
 // Partition returns two new ThingLists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original set.
-func (set ThingSet) Partition(p func(Thing) bool) (ThingSet, ThingSet) {
+func (set ThingSet) Partition(p func(Thing) bool) (ThingCollection, ThingCollection) {
 	matching := make(map[Thing]struct{})
 	others := make(map[Thing]struct{})
 	for v := range set {
@@ -293,7 +302,7 @@ func (set ThingSet) Partition(p func(Thing) bool) (ThingSet, ThingSet) {
 			others[v] = struct{}{}
 		}
 	}
-	return matching, others
+	return ThingSet(matching), ThingSet(others)
 }
 
 // CountBy gives the number elements of ThingSet that return true for the passed predicate.
@@ -377,4 +386,50 @@ func (set ThingSet) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[]}
+// MapToNum1 transforms ThingSet to Num1Set.
+func (set ThingSet) MapToNum1(fn func(Thing) Num1) Num1Collection {
+	result := make(map[Num1]struct{})
+	for v := range set {
+		u := fn(v)
+		result[u] = struct{}{}
+	}
+	return Num1Set(result)
+}
+
+// FlatMapToNum1 transforms ThingSet to Num1Set, by
+// calling the supplied function on each of the enclosed set elements, and returning a new set.
+func (set ThingSet) FlatMapToNum1(fn func(Thing) Num1Collection) Num1Collection {
+	result := make(map[Num1]struct{})
+	for a := range set {
+		b := fn(a)
+		b.Foreach(func(c Num1) {
+			result[c] = struct{}{}
+		})
+	}
+	return Num1Set(result)
+}
+
+// MapToNum2 transforms ThingSet to *Num2Set.
+func (set ThingSet) MapToNum2(fn func(Thing) *Num2) Num2Collection {
+	result := make(map[*Num2]struct{})
+	for v := range set {
+		u := fn(v)
+		result[u] = struct{}{}
+	}
+	return Num2Set(result)
+}
+
+// FlatMapToNum2 transforms ThingSet to Num2Set, by
+// calling the supplied function on each of the enclosed set elements, and returning a new set.
+func (set ThingSet) FlatMapToNum2(fn func(Thing) Num2Collection) Num2Collection {
+	result := make(map[*Num2]struct{})
+	for a := range set {
+		b := fn(a)
+		b.Foreach(func(c *Num2) {
+			result[c] = struct{}{}
+		})
+	}
+	return Num2Set(result)
+}
+
+// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[MapTo:true]}

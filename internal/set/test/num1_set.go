@@ -111,6 +111,14 @@ func (set Num1Set) NonEmpty() bool {
 	return len(set) > 0
 }
 
+// Any gets an arbitrary element.
+func (set Num1Set) Any() Num1 {
+	for v := range set {
+		return v
+	}
+	panic("Set is empty")
+}
+
 // ToSlice gets all the set's elements in a slice.
 func (set Num1Set) ToSlice() []Num1 {
 	slice := make([]Num1, 0, len(set))
@@ -147,8 +155,9 @@ func (set Num1Set) actualSubset(other Num1Set) bool {
 
 // Equals determines if two sets are equal to each other.
 // They are considered equal if both are the same size and both have the same items.
-func (set Num1Set) Equals(other Num1Set) bool {
-	return set.Size() == other.Size() && set.actualSubset(other)
+func (set Num1Set) Equals(other Num1Collection) bool {
+	otherSet, isSet := other.(Num1Set)
+	return isSet && set.Size() == other.Size() && set.actualSubset(otherSet)
 }
 
 // IsSubset determines if every item in the other set is in this set.
@@ -278,21 +287,21 @@ func (set Num1Set) Iter() <-chan Num1 {
 }
 
 // Filter returns a new Num1Set whose elements return true for func.
-func (set Num1Set) Filter(fn func(Num1) bool) Num1Set {
+func (set Num1Set) Filter(fn func(Num1) bool) Num1Collection {
 	result := make(map[Num1]struct{})
 	for v := range set {
 		if fn(v) {
 			result[v] = struct{}{}
 		}
 	}
-	return result
+	return Num1Set(result)
 }
 
 // Partition returns two new Num1Lists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original set.
-func (set Num1Set) Partition(p func(Num1) bool) (Num1Set, Num1Set) {
+func (set Num1Set) Partition(p func(Num1) bool) (Num1Collection, Num1Collection) {
 	matching := make(map[Num1]struct{})
 	others := make(map[Num1]struct{})
 	for v := range set {
@@ -302,7 +311,7 @@ func (set Num1Set) Partition(p func(Num1) bool) (Num1Set, Num1Set) {
 			others[v] = struct{}{}
 		}
 	}
-	return matching, others
+	return Num1Set(matching), Num1Set(others)
 }
 
 // CountBy gives the number elements of Num1Set that return true for the passed predicate.
@@ -359,6 +368,26 @@ func (set Num1Set) MaxBy(less func(Num1, Num1) bool) (result Num1, err error) {
 	return
 }
 
+// These methods require Num1 be numeric.
+
+// Sum sums all elements in the set.
+func (set Num1Set) Sum() (result Num1) {
+	for v := range set {
+		result += v
+	}
+	return
+}
+
+// Mean computes the arithmetic mean of all elements.
+// Panics if the set is empty.
+func (set Num1Set) Mean() Num1 {
+	l := len(set)
+	if l == 0 {
+		panic("Cannot compute the arithmetic mean of zero-length Num1Set")
+	}
+	return set.Sum() / Num1(l)
+}
+
 // String implements the Stringer interface to render the set as a comma-separated array.
 func (set Num1Set) String() string {
 	return set.MkString3("[", ",", "]")
@@ -386,4 +415,27 @@ func (set Num1Set) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[]}
+// MapToFoo transforms Num1Set to FooSet.
+func (set Num1Set) MapToFoo(fn func(Num1) Foo) FooCollection {
+	result := make(map[Foo]struct{})
+	for v := range set {
+		u := fn(v)
+		result[u] = struct{}{}
+	}
+	return FooSet(result)
+}
+
+// FlatMapToFoo transforms Num1Set to FooSet, by
+// calling the supplied function on each of the enclosed set elements, and returning a new set.
+func (set Num1Set) FlatMapToFoo(fn func(Num1) FooCollection) FooCollection {
+	result := make(map[Foo]struct{})
+	for a := range set {
+		b := fn(a)
+		b.Foreach(func(c Foo) {
+			result[c] = struct{}{}
+		})
+	}
+	return FooSet(result)
+}
+
+// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[MapTo:true]}

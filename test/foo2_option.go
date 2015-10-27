@@ -813,7 +813,7 @@ func (list Foo2List) Distinct() Foo2Seq {
 
 // These methods require Foo2 be numeric.
 
-// Sum sums Foo2 elements in Foo2List.
+// Sum sums all elements in the list.
 func (list Foo2List) Sum() (result Foo2) {
 	for _, v := range list {
 		result += v
@@ -977,6 +977,14 @@ func (set Foo2Set) NonEmpty() bool {
 	return len(set) > 0
 }
 
+// Any gets an arbitrary element.
+func (set Foo2Set) Any() Foo2 {
+	for v := range set {
+		return v
+	}
+	panic("Set is empty")
+}
+
 // ToList gets all the set's elements in a in SetList.
 func (set Foo2Set) ToList() Foo2List {
 	slice := make([]Foo2, 0, len(set))
@@ -1013,8 +1021,9 @@ func (set Foo2Set) actualSubset(other Foo2Set) bool {
 
 // Equals determines if two sets are equal to each other.
 // They are considered equal if both are the same size and both have the same items.
-func (set Foo2Set) Equals(other Foo2Set) bool {
-	return set.Size() == other.Size() && set.actualSubset(other)
+func (set Foo2Set) Equals(other Foo2Collection) bool {
+	otherSet, isSet := other.(Foo2Set)
+	return isSet && set.Size() == other.Size() && set.actualSubset(otherSet)
 }
 
 // IsSubset determines if every item in the other set is in this set.
@@ -1144,21 +1153,21 @@ func (set Foo2Set) Iter() <-chan Foo2 {
 }
 
 // Filter returns a new Foo2Set whose elements return true for func.
-func (set Foo2Set) Filter(fn func(Foo2) bool) Foo2Set {
+func (set Foo2Set) Filter(fn func(Foo2) bool) Foo2Collection {
 	result := make(map[Foo2]struct{})
 	for v := range set {
 		if fn(v) {
 			result[v] = struct{}{}
 		}
 	}
-	return result
+	return Foo2Set(result)
 }
 
 // Partition returns two new Foo2Lists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original set.
-func (set Foo2Set) Partition(p func(Foo2) bool) (Foo2Set, Foo2Set) {
+func (set Foo2Set) Partition(p func(Foo2) bool) (Foo2Collection, Foo2Collection) {
 	matching := make(map[Foo2]struct{})
 	others := make(map[Foo2]struct{})
 	for v := range set {
@@ -1168,7 +1177,7 @@ func (set Foo2Set) Partition(p func(Foo2) bool) (Foo2Set, Foo2Set) {
 			others[v] = struct{}{}
 		}
 	}
-	return matching, others
+	return Foo2Set(matching), Foo2Set(others)
 }
 
 // CountBy gives the number elements of Foo2Set that return true for the passed predicate.
@@ -1225,6 +1234,26 @@ func (set Foo2Set) MaxBy(less func(Foo2, Foo2) bool) (result Foo2, err error) {
 	return
 }
 
+// These methods require Foo2 be numeric.
+
+// Sum sums all elements in the set.
+func (set Foo2Set) Sum() (result Foo2) {
+	for v := range set {
+		result += v
+	}
+	return
+}
+
+// Mean computes the arithmetic mean of all elements.
+// Panics if the set is empty.
+func (set Foo2Set) Mean() Foo2 {
+	l := len(set)
+	if l == 0 {
+		panic("Cannot compute the arithmetic mean of zero-length Foo2Set")
+	}
+	return set.Sum() / Foo2(l)
+}
+
 // String implements the Stringer interface to render the set as a comma-separated array.
 func (set Foo2Set) String() string {
 	return set.MkString3("[", ",", "]")
@@ -1252,4 +1281,29 @@ func (set Foo2Set) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// Option flags: {Collection:false Sequence:false List:true Option:true Set:true Tag:map[]}
+// MapToFoo1 transforms OptionalFoo2 to OptionalFoo1.
+func (o OptionalFoo2) MapToFoo1(fn func(Foo2) Foo1) Foo1Seq {
+	if o.IsEmpty() {
+		return NoFoo1()
+	}
+
+	u := fn(*(o.x))
+
+	return SomeFoo1(u)
+}
+
+// FlatMapToFoo1 transforms OptionalFoo2 to OptionalFoo1, by
+// calling the supplied function on the enclosed instance, if any, and returning an option.
+// The result is only defined if *both* the receiver is defined and the function returns a non-empty sequence.
+func (o OptionalFoo2) FlatMapToFoo1(fn func(Foo2) Foo1Seq) (result Foo1Seq) {
+	if o.IsEmpty() {
+		return NoFoo1()
+	}
+	u := fn(*(o.x))
+	if u.IsEmpty() {
+		return NoFoo1()
+	}
+	return SomeFoo1(u.Head())
+}
+
+// Option flags: {Collection:false Sequence:false List:true Option:true Set:true Tag:map[MapTo:true]}

@@ -847,4 +847,29 @@ func (list Foo4List) LastOption() OptionalFoo4 {
 	}
 }
 
-// Option flags: {Collection:false Sequence:false List:true Option:true Set:false Tag:map[]}
+// MapToFoo3 transforms OptionalFoo4 to OptionalFoo3.
+func (o OptionalFoo4) MapToFoo3(fn func(*Foo4) Foo3) Foo3Seq {
+	if o.IsEmpty() {
+		return NoFoo3()
+	}
+
+	u := fn(o.x)
+
+	return SomeFoo3(&u)
+}
+
+// FlatMapToFoo3 transforms OptionalFoo4 to OptionalFoo3, by
+// calling the supplied function on the enclosed instance, if any, and returning an option.
+// The result is only defined if *both* the receiver is defined and the function returns a non-empty sequence.
+func (o OptionalFoo4) FlatMapToFoo3(fn func(*Foo4) Foo3Seq) (result Foo3Seq) {
+	if o.IsEmpty() {
+		return NoFoo3()
+	}
+	u := fn((o.x))
+	if u.IsEmpty() {
+		return NoFoo3()
+	}
+	return SomeFoo3(u.Head())
+}
+
+// Option flags: {Collection:false Sequence:false List:true Option:true Set:false Tag:map[MapTo:true]}

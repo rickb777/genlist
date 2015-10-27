@@ -566,7 +566,7 @@ func (list Foo1List) Distinct() Foo1Seq {
 
 // These methods require Foo1 be numeric.
 
-// Sum sums Foo1 elements in Foo1List.
+// Sum sums all elements in the list.
 func (list Foo1List) Sum() (result Foo1) {
 	for _, v := range list {
 		result += v
@@ -977,6 +977,14 @@ func (set Foo1Set) NonEmpty() bool {
 	return len(set) > 0
 }
 
+// Any gets an arbitrary element.
+func (set Foo1Set) Any() Foo1 {
+	for v := range set {
+		return v
+	}
+	panic("Set is empty")
+}
+
 // ToList gets all the set's elements in a in SetList.
 func (set Foo1Set) ToList() Foo1List {
 	slice := make([]Foo1, 0, len(set))
@@ -1013,8 +1021,9 @@ func (set Foo1Set) actualSubset(other Foo1Set) bool {
 
 // Equals determines if two sets are equal to each other.
 // They are considered equal if both are the same size and both have the same items.
-func (set Foo1Set) Equals(other Foo1Set) bool {
-	return set.Size() == other.Size() && set.actualSubset(other)
+func (set Foo1Set) Equals(other Foo1Collection) bool {
+	otherSet, isSet := other.(Foo1Set)
+	return isSet && set.Size() == other.Size() && set.actualSubset(otherSet)
 }
 
 // IsSubset determines if every item in the other set is in this set.
@@ -1144,21 +1153,21 @@ func (set Foo1Set) Iter() <-chan Foo1 {
 }
 
 // Filter returns a new Foo1Set whose elements return true for func.
-func (set Foo1Set) Filter(fn func(Foo1) bool) Foo1Set {
+func (set Foo1Set) Filter(fn func(Foo1) bool) Foo1Collection {
 	result := make(map[Foo1]struct{})
 	for v := range set {
 		if fn(v) {
 			result[v] = struct{}{}
 		}
 	}
-	return result
+	return Foo1Set(result)
 }
 
 // Partition returns two new Foo1Lists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original set.
-func (set Foo1Set) Partition(p func(Foo1) bool) (Foo1Set, Foo1Set) {
+func (set Foo1Set) Partition(p func(Foo1) bool) (Foo1Collection, Foo1Collection) {
 	matching := make(map[Foo1]struct{})
 	others := make(map[Foo1]struct{})
 	for v := range set {
@@ -1168,7 +1177,7 @@ func (set Foo1Set) Partition(p func(Foo1) bool) (Foo1Set, Foo1Set) {
 			others[v] = struct{}{}
 		}
 	}
-	return matching, others
+	return Foo1Set(matching), Foo1Set(others)
 }
 
 // CountBy gives the number elements of Foo1Set that return true for the passed predicate.
@@ -1225,6 +1234,26 @@ func (set Foo1Set) MaxBy(less func(Foo1, Foo1) bool) (result Foo1, err error) {
 	return
 }
 
+// These methods require Foo1 be numeric.
+
+// Sum sums all elements in the set.
+func (set Foo1Set) Sum() (result Foo1) {
+	for v := range set {
+		result += v
+	}
+	return
+}
+
+// Mean computes the arithmetic mean of all elements.
+// Panics if the set is empty.
+func (set Foo1Set) Mean() Foo1 {
+	l := len(set)
+	if l == 0 {
+		panic("Cannot compute the arithmetic mean of zero-length Foo1Set")
+	}
+	return set.Sum() / Foo1(l)
+}
+
 // String implements the Stringer interface to render the set as a comma-separated array.
 func (set Foo1Set) String() string {
 	return set.MkString3("[", ",", "]")
@@ -1252,4 +1281,27 @@ func (set Foo1Set) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// List flags: {Collection:false Sequence:false List:true Option:true Set:true Tag:map[]}
+// MapToFoo2 transforms Foo1List to Foo2List.
+func (list Foo1List) MapToFoo2(fn func(Foo1) Foo2) Foo2Seq {
+	result := make(Foo2List, 0, len(list))
+	for _, v := range list {
+		u := fn(v)
+		result = append(result, u)
+	}
+	return result
+}
+
+// FlatMapToFoo2 transforms Foo1List to Foo2List, by repeatedly
+// calling the supplied function and concatenating the results as a single flat list.
+func (list Foo1List) FlatMapToFoo2(fn func(Foo1) Foo2Seq) Foo2Seq {
+	result := make(Foo2List, 0, len(list))
+	for _, v := range list {
+		u := fn(v)
+		if u.NonEmpty() {
+			result = append(result, (u.ToList())...)
+		}
+	}
+	return result
+}
+
+// List flags: {Collection:false Sequence:false List:true Option:true Set:true Tag:map[MapTo:true]}

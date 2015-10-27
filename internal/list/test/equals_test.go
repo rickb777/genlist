@@ -3,9 +3,9 @@ package main
 import "testing"
 
 func TestEqualsNum1(t *testing.T) {
-	listA := Num1List{50, 100, 9, 7, 100, 99}
-	listB := Num1List{50, 100, 9, 7, 42, 99}
-	listC := Num1List{}
+	listA := num1Collection(50, 100, 9, 7, 100, 99)
+	listB := num1Collection(50, 100, 9, 7, 42, 99)
+	listC := num1Collection()
 
 	if !listA.Equals(listA) {
 		t.Errorf("Equals should be true")

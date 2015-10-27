@@ -6,9 +6,9 @@ import (
 )
 
 func TestDistinctNum1(t *testing.T) {
-	things := Num1List{50, 100, 9, 7, 100, 99}
+	things := num1Collection(50, 100, 9, 7, 100, 99)
 
-	should := Num1List{50, 100, 9, 7, 99}
+	should := num1Collection(50, 100, 9, 7, 99)
 
 	distinct1 := things.Distinct()
 

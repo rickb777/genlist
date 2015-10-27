@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestForallNum1(t *testing.T) {
-	things := Num1List{60, -20, 100}
+	things := num1Collection(60, -20, 100)
 
 	all1 := things.Forall(func(x Num1) bool {
 		return x == 60
@@ -21,7 +21,7 @@ func TestForallNum1(t *testing.T) {
 		t.Errorf("Forall should be true")
 	}
 
-	all3 := Num1List{}.Forall(func(x Num1) bool {
+	all3 := num1Collection().Forall(func(x Num1) bool {
 		return false
 	})
 

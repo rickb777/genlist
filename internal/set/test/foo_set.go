@@ -102,6 +102,14 @@ func (set FooSet) NonEmpty() bool {
 	return len(set) > 0
 }
 
+// Any gets an arbitrary element.
+func (set FooSet) Any() Foo {
+	for v := range set {
+		return v
+	}
+	panic("Set is empty")
+}
+
 // ToSlice gets all the set's elements in a slice.
 func (set FooSet) ToSlice() []Foo {
 	slice := make([]Foo, 0, len(set))
@@ -138,8 +146,9 @@ func (set FooSet) actualSubset(other FooSet) bool {
 
 // Equals determines if two sets are equal to each other.
 // They are considered equal if both are the same size and both have the same items.
-func (set FooSet) Equals(other FooSet) bool {
-	return set.Size() == other.Size() && set.actualSubset(other)
+func (set FooSet) Equals(other FooCollection) bool {
+	otherSet, isSet := other.(FooSet)
+	return isSet && set.Size() == other.Size() && set.actualSubset(otherSet)
 }
 
 // IsSubset determines if every item in the other set is in this set.
@@ -269,21 +278,21 @@ func (set FooSet) Iter() <-chan Foo {
 }
 
 // Filter returns a new FooSet whose elements return true for func.
-func (set FooSet) Filter(fn func(Foo) bool) FooSet {
+func (set FooSet) Filter(fn func(Foo) bool) FooCollection {
 	result := make(map[Foo]struct{})
 	for v := range set {
 		if fn(v) {
 			result[v] = struct{}{}
 		}
 	}
-	return result
+	return FooSet(result)
 }
 
 // Partition returns two new FooLists whose elements return true or false for the predicate, p.
 // The first result consists of all elements that satisfy the predicate and the second result consists of
 // all elements that don't. The relative order of the elements in the results is the same as in the
 // original set.
-func (set FooSet) Partition(p func(Foo) bool) (FooSet, FooSet) {
+func (set FooSet) Partition(p func(Foo) bool) (FooCollection, FooCollection) {
 	matching := make(map[Foo]struct{})
 	others := make(map[Foo]struct{})
 	for v := range set {
@@ -293,7 +302,7 @@ func (set FooSet) Partition(p func(Foo) bool) (FooSet, FooSet) {
 			others[v] = struct{}{}
 		}
 	}
-	return matching, others
+	return FooSet(matching), FooSet(others)
 }
 
 // CountBy gives the number elements of FooSet that return true for the passed predicate.
@@ -377,4 +386,27 @@ func (set FooSet) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[]}
+// MapToNum1 transforms FooSet to Num1Set.
+func (set FooSet) MapToNum1(fn func(Foo) Num1) Num1Collection {
+	result := make(map[Num1]struct{})
+	for v := range set {
+		u := fn(v)
+		result[u] = struct{}{}
+	}
+	return Num1Set(result)
+}
+
+// FlatMapToNum1 transforms FooSet to Num1Set, by
+// calling the supplied function on each of the enclosed set elements, and returning a new set.
+func (set FooSet) FlatMapToNum1(fn func(Foo) Num1Collection) Num1Collection {
+	result := make(map[Num1]struct{})
+	for a := range set {
+		b := fn(a)
+		b.Foreach(func(c Num1) {
+			result[c] = struct{}{}
+		})
+	}
+	return Num1Set(result)
+}
+
+// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[MapTo:true]}

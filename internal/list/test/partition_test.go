@@ -6,15 +6,15 @@ import (
 )
 
 func TestPartitionNum(t *testing.T) {
-	things := Num1List{60, -20, -10, 100}
+	things := num1Collection(60, -20, -10, 100)
 
 	m1, o1 := things.Partition(func(x Num1) bool {
 		return x > 0
 	})
 
-	expected1 := Num1List{60, 100}
+	expected1 := num1Collection(60, 100)
 
-	others1 := Num1List{-20, -10}
+	others1 := num1Collection(-20, -10)
 
 	if !reflect.DeepEqual(m1, expected1) {
 		t.Errorf("Partition should result in %#v, got %#v", expected1, m1)
@@ -36,7 +36,7 @@ func TestPartitionNum(t *testing.T) {
 		t.Errorf("Partition should result in %#v, got %#v", things, o2)
 	}
 
-	m3, o3 := Num1List{}.Partition(func(x Num1) bool {
+	m3, o3 := num1Collection().Partition(func(x Num1) bool {
 		return true
 	})
 

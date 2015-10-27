@@ -34,7 +34,7 @@ func TestMinByNum1(t *testing.T) {
 	}
 }
 
-func TestMinByColour(t *testing.T) {
+func TestMinByFoo(t *testing.T) {
 	things := ThingList{
 		{"First", 60},
 		{"Second", -20},
@@ -43,24 +43,24 @@ func TestMinByColour(t *testing.T) {
 		{"Fifth", 17},
 	}
 
-	number := func(x Thing) Colour {
-		return Colour(x.Name)
+	number := func(x Thing) Foo {
+		return Foo(x.Name)
 	}
 
-	min1, err := things.MinByColour(number)
+	min1, err := things.MinByFoo(number)
 	expected1 := Thing{"Fifth", 17}
 
 	if err != nil {
-		t.Errorf("MinColour should succeed")
+		t.Errorf("MinFoo should succeed")
 	}
 
 	if !reflect.DeepEqual(min1, expected1)  {
-		t.Errorf("MinColour should be %#v, got %#v", expected1, min1)
+		t.Errorf("MinFoo should be %#v, got %#v", expected1, min1)
 	}
 
-	_, err = ThingList{}.MinByColour(number)
+	_, err = ThingList{}.MinByFoo(number)
 
 	if err == nil {
-		t.Errorf("MinColour should fail on empty list")
+		t.Errorf("MinFoo should fail on empty list")
 	}
 }

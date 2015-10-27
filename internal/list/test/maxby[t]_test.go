@@ -34,7 +34,7 @@ func TestMaxByNum1(t *testing.T) {
 	}
 }
 
-func TestMaxByColour(t *testing.T) {
+func TestMaxByFoo(t *testing.T) {
 	things := ThingList{
 		{"First", 60},
 		{"Second", -20},
@@ -43,24 +43,24 @@ func TestMaxByColour(t *testing.T) {
 		{"Fifth", 17},
 	}
 
-	number := func(x Thing) Colour {
-		return Colour(x.Name)
+	number := func(x Thing) Foo {
+		return Foo(x.Name)
 	}
 
-	max1, err := things.MaxByColour(number)
+	max1, err := things.MaxByFoo(number)
 	expected1 := Thing{"Third", 100}
 
 	if err != nil {
-		t.Errorf("MaxColour should succeed")
+		t.Errorf("MaxFoo should succeed")
 	}
 
 	if !reflect.DeepEqual(max1, expected1)  {
-		t.Errorf("MaxColour should be %#v, got %#v", expected1, max1)
+		t.Errorf("MaxFoo should be %#v, got %#v", expected1, max1)
 	}
 
-	_, err = ThingList{}.MaxByColour(number)
+	_, err = ThingList{}.MaxByFoo(number)
 
 	if err == nil {
-		t.Errorf("MaxColour should fail on empty list")
+		t.Errorf("MaxFoo should fail on empty list")
 	}
 }

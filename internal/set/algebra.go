@@ -2,13 +2,13 @@ package set
 
 const setAlgebra = `
 // Contains tests whether an item is already in the {{.TName}}Set.
-func (set {{.TName}}Set) Contains(i {{.TName}}) bool {
+func (set {{.TName}}Set) Contains(i {{.PName}}) bool {
 	_, found := set[i]
 	return found
 }
 
 // ContainsAll tests whether many items are all in the {{.TName}}Set.
-func (set {{.TName}}Set) ContainsAll(i ...{{.TName}}) bool {
+func (set {{.TName}}Set) ContainsAll(i ...{{.PName}}) bool {
 	for _, v := range i {
 		if !set.Contains(v) {
 			return false
@@ -28,8 +28,9 @@ func (set {{.TName}}Set) actualSubset(other {{.TName}}Set) bool {
 
 // Equals determines if two sets are equal to each other.
 // They are considered equal if both are the same size and both have the same items.
-func (set {{.TName}}Set) Equals(other {{.TName}}Set) bool {
-	return set.Size() == other.Size() && set.actualSubset(other)
+func (set {{.TName}}Set) Equals(other {{.TName}}Collection) bool {
+	otherSet, isSet := other.({{.TName}}Set)
+	return isSet && set.Size() == other.Size() && set.actualSubset(otherSet)
 }
 
 // IsSubset determines if every item in the other set is in this set.

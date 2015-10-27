@@ -34,7 +34,7 @@ func TestGroupByNum1(t *testing.T) {
 	}
 }
 
-func TestGroupByColour(t *testing.T) {
+func TestGroupByFoo(t *testing.T) {
 	things := ThingList{
 		{"First", 60},
 		{"Second", -10},
@@ -43,19 +43,19 @@ func TestGroupByColour(t *testing.T) {
 		{"Fifth", 60},
 	}
 
-	number := func(x Thing) Colour {
+	number := func(x Thing) Foo {
 		switch {
-		case x.Number < 10: return Colour("green")
-		case x.Number < 70: return Colour("amber")
-		default: return Colour("red")
+		case x.Number < 10: return Foo("green")
+		case x.Number < 70: return Foo("amber")
+		default: return Foo("red")
 		}
 	}
 
-	groupby1 := things.GroupByColour(number)
-	expected1 := map[Colour]ThingList{
-		Colour("green"): {{"Second", -10}, {"Fourth", 0}},
-		Colour("amber"): {{"First", 60}, {"Fifth", 60}},
-		Colour("red"): {{"Third", 100}},
+	groupby1 := things.GroupByFoo(number)
+	expected1 := map[Foo]ThingList{
+		Foo("green"): {{"Second", -10}, {"Fourth", 0}},
+		Foo("amber"): {{"First", 60}, {"Fifth", 60}},
+		Foo("red"): {{"Third", 100}},
 	}
 
 	if len(groupby1) != len(expected1) {

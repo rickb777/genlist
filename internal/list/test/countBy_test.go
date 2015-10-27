@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestCountByNum1(t *testing.T) {
-	things := Num1List{50, 100, 9, 7, 100, 99}
+	things := num1Collection(50, 100, 9, 7, 100, 99)
 
 	count1 := things.CountBy(func(x Num1) bool {
 		return x == 9
@@ -29,7 +29,7 @@ func TestCountByNum1(t *testing.T) {
 		t.Errorf("CountBy should no items with the value 1")
 	}
 
-	count4 := Num1List{}.CountBy(func(x Num1) bool {
+	count4 := num1Collection().CountBy(func(x Num1) bool {
 		return true
 	})
 

@@ -734,8 +734,8 @@ func (list ThingList) MaxByNum1(fn func(Thing) Num1) (result Thing, err error) {
 	return
 }
 
-// FoldLeftColour applies a binary operator to a start value and all elements of this list, going left to right.
-func (list ThingList) FoldLeftColour(zero Colour, fn func(Colour, Thing) Colour) Colour {
+// FoldLeftFoo applies a binary operator to a start value and all elements of this list, going left to right.
+func (list ThingList) FoldLeftFoo(zero Foo, fn func(Foo, Thing) Foo) Foo {
 	sum := zero
 	for _, v := range list {
 		sum = fn(sum, v)
@@ -743,8 +743,8 @@ func (list ThingList) FoldLeftColour(zero Colour, fn func(Colour, Thing) Colour)
 	return sum
 }
 
-// FoldRightColour applies a binary operator to a start value and all elements of this list, going right to left.
-func (list ThingList) FoldRightColour(zero Colour, fn func(Colour, Thing) Colour) Colour {
+// FoldRightFoo applies a binary operator to a start value and all elements of this list, going right to left.
+func (list ThingList) FoldRightFoo(zero Foo, fn func(Foo, Thing) Foo) Foo {
 	sum := zero
 	for i := len(list) - 1; i >= 0; i-- {
 		sum = fn(sum, list[i])
@@ -754,9 +754,9 @@ func (list ThingList) FoldRightColour(zero Colour, fn func(Colour, Thing) Colour
 
 // This methods require Thing be comparable.
 
-// GroupByColour groups elements into a map keyed by Colour.
-func (list ThingList) GroupByColour(fn func(Thing) Colour) map[Colour]ThingList {
-	result := make(map[Colour]ThingList)
+// GroupByFoo groups elements into a map keyed by Foo.
+func (list ThingList) GroupByFoo(fn func(Thing) Foo) map[Foo]ThingList {
+	result := make(map[Foo]ThingList)
 	for _, v := range list {
 		key := fn(v)
 		result[key] = append(result[key], v)
@@ -764,12 +764,12 @@ func (list ThingList) GroupByColour(fn func(Thing) Colour) map[Colour]ThingList 
 	return result
 }
 
-// These methods require Colour be ordered.
+// These methods require Foo be ordered.
 
-// MinByColour finds the first element which yields the smallest value measured by function fn.
+// MinByFoo finds the first element which yields the smallest value measured by function fn.
 // fn is usually called a projection or measuring function.
 // Returns an error if the ThingList is empty.
-func (list ThingList) MinByColour(fn func(Thing) Colour) (result Thing, err error) {
+func (list ThingList) MinByFoo(fn func(Thing) Foo) (result Thing, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("cannot determine Min of zero-length ThingList")
@@ -790,10 +790,10 @@ func (list ThingList) MinByColour(fn func(Thing) Colour) (result Thing, err erro
 	return
 }
 
-// MaxByColour finds the first element which yields the largest value measured by function fn.
+// MaxByFoo finds the first element which yields the largest value measured by function fn.
 // fn is usually called a projection or measuring function.
 // Returns an error if the ThingList is empty.
-func (list ThingList) MaxByColour(fn func(Thing) Colour) (result Thing, err error) {
+func (list ThingList) MaxByFoo(fn func(Thing) Foo) (result Thing, err error) {
 	l := len(list)
 	if l == 0 {
 		err = errors.New("cannot determine Max of zero-length ThingList")
@@ -1037,4 +1037,4 @@ func quickSortThingList(list ThingList, less func(Thing, Thing) bool, a, b, maxD
 	}
 }
 
-// List flags: {Collection:false Sequence:false List:true Option:false Set:false Tag:map[MapTo:true With:true SortWith:true]}
+// List flags: {Collection:false Sequence:false List:true Option:false Set:false Tag:map[SortWith:true MapTo:true With:true]}

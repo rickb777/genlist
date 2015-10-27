@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestHeadTailNum1(t *testing.T) {
-	things := Num1List{3, 5, 8, 13}
+	things := num1Collection(3, 5, 8, 13)
 
 	h1 := things.Head()
 	t1 := things.Tail()

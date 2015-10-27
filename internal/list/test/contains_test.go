@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestContainsNum1(t *testing.T) {
-	things := Num1List{50, 100, 9, 7, 100, 99}
+	things := num1Collection(50, 100, 9, 7, 100, 99)
 
 	has1 := things.Contains(3)
 
@@ -17,7 +17,7 @@ func TestContainsNum1(t *testing.T) {
 		t.Errorf("Contains should evaluate true for 7")
 	}
 
-	has3 := Num1List{}.Contains(1)
+	has3 := num1Collection().Contains(1)
 
 	if has3 {
 		t.Errorf("Contains should evaluate false for empty slices")

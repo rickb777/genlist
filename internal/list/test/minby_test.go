@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestMinByNum(t *testing.T) {
-	things := Num1List{50, 100, -20, 7, 100, 99}
+	things := num1Collection(50, 100, -20, 7, 100, 99)
 
 	min1, err1 := things.MinBy(func(a, b Num1) bool {
 		return a < b
@@ -17,7 +17,7 @@ func TestMinByNum(t *testing.T) {
 		t.Errorf("MinBy Number should return %#v, got %#v", -20, min1)
 	}
 
-	_, err2 := Num1List{}.MinBy(func(a, b Num1) bool {
+	_, err2 := num1Collection().MinBy(func(a, b Num1) bool {
 		return true
 	})
 

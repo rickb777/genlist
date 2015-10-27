@@ -24,22 +24,22 @@ func TestFoldLeftNum1(t *testing.T) {
 	}
 }
 
-func TestFoldLeftColour(t *testing.T) {
+func TestFoldLeftFoo(t *testing.T) {
 	things := ThingList{
 		{"First", 60},
 		{"Second", -20},
 		{"Third", 100},
 	}
 
-	sum := func(state Colour, x Thing) Colour {
-		return Colour(fmt.Sprintf("%s:%d", state, x.Number))
+	sum := func(state Foo, x Thing) Foo {
+		return Foo(fmt.Sprintf("%s:%d", state, x.Number))
 	}
 
-	aggregate1 := things.FoldLeftColour(Colour("red"), sum)
-	expected1 := Colour("red:60:-20:100")
+	aggregate1 := things.FoldLeftFoo(Foo("red"), sum)
+	expected1 := Foo("red:60:-20:100")
 
 	if aggregate1 != expected1 {
-		t.Errorf("FoldLeftColour should be %#v, got %#v", expected1, aggregate1)
+		t.Errorf("FoldLeftFoo should be %#v, got %#v", expected1, aggregate1)
 	}
 }
 
@@ -62,21 +62,21 @@ func TestFoldRightNum1(t *testing.T) {
 	}
 }
 
-func TestFoldRightColour(t *testing.T) {
+func TestFoldRightFoo(t *testing.T) {
 	things := ThingList{
 		{"First", 60},
 		{"Second", -20},
 		{"Third", 100},
 	}
 
-	sum := func(state Colour, x Thing) Colour {
-		return Colour(fmt.Sprintf("%s:%d", state, x.Number))
+	sum := func(state Foo, x Thing) Foo {
+		return Foo(fmt.Sprintf("%s:%d", state, x.Number))
 	}
 
-	aggregate1 := things.FoldRightColour(Colour("red"), sum)
-	expected1 := Colour("red:100:-20:60")
+	aggregate1 := things.FoldRightFoo(Foo("red"), sum)
+	expected1 := Foo("red:100:-20:60")
 
 	if aggregate1 != expected1 {
-		t.Errorf("FoldRightColour should be %#v, got %#v", expected1, aggregate1)
+		t.Errorf("FoldRightFoo should be %#v, got %#v", expected1, aggregate1)
 	}
 }

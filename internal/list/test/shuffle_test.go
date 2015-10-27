@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestShuffleNum(t *testing.T) {
-	original := Num1List{50, 100, 9, 7, 100, 99}
+	original := num1Collection(50, 100, 9, 7, 100, 99)
 
 	shuffled := original.Shuffle()
 

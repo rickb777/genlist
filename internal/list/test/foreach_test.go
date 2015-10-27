@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestForeachNum1(t *testing.T) {
-	things := Num1List{60, -20, 100}
+	things := num1Collection(60, -20, 100)
 
 	sum := Num1(0)
 	things.Foreach(func(x Num1) {

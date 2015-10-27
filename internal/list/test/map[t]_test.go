@@ -17,7 +17,7 @@ func TestMapToNum(t *testing.T) {
 	}
 
 	r1 := things.MapToNum1(number1)
-	expected1 := Num1List{60, -20, 100}
+	expected1 := num1Collection(60, -20, 100)
 
 	if !reflect.DeepEqual(r1, expected1) {
 		t.Errorf("MapToNum1 should result in %#v, got %#v", expected1, r1)
@@ -44,7 +44,7 @@ func TestMapToNumEmpty(t *testing.T) {
 	}
 
 	r1 := noThings.MapToNum1(number1)
-	expected1 := Num1List{}
+	expected1 := num1Collection()
 
 	if !reflect.DeepEqual(r1, expected1) {
 		t.Errorf("MapToNum1 should result in %#v, got %#v", expected1, r1)

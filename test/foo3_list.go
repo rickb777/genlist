@@ -847,4 +847,27 @@ func (o OptionalFoo3) MkString3(pfx, mid, sfx string) string {
 	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
 
-// List flags: {Collection:false Sequence:false List:true Option:true Set:false Tag:map[]}
+// MapToFoo4 transforms Foo3List to Foo4List.
+func (list Foo3List) MapToFoo4(fn func(*Foo3) Foo4) Foo4Seq {
+	result := make(Foo4List, 0, len(list))
+	for _, v := range list {
+		u := fn(v)
+		result = append(result, &u)
+	}
+	return result
+}
+
+// FlatMapToFoo4 transforms Foo3List to Foo4List, by repeatedly
+// calling the supplied function and concatenating the results as a single flat list.
+func (list Foo3List) FlatMapToFoo4(fn func(*Foo3) Foo4Seq) Foo4Seq {
+	result := make(Foo4List, 0, len(list))
+	for _, v := range list {
+		u := fn(v)
+		if u.NonEmpty() {
+			result = append(result, (u.ToList())...)
+		}
+	}
+	return result
+}
+
+// List flags: {Collection:false Sequence:false List:true Option:true Set:false Tag:map[MapTo:true]}

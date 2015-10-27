@@ -6,11 +6,11 @@ import (
 )
 
 func TestDropNum1(t *testing.T) {
-	things := Num1List{1, 17, 5, 6, 17, 8, 9}
+	things := num1Collection(1, 17, 5, 6, 17, 8, 9)
 
 	where1 := things.Drop(3)
 
-	expected1 := Num1List{6, 17, 8, 9}
+	expected1 := num1Collection(6, 17, 8, 9)
 
 	if !reflect.DeepEqual(where1, expected1) {
 		t.Errorf("Drop should result in %#v, got %#v", expected1, where1)
@@ -28,7 +28,7 @@ func TestDropNum1(t *testing.T) {
 		t.Errorf("Drop should result in empty list, got %#v", where3)
 	}
 
-	where4 := Num1List{}.Drop(100)
+	where4 := num1Collection().Drop(100)
 
 	if len(where4) != 0 {
 		t.Errorf("Drop should result in empty list, got %#v", where4)

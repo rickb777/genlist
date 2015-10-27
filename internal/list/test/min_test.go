@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestMinOrdered(t *testing.T) {
-	others := Num1List{50, 100, 9, 7, 100, 99}
+	others := num1Collection(50, 100, 9, 7, 100, 99)
 
 	min1, err := others.Min()
 	m1 := Num1(7)
@@ -16,7 +16,7 @@ func TestMinOrdered(t *testing.T) {
 		t.Errorf("Min should return %#v, got %#v", m1, min1)
 	}
 
-	min2, err := Num1List{}.Min()
+	min2, err := num1Collection().Min()
 	var m2 Num1
 
 	if err == nil || min2 != m2 {

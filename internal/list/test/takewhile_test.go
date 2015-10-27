@@ -6,13 +6,13 @@ import (
 )
 
 func TestTakeWhileNum(t *testing.T) {
-	things := Num1List{1, 3, 17, 5, 6, 17, 8, 9}
+	things := num1Collection(1, 3, 17, 5, 6, 17, 8, 9)
 
 	where1 := things.TakeWhile(func(x Num1) bool {
 		return x % 2 == 1
 	})
 
-	expected1 := Num1List{1, 3, 17, 5}
+	expected1 := num1Collection(1, 3, 17, 5)
 
 	if !reflect.DeepEqual(where1, expected1) {
 		t.Errorf("TakeWhile should result in %#v, got %#v", expected1, where1)
@@ -34,7 +34,7 @@ func TestTakeWhileNum(t *testing.T) {
 		t.Errorf("TakeWhile should result in %#v, got %#v", things, where3)
 	}
 
-	where4 := Num1List{}.TakeWhile(func(x Num1) bool {
+	where4 := num1Collection().TakeWhile(func(x Num1) bool {
 		return true
 	})
 

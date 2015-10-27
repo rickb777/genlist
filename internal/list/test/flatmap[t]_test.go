@@ -13,22 +13,22 @@ func TestFlatMapToNum(t *testing.T) {
 	}
 
 	number0 := func(x Thing) Num1Seq {
-		return Num1List{}
+		return num1Collection()
 	}
 
 	r0 := things.FlatMapToNum1(number0)
-	expected0 := Num1List{}
+	expected0 := num1Collection()
 
 	if !reflect.DeepEqual(r0, expected0) {
 		t.Errorf("FlatMapToNum1 should result in %#v, got %d %#v", expected0, r0.Size(), r0)
 	}
 
 	number1 := func(x Thing) Num1Seq {
-		return Num1List{x.Number, x.Number}
+		return num1Collection(x.Number, x.Number)
 	}
 
 	r1 := things.FlatMapToNum1(number1)
-	expected1 := Num1List{60, 60, -20, -20, 100, 100}
+	expected1 := num1Collection(60, 60, -20, -20, 100, 100)
 
 	if !reflect.DeepEqual(r1, expected1) {
 		t.Errorf("FlatMapToNum1 should result in %#v, got %#v", expected1, r1)

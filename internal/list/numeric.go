@@ -2,9 +2,9 @@ package list
 
 const numericFunctions = `
 {{if .Type.Numeric}}
-// These methods require {{.PName}} be numeric.
+// These methods require {{.TName}} be numeric.
 
-// Sum sums {{.PName}} elements in {{.TName}}List.
+// Sum sums all elements in the list.
 func (list {{.TName}}List) Sum() (result {{.PName}}) {
 	for _, v := range list {
 		result += v

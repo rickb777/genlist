@@ -12,7 +12,7 @@ func (o Optional{{.TName}}) MapTo{{.TypeParameter.LongName}}(fn func({{.PName}})
 	{{else}}
 	u := fn(*(o.x))
 	{{end}}
-	return Some{{.TypeParameter}}(u)
+	return Some{{.TypeParameter}}({{.Addr}}u)
 }
 
 // FlatMapTo{{.TypeParameter.LongName}} transforms Optional{{.TName}} to Optional{{.TypeParameter.Name}}, by

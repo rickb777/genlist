@@ -27,7 +27,7 @@ func TestLenFoo(t *testing.T) {
 }
 
 func TestLenNum1(t *testing.T) {
-	emptyThing := NewNum1Set()
+	emptyThing := num1Collection()
 	if emptyThing.Size() != 0 {
 		t.Errorf("Size should be 0")
 	}
@@ -38,7 +38,7 @@ func TestLenNum1(t *testing.T) {
 		t.Errorf("NonEmpty should be false")
 	}
 
-	someThing := NewNum1Set(1, 2)
+	someThing := num1Collection(1, 2)
 	if someThing.Size() != 2 {
 		t.Errorf("Size should be 2")
 	}
@@ -51,7 +51,7 @@ func TestLenNum1(t *testing.T) {
 }
 
 func TestToSlice(t *testing.T) {
-	a := NewNum1Set(1, 2, 3)
+	a := num1Collection(1, 2, 3)
 	b := a.ToSlice()
 
 	if len(b) != 3 {
@@ -64,7 +64,7 @@ func TestToSlice(t *testing.T) {
 }
 
 func TestAddRemoveContains(t *testing.T) {
-	a := NewNum1Set()
+	a := num1Collection()
 
 	b := a.Add(71)
 
@@ -86,7 +86,7 @@ func TestAddRemoveContains(t *testing.T) {
 }
 
 func TestSetHasNoDuplicate(t *testing.T) {
-	a := NewNum1Set(3, 5, 8, 3)
+	a := num1Collection(3, 5, 8, 3)
 
 	if a.Size() != 3 {
 		t.Errorf("set should have 3 elements with no duplicates")
@@ -98,7 +98,7 @@ func TestSetHasNoDuplicate(t *testing.T) {
 }
 
 func TestContainsAll(t *testing.T) {
-	a := NewNum1Set(2, 3, 5, 8, 13, 21)
+	a := num1Collection(2, 3, 5, 8, 13, 21)
 
 	if !a.ContainsAll(2, 3, 5, 8, 13, 21) {
 		t.Errorf("ContainsAll should contain 6 fibs")
@@ -110,10 +110,10 @@ func TestContainsAll(t *testing.T) {
 }
 
 func TestSetIsSubsetAndSuperset(t *testing.T) {
-	a := NewNum1Set(1, 2, 3, 5, 7)
-	b := NewNum1Set(1, 3, 7)
-	c := NewNum1Set(1, 3, 5, 7, 9)
-	e := NewNum1Set()
+	a := num1Collection(1, 2, 3, 5, 7)
+	b := num1Collection(1, 3, 7)
+	c := num1Collection(1, 3, 5, 7, 9)
+	e := num1Collection()
 
 	if !a.Equals(a) {
 		t.Errorf("set %v should be equal to itself", a)
@@ -155,7 +155,7 @@ func TestSetIsSubsetAndSuperset(t *testing.T) {
 		t.Errorf("set %v should be a superset of set %v", e, a)
 	}
 
-	d := NewNum1Set(1, 3, 4, 7)
+	d := num1Collection(1, 3, 4, 7)
 
 	if d.IsSubset(a) {
 		t.Errorf("set %v should not be a subset of set %v", d, a)
@@ -169,9 +169,9 @@ func TestSetIsSubsetAndSuperset(t *testing.T) {
 }
 
 func TestUnion(t *testing.T) {
-	a := NewNum1Set(1, 2, 3, 5, 8)
-	b := NewNum1Set(4, 5, 6, 7, 8)
-	e := NewNum1Set()
+	a := num1Collection(1, 2, 3, 5, 8)
+	b := num1Collection(4, 5, 6, 7, 8)
+	e := num1Collection()
 
 	u1 := a.Union(e)
 	if u1.Size() != 5 {
@@ -190,10 +190,10 @@ func TestUnion(t *testing.T) {
 }
 
 func TestIntersection(t *testing.T) {
-	a := NewNum1Set(1, 2, 3, 5, 8)
-	b := NewNum1Set(4, 5, 6, 7, 8)
-	c := NewNum1Set(4, 9, 16, 25)
-	e := NewNum1Set()
+	a := num1Collection(1, 2, 3, 5, 8)
+	b := num1Collection(4, 5, 6, 7, 8)
+	c := num1Collection(4, 9, 16, 25)
+	e := num1Collection()
 
 	i1 := a.Intersection(e)
 	if i1.Size() != 0 {
@@ -217,8 +217,8 @@ func TestIntersection(t *testing.T) {
 }
 
 func TestDifference(t *testing.T) {
-	a := NewNum1Set(1, 2, 3)
-	b := NewNum1Set(1, 3, 4, 5, 6, 10)
+	a := num1Collection(1, 2, 3)
+	b := num1Collection(1, 3, 4, 5, 6, 10)
 
 	d1 := a.Difference(b)
 
@@ -228,14 +228,14 @@ func TestDifference(t *testing.T) {
 
 	d2 := b.Difference(a)
 
-	if !(d2.Size() == 4 && d2.Equals(NewNum1Set(4, 5, 6, 10))) {
+	if !(d2.Size() == 4 && d2.Equals(num1Collection(4, 5, 6, 10))) {
 		t.Errorf("the difference is wrong: %v", d2)
 	}
 }
 
 func TestIterator(t *testing.T) {
-	a := NewNum1Set(1, 2, 3, 4)
-	b := NewNum1Set()
+	a := num1Collection(1, 2, 3, 4)
+	b := num1Collection()
 	for v := range a.Iter() {
 		b = b.Add(v)
 	}
@@ -246,7 +246,7 @@ func TestIterator(t *testing.T) {
 }
 
 func TestExists(t *testing.T) {
-	someThing := NewNum1Set(10)
+	someThing := num1Collection(10)
 	if !someThing.Exists(func(x Num1) bool { return x == 10 }) {
 		t.Errorf("Exists should be true")
 	}
@@ -256,7 +256,7 @@ func TestExists(t *testing.T) {
 }
 
 func TestForall(t *testing.T) {
-	someThing := NewNum1Set(10)
+	someThing := num1Collection(10)
 	if !someThing.Forall(func(x Num1) bool { return x > 0 }) {
 		t.Errorf("Forall should be true")
 	}
@@ -267,7 +267,7 @@ func TestForall(t *testing.T) {
 }
 
 func TestFilter(t *testing.T) {
-	someThing := NewNum1Set(10)
+	someThing := num1Collection(10)
 	v1 := someThing.Filter(func(x Num1) bool { return true })
 	if !v1.Equals(someThing) {
 		t.Errorf("Filter failed: got %v", v1)
@@ -280,7 +280,7 @@ func TestFilter(t *testing.T) {
 }
 
 func TestPartition(t *testing.T) {
-	someThing := NewNum1Set(10)
+	someThing := num1Collection(10)
 	m1, o1 := someThing.Partition(func(Num1) bool { return true })
 	if !m1.Equals(someThing) {
 		t.Errorf("Partition match should be 10")
@@ -301,7 +301,7 @@ func TestPartition(t *testing.T) {
 }
 
 func TestForeach(t *testing.T) {
-	someThing := NewNum1Set(1, 2, 3)
+	someThing := num1Collection(1, 2, 3)
 	x := Num1(0)
 	someThing.Foreach(func(v Num1) { x += v })
 	if x != 6 {

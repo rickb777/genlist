@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestExistsNum1(t *testing.T) {
-	things := Num1List{60, -20, 100}
+	things := num1Collection(60, -20, 100)
 
 	any1 := things.Exists(func(x Num1) bool {
 		return x == 10
@@ -21,7 +21,7 @@ func TestExistsNum1(t *testing.T) {
 		t.Errorf("Exists should evaluate true for Number > 50")
 	}
 
-	any3 := Num1List{}.Exists(func(x Num1) bool {
+	any3 := num1Collection().Exists(func(x Num1) bool {
 		return true
 	})
 

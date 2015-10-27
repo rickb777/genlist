@@ -5,7 +5,7 @@ import (
 )
 
 func TestMkStringNum1(t *testing.T) {
-	things := Num1List{1, 2, 3, 5, 8, 13}
+	things := num1Collection(1, 2, 3, 5, 8, 13)
 
 	s1 := things.MkString(", ")
 	if s1 != "1, 2, 3, 5, 8, 13" {

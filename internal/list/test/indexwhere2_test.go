@@ -5,7 +5,7 @@ import (
 )
 
 func TestIndexWhere2Num(t *testing.T) {
-	things := Num1List{1, 3, 17, 5, 6, 17, 8, 9}
+	things := num1Collection(1, 3, 17, 5, 6, 17, 8, 9)
 
 	where1a := things.IndexWhere2(func(x Num1) bool {
 		return x == 17
@@ -31,7 +31,7 @@ func TestIndexWhere2Num(t *testing.T) {
 		t.Errorf("IndexWhere2 should be -1, got %#v", where2)
 	}
 
-	where3 := Num1List{}.IndexWhere2(func(x Num1) bool {
+	where3 := num1Collection().IndexWhere2(func(x Num1) bool {
 		return true
 	}, 0)
 

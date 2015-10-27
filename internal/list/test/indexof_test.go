@@ -5,7 +5,7 @@ import (
 )
 
 func TestIndexOfNum1(t *testing.T) {
-	things := Num1List{1, 3, 17, 5, 6, 17, 8, 9}
+	things := num1Collection(1, 3, 17, 5, 6, 17, 8, 9)
 
 	where1 := things.IndexOf(17)
 
@@ -19,7 +19,7 @@ func TestIndexOfNum1(t *testing.T) {
 		t.Errorf("IndexOf should be -1, got %#v", where2)
 	}
 
-	where3 := Num1List{}.IndexOf(1)
+	where3 := num1Collection().IndexOf(1)
 
 	if where3 != -1 {
 		t.Errorf("IndexOf should be -1, got %#v", where3)

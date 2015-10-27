@@ -10,12 +10,12 @@ const Set = sequence.Collection + `
 //
 // The implementation is based on Go maps.
 
-type {{.TName}}Set map[{{.TName}}]struct{}
+type {{.TName}}Set map[{{.PName}}]struct{}
 
 //-------------------------------------------------------------------------------------------------
 // New{{.TName}}Set constructs a new set containing the supplied values, if any.
-func New{{.TName}}Set(e ...{{.TName}}) {{.TName}}Set {
-	set := make(map[{{.TName}}]struct{})
+func New{{.TName}}Set(e ...{{.PName}}) {{.TName}}Set {
+	set := make(map[{{.PName}}]struct{})
 	for _, v := range e {
 		set[v] = struct{}{}
 	}
@@ -24,8 +24,8 @@ func New{{.TName}}Set(e ...{{.TName}}) {{.TName}}Set {
 
 // Build{{.TName}}SetFrom constructs a new {{.TName}}Set from a channel that supplies values
 // until it is closed.
-func Build{{.TName}}SetFrom(source <-chan {{.TName}}) {{.TName}}Set {
-	set := make(map[{{.TName}}]struct{})
+func Build{{.TName}}SetFrom(source <-chan {{.PName}}) {{.TName}}Set {
+	set := make(map[{{.PName}}]struct{})
 	for v := range source {
 		set[v] = struct{}{}
 	}
@@ -46,10 +46,18 @@ func (set {{.TName}}Set) NonEmpty() bool {
 	return len(set) > 0
 }
 
+// Any gets an arbitrary element.
+func (set {{.TName}}Set) Any() {{.PName}} {
+	for v := range set {
+		return v
+	}
+	panic("Set is empty")
+}
+
 {{if .Has.List}}
 // ToList gets all the set's elements in a in {{.Name}}List.
 func (set {{.TName}}Set) ToList() {{.TName}}List {
-	slice := make([]{{.TName}}, 0, len(set))
+	slice := make([]{{.PName}}, 0, len(set))
 	for v := range set {
 		slice = append(slice, v)
 	}
@@ -57,12 +65,12 @@ func (set {{.TName}}Set) ToList() {{.TName}}List {
 }
 {{else}}
 // ToSlice gets all the set's elements in a slice.
-func (set {{.TName}}Set) ToSlice() []{{.TName}} {
-	slice := make([]{{.TName}}, 0, len(set))
+func (set {{.TName}}Set) ToSlice() []{{.PName}} {
+	slice := make([]{{.PName}}, 0, len(set))
 	for v := range set {
 		slice = append(slice, v)
 	}
 	return slice
 }
 {{end}}
-` + setAlgebra + addRemoveFunctions + iterationFunctions + predicatedFunctions + mkstringFunctions
+` + setAlgebra + addRemoveFunctions + iterationFunctions + predicatedFunctions + numericFunctions + mkstringFunctions

@@ -6,9 +6,9 @@ import (
 )
 
 func TestDistinctByNum1(t *testing.T) {
-	things := Num1List{50, 100, 9, 7, 9, 100, 99, 50}
+	things := num1Collection(50, 100, 9, 7, 9, 100, 99, 50)
 
-	expected := Num1List{50, 100, 9, 7, 99}
+	expected := num1Collection(50, 100, 9, 7, 99)
 
 	distinctby1 := things.DistinctBy(func(a, b Num1) bool {
 		return a == b

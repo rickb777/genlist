@@ -29,8 +29,15 @@ Extra tags can be included to add more features. You can include a comma-separat
 
 #### `List` Tag
 
-`List` adds list implementation on the same type (e.g. `Example`). Some additional methods are provided to convert
-between sets and lists.
+`List` adds list implementation on the same type (e.g. `Example`).
+
+````go
+// +gen Set:"List"
+type Example struct { ... }
+````
+
+Some additional methods are provided to convert between sets and lists. Therefore, it is better to use this tag
+rather than generate separate data structures using `+gen Set List` or similar.
 
 #### `MapTo` Tag
 
@@ -38,7 +45,7 @@ between sets and lists.
 set by transforming its element using a function you provide. `MapTo[T]` can be used more than once: 
 
 ````go
-// +gen Option:"MapTo[Fred], MapTo[Jim]"
+// +gen Set:"MapTo[Fred], MapTo[Jim]"
 type Example struct { ... }
 ````
 
