@@ -1,6 +1,6 @@
 package main
 
-// +test Set:"MapTo[Num1], MapTo[*Num2]"
+// +test Set:"MapTo[Num1]"
 type Thing struct {
 	Name   string
 	Number Num1
@@ -11,7 +11,7 @@ type Thing struct {
 type Num1 Underlying
 
 // +test * Set
-type Num2 Underlying
+//type Num2 Underlying
 
 type Underlying int
 

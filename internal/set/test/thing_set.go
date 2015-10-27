@@ -409,27 +409,4 @@ func (set ThingSet) FlatMapToNum1(fn func(Thing) Num1Collection) Num1Collection 
 	return Num1Set(result)
 }
 
-// MapToNum2 transforms ThingSet to *Num2Set.
-func (set ThingSet) MapToNum2(fn func(Thing) *Num2) Num2Collection {
-	result := make(map[*Num2]struct{})
-	for v := range set {
-		u := fn(v)
-		result[u] = struct{}{}
-	}
-	return Num2Set(result)
-}
-
-// FlatMapToNum2 transforms ThingSet to Num2Set, by
-// calling the supplied function on each of the enclosed set elements, and returning a new set.
-func (set ThingSet) FlatMapToNum2(fn func(Thing) Num2Collection) Num2Collection {
-	result := make(map[*Num2]struct{})
-	for a := range set {
-		b := fn(a)
-		b.Foreach(func(c *Num2) {
-			result[c] = struct{}{}
-		})
-	}
-	return Num2Set(result)
-}
-
 // Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[MapTo:true]}

@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestLenFoo(t *testing.T) {
-	emptyThing := NewFooSet()
+	emptyThing := fooCollection()
 	if emptyThing.Size() != 0 {
 		t.Errorf("Size should be 0")
 	}
@@ -14,7 +14,7 @@ func TestLenFoo(t *testing.T) {
 		t.Errorf("NonEmpty should be false")
 	}
 
-	someThing := NewFooSet("aa", "bb")
+	someThing := fooCollection("aa", "bb")
 	if someThing.Size() != 2 {
 		t.Errorf("Size should be 2")
 	}
@@ -242,16 +242,6 @@ func TestIterator(t *testing.T) {
 
 	if !a.Equals(b) {
 		t.Errorf("Expected the same but got %v and %v", a, b)
-	}
-}
-
-func TestExists(t *testing.T) {
-	someThing := num1Collection(10)
-	if !someThing.Exists(func(x Num1) bool { return x == 10 }) {
-		t.Errorf("Exists should be true")
-	}
-	if someThing.Exists(func(x Num1) bool { return x == 0 }) {
-		t.Errorf("Exists should be false")
 	}
 }
 

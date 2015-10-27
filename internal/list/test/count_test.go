@@ -2,11 +2,6 @@ package main
 
 import "testing"
 
-func ip(n int) *Num2 {
-	v := Num2(n)
-	return &v
-}
-
 func TestCountNum1(t *testing.T) {
 	things := num1Collection(50, 100, 9, 7, 100, 99)
 

@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestContainsNum1(t *testing.T) {
 	things := num1Collection(50, 100, 9, 7, 100, 99)
@@ -24,34 +26,12 @@ func TestContainsNum1(t *testing.T) {
 	}
 }
 
-func TestContainsNum2(t *testing.T) {
-	things := num2Collection(ip(50), ip(100), ip(9), ip(7), ip(100), ip(99))
-
-	has1 := things.Contains(ip(3))
-
-	if has1 {
-		t.Errorf("Contains should not evaluate true for 3")
-	}
-
-	has2 := things.Contains(ip(7))
-
-	if !has2 {
-		t.Errorf("Contains should evaluate true for 7 in %+v", things)
-	}
-
-	has3 := num2Collection().Contains(ip(1))
-
-	if has3 {
-		t.Errorf("Contains should evaluate false for empty slices")
-	}
-}
-
 func TestContainsThing(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"First", 60},
+		Thing{"Second", -20},
+		Thing{"Third", 100},
+	)
 
 	has1 := things.Contains(Thing{"Dummy", 9})
 
@@ -65,7 +45,7 @@ func TestContainsThing(t *testing.T) {
 		t.Errorf("Contains should evaluate true for Second,-20")
 	}
 
-	has3 := ThingList{}.Contains(Thing{"A", 1})
+	has3 := thingCollection().Contains(Thing{"A", 1})
 
 	if has3 {
 		t.Errorf("Contains should evaluate false for empty slices")
