@@ -24,7 +24,7 @@ func TestMkStringNum1(t *testing.T) {
 }
 
 func TestMkStringNum2(t *testing.T) {
-	things := Num2List{ip(1), ip(2), ip(3), ip(5), ip(8), ip(13)}
+	things := num2Collection(ip(1), ip(2), ip(3), ip(5), ip(8), ip(13))
 
 	s1 := things.MkString(", ")
 	if s1 != "1, 2, 3, 5, 8, 13" {

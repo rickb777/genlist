@@ -29,9 +29,9 @@ func TestEqualsNum1(t *testing.T) {
 }
 
 func TestEqualsNum2(t *testing.T) {
-	listA := Num2List{ip(50), ip(100), ip(9), ip(7), ip(100), ip(99)}
-	listB := Num2List{ip(50), ip(100), ip(9), ip(7), ip(42), ip(99)}
-	listC := Num2List{}
+	listA := num2Collection(ip(50), ip(100), ip(9), ip(7), ip(100), ip(99))
+	listB := num2Collection(ip(50), ip(100), ip(9), ip(7), ip(42), ip(99))
+	listC := num2Collection()
 
 	if !listA.Equals(listA) {
 		t.Errorf("Equals should be true")

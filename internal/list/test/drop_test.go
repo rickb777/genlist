@@ -36,11 +36,11 @@ func TestDropNum1(t *testing.T) {
 }
 
 func TestDropNum2(t *testing.T) {
-	things := Num2List{ip(1), ip(17), ip(5), ip(6), ip(17), ip(8), ip(9)}
+	things := num2Collection(ip(1), ip(17), ip(5), ip(6), ip(17), ip(8), ip(9))
 
 	where1 := things.Drop(3)
 
-	expected1 := Num2List{ip(6), ip(17), ip(8), ip(9)}
+	expected1 := num2Collection(ip(6), ip(17), ip(8), ip(9))
 
 	if !reflect.DeepEqual(where1, expected1) {
 		t.Errorf("Drop should result in %#v, got %#v", expected1, where1)

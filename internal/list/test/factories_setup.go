@@ -1,8 +1,15 @@
 package main
 
 func num1Collection(v ...Num1) Num1List {
-	if len(v) == 0 {
-		return Num1List{}
+	list := Num1List{}
+	list = append(list, v...)
+	return list
+}
+
+func num2Collection(v ...*Num2) Num2List {
+	list := make([]*Num2, len(v))
+	for i, n := range v {
+		list[i] = n
 	}
-	return Num1List(v)
+	return list
 }

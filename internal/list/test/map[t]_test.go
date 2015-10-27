@@ -29,7 +29,7 @@ func TestMapToNum(t *testing.T) {
 	}
 
 	r2 := things.MapToNum2(number2)
-	expected2 := Num2List{ip(60), ip(-20), ip(100)}
+	expected2 := num2Collection(ip(60), ip(-20), ip(100))
 
 	if !reflect.DeepEqual(r2, expected2) {
 		t.Errorf("MapToNum2 should result in %#v, got %#v", expected2, r2)

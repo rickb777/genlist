@@ -31,7 +31,7 @@ func TestExistsNum1(t *testing.T) {
 }
 
 func TestExistsNum2(t *testing.T) {
-	things := Num2List{ip(60), ip(-20), ip(100)}
+	things := num2Collection(ip(60), ip(-20), ip(100))
 
 	any1 := things.Exists(func(x *Num2) bool {
 		return *x == 10
@@ -49,7 +49,7 @@ func TestExistsNum2(t *testing.T) {
 		t.Errorf("Exists should evaluate true for Number > 50")
 	}
 
-	any3 := Num2List{}.Exists(func(x *Num2) bool {
+	any3 := num2Collection().Exists(func(x *Num2) bool {
 		return true
 	})
 

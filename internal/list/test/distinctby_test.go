@@ -20,9 +20,9 @@ func TestDistinctByNum1(t *testing.T) {
 }
 
 func TestDistinctByNum2(t *testing.T) {
-	things := Num2List{ip(50), ip(100), ip(9), ip(7), ip(100), ip(99)}
+	things := num2Collection(ip(50), ip(100), ip(9), ip(7), ip(100), ip(99))
 
-	expected := Num2List{ip(50), ip(100), ip(9), ip(7), ip(99)}
+	expected := num2Collection(ip(50), ip(100), ip(9), ip(7), ip(99))
 
 	distinctby1 := things.DistinctBy(func(a, b *Num2) bool {
 		return *a == *b

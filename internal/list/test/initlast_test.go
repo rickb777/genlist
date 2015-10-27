@@ -39,7 +39,7 @@ func TestInitLastNum1(t *testing.T) {
 }
 
 func TestInitLastNum2(t *testing.T) {
-	things := Num2List{ip(3), ip(5), ip(8), ip(13)}
+	things := num2Collection(ip(3), ip(5), ip(8), ip(13))
 
 	h1 := things.Last()
 	t1 := things.Init()

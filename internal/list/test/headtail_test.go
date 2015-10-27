@@ -39,7 +39,7 @@ func TestHeadTailNum1(t *testing.T) {
 }
 
 func TestHeadTailNum2(t *testing.T) {
-	things := Num2List{ip(3), ip(5), ip(8), ip(13)}
+	things := num2Collection(ip(3), ip(5), ip(8), ip(13))
 
 	h1 := things.Head()
 	t1 := things.Tail()

@@ -30,7 +30,7 @@ func TestCountNum1(t *testing.T) {
 }
 
 func TestCountNum2(t *testing.T) {
-	things := Num2List{ip(50), ip(100), ip(9), ip(7), ip(100), ip(99)}
+	things := num2Collection(ip(50), ip(100), ip(9), ip(7), ip(100), ip(99))
 
 	count1 := things.Count(ip(7))
 
@@ -44,7 +44,7 @@ func TestCountNum2(t *testing.T) {
 		t.Errorf("Count should no items for 3")
 	}
 
-	count3 := Num2List{}.Count(ip(9))
+	count3 := num2Collection().Count(ip(9))
 
 	if count3 != 0 {
 		t.Errorf("Count should find no items in an empty list")

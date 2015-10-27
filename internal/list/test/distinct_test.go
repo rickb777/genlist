@@ -18,9 +18,9 @@ func TestDistinctNum1(t *testing.T) {
 }
 
 func TestDistinctNum2(t *testing.T) {
-	things := Num2List{ip(50), ip(100), ip(9), ip(7), ip(100), ip(99)}
+	things := num2Collection(ip(50), ip(100), ip(9), ip(7), ip(100), ip(99))
 
-	should := Num2List{ip(50), ip(100), ip(9), ip(7), ip(99)}
+	should := num2Collection(ip(50), ip(100), ip(9), ip(7), ip(99))
 
 	distinct1 := things.Distinct()
 

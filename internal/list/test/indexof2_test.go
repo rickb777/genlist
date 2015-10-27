@@ -33,7 +33,7 @@ func TestIndexOf2Num1(t *testing.T) {
 }
 
 func TestIndexOf2Num2(t *testing.T) {
-	things := Num2List{ip(1), ip(3), ip(17), ip(5), ip(6), ip(17), ip(8), ip(9)}
+	things := num2Collection(ip(1), ip(3), ip(17), ip(5), ip(6), ip(17), ip(8), ip(9))
 
 	where1a := things.IndexOf2(ip(17), 2)
 
@@ -53,7 +53,7 @@ func TestIndexOf2Num2(t *testing.T) {
 		t.Errorf("IndexOf should be -1, got %#v", where2)
 	}
 
-	where3 := Num2List{}.IndexOf2(ip(1), 0)
+	where3 := num2Collection().IndexOf2(ip(1), 0)
 
 	if where3 != -1 {
 		t.Errorf("IndexOf should be -1, got %#v", where3)

@@ -36,11 +36,11 @@ func TestFlatMapToNum(t *testing.T) {
 
 	number2 := func(x Thing) Num2Seq {
 		v := Num2(x.Number)
-		return Num2List{&v, &v}
+		return num2Collection(&v, &v)
 	}
 
 	r2 := things.FlatMapToNum2(number2)
-	expected2 := Num2List{ip(60), ip(60), ip(-20), ip(-20), ip(100), ip(100)}
+	expected2 := num2Collection(ip(60), ip(60), ip(-20), ip(-20), ip(100), ip(100))
 
 	if !reflect.DeepEqual(r2, expected2) {
 		t.Errorf("FlatMapToNum2 should result in %#v, got %#v", expected2, r2)

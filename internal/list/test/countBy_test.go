@@ -39,7 +39,7 @@ func TestCountByNum1(t *testing.T) {
 }
 
 func TestCountByNum2(t *testing.T) {
-	things := Num2List{ip(50)}
+	things := num2Collection(ip(50))
 
 	count1 := things.CountBy(func(x *Num2) bool {
 		return *x == 50
