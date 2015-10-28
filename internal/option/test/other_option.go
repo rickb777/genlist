@@ -9,33 +9,35 @@ import "fmt"
 //-------------------------------------------------------------------------------------------------
 // OtherCollection is an interface for collections of type Other, including sets, lists and options (where present).
 type OtherCollection interface {
-	// Size gets the size/length of the sequence.
+	// Size gets the size/length of the collection.
 	Size() int
 
-	// IsEmpty returns true if the sequence is empty.
+	// IsEmpty returns true if the collection is empty.
 	IsEmpty() bool
 
-	// NonEmpty returns true if the sequence is non-empty.
+	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
 	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
+	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Other) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predicate supplied.
+	// Forall returns true if every element in the collection matches the predicate supplied.
 	Forall(predicate func(Other) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Other))
 
-	// Iter sends all elements along a channel of type Other.
-	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
-	// it will give the same order each subsequent time it is used.
+	// Iter sends all elements along a channel of type Other. For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
 	Iter() <-chan Other
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new OtherCollection whose elements return true for a predicate function.
+	// The relative order of the elements in the result is the same as in the
+	// original collection.
 	Filter(predicate func(Other) bool) (result OtherCollection)
 
 	// Partition returns two new OtherCollections whose elements return true or false for the predicate, p.
@@ -50,7 +52,7 @@ type OtherCollection interface {
 	// Omitted if Other is not comparable.
 	Equals(other OtherCollection) bool
 
-	// Contains tests whether a given value is present in the sequence.
+	// Contains tests whether a given value is present in the collection.
 	// Omitted if Other is not comparable.
 	Contains(value Other) bool
 
@@ -63,8 +65,9 @@ type OtherCollection interface {
 	// Omitted if Other is not numeric.
 	Mean() Other
 
-	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
-	// of the elements.
+	//-------------------------------------------------------------------------
+	// String gets a string representation of the collection. "[" and "]" surround
+	// a comma-separated list of the elements.
 	String() string
 
 	// MkString gets a string representation of the collection. "[" and "]" surround a list
@@ -74,6 +77,19 @@ type OtherCollection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// OtherOrderedCollection is an interface for collections of ordered types.
+type OtherOrderedCollection interface {
+	// Min returns the minimum value of OtherList. In the case of multiple items being equally minimal,
+	// the first such element is returned. Panics if the collection is empty.
+	Min() Other
+
+	// Max returns the maximum value of OtherList. In the case of multiple items being equally maximal,
+	// the first such element is returned. Panics if the collection is empty.
+	Max() Other
 }
 
 //-------------------------------------------------------------------------------------------------

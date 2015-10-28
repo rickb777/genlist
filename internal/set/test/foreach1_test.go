@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+"testing"
+"strings"
+)
 
 func TestForeachNum1(t *testing.T) {
 	things := num1Collection(60, -20, 100)
@@ -27,7 +30,19 @@ func TestForeachThing(t *testing.T) {
 		concat += x.Name
 	})
 
-	if concat != "FirstSecondThird" {
+	if len(concat) != len("FirstSecondThird") {
+		t.Errorf("Foreach should concatenate: %s", concat)
+	}
+
+	if !strings.Contains(concat, "First") {
+		t.Errorf("Foreach should concatenate: %s", concat)
+	}
+
+	if !strings.Contains(concat, "Second") {
+		t.Errorf("Foreach should concatenate: %s", concat)
+	}
+
+	if !strings.Contains(concat, "Third") {
 		t.Errorf("Foreach should concatenate: %s", concat)
 	}
 }

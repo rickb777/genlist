@@ -2,6 +2,7 @@ package list
 
 const numericFunctions = `
 {{if .Type.Numeric}}
+//-------------------------------------------------------------------------------------------------
 // These methods require {{.TName}} be numeric.
 
 // Sum sums all elements in the list.

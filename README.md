@@ -3,11 +3,12 @@
 This package is a typewriter for use with Mark Sherman's [gen](https://github.com/clipperhouse/gen), an excellent 
 type-driven code generation tool for Go.
 
-This Go code generator offers scala-like **List** and **Option** containers, with methods such as filtering and sorting,
-for working with Go types and slices of types.
+This Go code generator offers **List**, **Option** and **Set** containers, loosely influenced bby Scala and Java. 
+These have methods for a wide variety of operations such as filtering and sorting, for working with Go types and
+slices of types.
 
-It produces flexible type-safe collection classes for your own types. They're not 'generics' because Go doesn't have
-them - but you get the benefit of a clean API for your own classes regardless.
+The code generator produces flexible type-safe collection classes for your own types. They're not 'generics'
+because Go doesn't really have them - but you get the benefit of a clean API for your own classes regardless.
 
 **This work is still beta quality.** If you use it, be prepared for small API changes as it gets completed. 
 

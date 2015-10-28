@@ -9,33 +9,35 @@ import "fmt"
 //-------------------------------------------------------------------------------------------------
 // BarCollection is an interface for collections of type Bar, including sets, lists and options (where present).
 type BarCollection interface {
-	// Size gets the size/length of the sequence.
+	// Size gets the size/length of the collection.
 	Size() int
 
-	// IsEmpty returns true if the sequence is empty.
+	// IsEmpty returns true if the collection is empty.
 	IsEmpty() bool
 
-	// NonEmpty returns true if the sequence is non-empty.
+	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
 	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
+	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(*Bar) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predicate supplied.
+	// Forall returns true if every element in the collection matches the predicate supplied.
 	Forall(predicate func(*Bar) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Bar))
 
-	// Iter sends all elements along a channel of type Bar.
-	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
-	// it will give the same order each subsequent time it is used.
+	// Iter sends all elements along a channel of type Bar. For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
 	Iter() <-chan *Bar
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new BarCollection whose elements return true for a predicate function.
+	// The relative order of the elements in the result is the same as in the
+	// original collection.
 	Filter(predicate func(*Bar) bool) (result BarCollection)
 
 	// Partition returns two new BarCollections whose elements return true or false for the predicate, p.
@@ -50,12 +52,13 @@ type BarCollection interface {
 	// Omitted if Bar is not comparable.
 	Equals(other BarCollection) bool
 
-	// Contains tests whether a given value is present in the sequence.
+	// Contains tests whether a given value is present in the collection.
 	// Omitted if Bar is not comparable.
 	Contains(value *Bar) bool
 
-	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
-	// of the elements.
+	//-------------------------------------------------------------------------
+	// String gets a string representation of the collection. "[" and "]" surround
+	// a comma-separated list of the elements.
 	String() string
 
 	// MkString gets a string representation of the collection. "[" and "]" surround a list
@@ -65,6 +68,21 @@ type BarCollection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// BarUnorderedCollection is an interface for collections of unordered types.
+type BarUnorderedCollection interface {
+	// Min returns an element of BarList containing the minimum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+	// Panics if the collection is empty.
+	Min(less func(*Bar, *Bar) bool) *Bar
+
+	// Max returns an element of BarList containing the maximum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+	// Panics if the collection is empty.
+	Max(less func(*Bar, *Bar) bool) *Bar
 }
 
 //-------------------------------------------------------------------------------------------------

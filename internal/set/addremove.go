@@ -6,7 +6,7 @@ const addRemoveFunctions = `
 // The receiver is modified and returned.
 func (set {{.TName}}Set) Add(others ...{{.PName}}) {{.TName}}Set {
 	for _, v := range others {
-		set[v] = struct{}{}
+		set[{{.Ptr}}v] = struct{}{}
 	}
 	return set
 }
@@ -15,7 +15,7 @@ func (set {{.TName}}Set) Add(others ...{{.PName}}) {{.TName}}Set {
 // The receiver is modified and returned.
 func (set {{.TName}}Set) Remove(unwanted ...{{.PName}}) {{.TName}}Set {
 	for _, item := range unwanted {
-		delete(set, item)
+		delete(set, {{.Ptr}}item)
 	}
 	return set
 }
@@ -29,7 +29,7 @@ func (set {{.TName}}Set) Add(others ...{{.PName}}) {{.TName}}Set {
 		added[item] = struct{}{}
 	}
 	for _, item := range others {
-		added[item] = struct{}{}
+		added[{{.Ptr}}item] = struct{}{}
 	}
 	return added
 }

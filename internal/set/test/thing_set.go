@@ -13,33 +13,35 @@ import (
 //-------------------------------------------------------------------------------------------------
 // ThingCollection is an interface for collections of type Thing, including sets, lists and options (where present).
 type ThingCollection interface {
-	// Size gets the size/length of the sequence.
+	// Size gets the size/length of the collection.
 	Size() int
 
-	// IsEmpty returns true if the sequence is empty.
+	// IsEmpty returns true if the collection is empty.
 	IsEmpty() bool
 
-	// NonEmpty returns true if the sequence is non-empty.
+	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
 	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
+	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Thing) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predicate supplied.
+	// Forall returns true if every element in the collection matches the predicate supplied.
 	Forall(predicate func(Thing) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Thing))
 
-	// Iter sends all elements along a channel of type Thing.
-	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
-	// it will give the same order each subsequent time it is used.
+	// Iter sends all elements along a channel of type Thing. For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
 	Iter() <-chan Thing
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new ThingCollection whose elements return true for a predicate function.
+	// The relative order of the elements in the result is the same as in the
+	// original collection.
 	Filter(predicate func(Thing) bool) (result ThingCollection)
 
 	// Partition returns two new ThingCollections whose elements return true or false for the predicate, p.
@@ -54,12 +56,13 @@ type ThingCollection interface {
 	// Omitted if Thing is not comparable.
 	Equals(other ThingCollection) bool
 
-	// Contains tests whether a given value is present in the sequence.
+	// Contains tests whether a given value is present in the collection.
 	// Omitted if Thing is not comparable.
 	Contains(value Thing) bool
 
-	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
-	// of the elements.
+	//-------------------------------------------------------------------------
+	// String gets a string representation of the collection. "[" and "]" surround
+	// a comma-separated list of the elements.
 	String() string
 
 	// MkString gets a string representation of the collection. "[" and "]" surround a list
@@ -69,6 +72,21 @@ type ThingCollection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// ThingUnorderedCollection is an interface for collections of unordered types.
+type ThingUnorderedCollection interface {
+	// Min returns an element of ThingList containing the minimum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+	// Panics if the collection is empty.
+	Min(less func(Thing, Thing) bool) Thing
+
+	// Max returns an element of ThingList containing the maximum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+	// Panics if the collection is empty.
+	Max(less func(Thing, Thing) bool) Thing
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -366,6 +384,49 @@ func (set ThingSet) MaxBy(less func(Thing, Thing) bool) (result Thing, err error
 			max = v
 		} else if less(v, max) {
 			max = v
+		}
+	}
+	return
+}
+
+//-------------------------------------------------------------------------------------------------
+// These methods are included when Thing is not ordered.
+
+// Min returns an element containing the minimum value, when compared to other elements
+// using a specified comparator function defining ‘less’.
+// Panics if the collection is empty.
+func (set ThingSet) Min(less func(Thing, Thing) bool) (result Thing) {
+	l := len(set)
+	if l == 0 {
+		panic("Cannot determine the minimum of an empty set.")
+	}
+	first := true
+	for v := range set {
+		if first {
+			first = false
+			result = v
+		} else if less(v, result) {
+			result = v
+		}
+	}
+	return
+}
+
+// Max returns an element containing the maximum value, when compared to other elements
+// using a specified comparator function defining ‘less’.
+// Panics if the collection is empty.
+func (set ThingSet) Max(less func(Thing, Thing) bool) (result Thing) {
+	l := len(set)
+	if l == 0 {
+		panic("Cannot determine the maximum of an empty set.")
+	}
+	first := true
+	for v := range set {
+		if first {
+			first = false
+			result = v
+		} else if less(result, v) {
+			result = v
 		}
 	}
 	return

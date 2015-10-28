@@ -1,7 +1,6 @@
 package list
 
 const WithParamFunctions = `
-
 // FoldLeft{{.TypeParameter.LongName}} applies a binary operator to a start value and all elements of this list, going left to right.
 func (list {{.TName}}List) FoldLeft{{.TypeParameter.LongName}}(zero {{.TypeParameter}}, fn func({{.TypeParameter}}, {{.PName}}) {{.TypeParameter}}) {{.TypeParameter}} {
 	sum := zero
@@ -110,5 +109,6 @@ func (list {{.TName}}List) MaxBy{{.TypeParameter.LongName}}(fn func({{.PName}}) 
 	}
 	return
 }
+
 {{end}}
 `

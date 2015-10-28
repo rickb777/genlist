@@ -10,12 +10,12 @@ const Set = sequence.Collection + `
 //
 // The implementation is based on Go maps.
 
-type {{.TName}}Set map[{{.PName}}]struct{}
+type {{.TName}}Set map[{{.TName}}]struct{}
 
 //-------------------------------------------------------------------------------------------------
 // New{{.TName}}Set constructs a new set containing the supplied values, if any.
 func New{{.TName}}Set(e ...{{.PName}}) {{.TName}}Set {
-	set := make(map[{{.PName}}]struct{})
+	set := make(map[{{.TName}}]struct{})
 	for _, v := range e {
 		set[v] = struct{}{}
 	}
@@ -25,7 +25,7 @@ func New{{.TName}}Set(e ...{{.PName}}) {{.TName}}Set {
 // Build{{.TName}}SetFrom constructs a new {{.TName}}Set from a channel that supplies values
 // until it is closed.
 func Build{{.TName}}SetFrom(source <-chan {{.PName}}) {{.TName}}Set {
-	set := make(map[{{.PName}}]struct{})
+	set := make(map[{{.TName}}]struct{})
 	for v := range source {
 		set[v] = struct{}{}
 	}
@@ -73,4 +73,5 @@ func (set {{.TName}}Set) ToSlice() []{{.PName}} {
 	return slice
 }
 {{end}}
-` + setAlgebra + addRemoveFunctions + iterationFunctions + predicatedFunctions + numericFunctions + mkstringFunctions
+` + setAlgebra + addRemoveFunctions + iterationFunctions + predicatedFunctions +
+numericFunctions + orderedFunctions + mkstringFunctions

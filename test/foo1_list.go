@@ -15,33 +15,35 @@ import (
 //-------------------------------------------------------------------------------------------------
 // Foo1Collection is an interface for collections of type Foo1, including sets, lists and options (where present).
 type Foo1Collection interface {
-	// Size gets the size/length of the sequence.
+	// Size gets the size/length of the collection.
 	Size() int
 
-	// IsEmpty returns true if the sequence is empty.
+	// IsEmpty returns true if the collection is empty.
 	IsEmpty() bool
 
-	// NonEmpty returns true if the sequence is non-empty.
+	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
 	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
+	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Foo1) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predicate supplied.
+	// Forall returns true if every element in the collection matches the predicate supplied.
 	Forall(predicate func(Foo1) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo1))
 
-	// Iter sends all elements along a channel of type Foo1.
-	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
-	// it will give the same order each subsequent time it is used.
+	// Iter sends all elements along a channel of type Foo1. For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
 	Iter() <-chan Foo1
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new Foo1Collection whose elements return true for a predicate function.
+	// The relative order of the elements in the result is the same as in the
+	// original collection.
 	Filter(predicate func(Foo1) bool) (result Foo1Collection)
 
 	// Partition returns two new Foo1Collections whose elements return true or false for the predicate, p.
@@ -56,7 +58,7 @@ type Foo1Collection interface {
 	// Omitted if Foo1 is not comparable.
 	Equals(other Foo1Collection) bool
 
-	// Contains tests whether a given value is present in the sequence.
+	// Contains tests whether a given value is present in the collection.
 	// Omitted if Foo1 is not comparable.
 	Contains(value Foo1) bool
 
@@ -69,8 +71,9 @@ type Foo1Collection interface {
 	// Omitted if Foo1 is not numeric.
 	Mean() Foo1
 
-	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
-	// of the elements.
+	//-------------------------------------------------------------------------
+	// String gets a string representation of the collection. "[" and "]" surround
+	// a comma-separated list of the elements.
 	String() string
 
 	// MkString gets a string representation of the collection. "[" and "]" surround a list
@@ -80,6 +83,19 @@ type Foo1Collection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Foo1OrderedCollection is an interface for collections of ordered types.
+type Foo1OrderedCollection interface {
+	// Min returns the minimum value of Foo1List. In the case of multiple items being equally minimal,
+	// the first such element is returned. Panics if the collection is empty.
+	Min() Foo1
+
+	// Max returns the maximum value of Foo1List. In the case of multiple items being equally maximal,
+	// the first such element is returned. Panics if the collection is empty.
+	Max() Foo1
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -576,6 +592,7 @@ func (list Foo1List) Distinct() Foo1Seq {
 	return result
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require Foo1 be numeric.
 
 // Sum sums all elements in the list.
@@ -596,14 +613,14 @@ func (list Foo1List) Mean() Foo1 {
 	return list.Sum() / Foo1(l)
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require Foo1 be ordered.
 
-// Min returns the minimum value of Foo1List. In the case of multiple items being equally minimal,
-// the first such element is returned. Returns error if no elements.
-func (list Foo1List) Min() (result Foo1, err error) {
+// Min returns the element with the minimum value. In the case of multiple items being equally minimal,
+// the first such element is returned. Panics if the collection is empty.
+func (list Foo1List) Min() (result Foo1) {
 	if len(list) == 0 {
-		err = errors.New("Cannot determine the Min of an empty list.")
-		return
+		panic("Cannot determine the Min of an empty list.")
 	}
 	result = list[0]
 	for _, v := range list {
@@ -614,12 +631,11 @@ func (list Foo1List) Min() (result Foo1, err error) {
 	return
 }
 
-// Max returns the maximum value of Foo1List. In the case of multiple items being equally maximal,
-// the first such element is returned. Returns error if no elements.
-func (list Foo1List) Max() (result Foo1, err error) {
+// Max returns the element with the maximum value. In the case of multiple items being equally maximal,
+// the first such element is returned. Panics if the collection is empty.
+func (list Foo1List) Max() (result Foo1) {
 	if len(list) == 0 {
-		err = errors.New("Cannot determine the Max of an empty list.")
-		return
+		panic("Cannot determine the Max of an empty list.")
 	}
 	result = list[0]
 	for _, v := range list {
@@ -1264,6 +1280,45 @@ func (set Foo1Set) Mean() Foo1 {
 		panic("Cannot compute the arithmetic mean of zero-length Foo1Set")
 	}
 	return set.Sum() / Foo1(l)
+}
+
+//-------------------------------------------------------------------------------------------------
+// These methods require Foo1 be ordered.
+
+// Min returns the element with the minimum value. In the case of multiple items being equally minimal,
+// any such element is returned. Panics if the collection is empty.
+func (set Foo1Set) Min() (result Foo1) {
+	if len(set) == 0 {
+		panic("Cannot determine the minimum of an empty set.")
+	}
+	first := true
+	for v := range set {
+		if first {
+			first = false
+			result = v
+		} else if v < result {
+			result = v
+		}
+	}
+	return
+}
+
+// Max returns the element with the maximum value. In the case of multiple items being equally maximal,
+// any such element is returned. Panics if the collection is empty.
+func (set Foo1Set) Max() (result Foo1) {
+	if len(set) == 0 {
+		panic("Cannot determine the maximum of an empty set.")
+	}
+	first := true
+	for v := range set {
+		if first {
+			first = false
+			result = v
+		} else if v > result {
+			result = v
+		}
+	}
+	return
 }
 
 // String implements the Stringer interface to render the set as a comma-separated array.

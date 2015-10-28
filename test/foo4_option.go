@@ -14,33 +14,35 @@ import (
 //-------------------------------------------------------------------------------------------------
 // Foo4Collection is an interface for collections of type Foo4, including sets, lists and options (where present).
 type Foo4Collection interface {
-	// Size gets the size/length of the sequence.
+	// Size gets the size/length of the collection.
 	Size() int
 
-	// IsEmpty returns true if the sequence is empty.
+	// IsEmpty returns true if the collection is empty.
 	IsEmpty() bool
 
-	// NonEmpty returns true if the sequence is non-empty.
+	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
 	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
+	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(*Foo4) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predicate supplied.
+	// Forall returns true if every element in the collection matches the predicate supplied.
 	Forall(predicate func(*Foo4) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Foo4))
 
-	// Iter sends all elements along a channel of type Foo4.
-	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
-	// it will give the same order each subsequent time it is used.
+	// Iter sends all elements along a channel of type Foo4. For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
 	Iter() <-chan *Foo4
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new Foo4Collection whose elements return true for a predicate function.
+	// The relative order of the elements in the result is the same as in the
+	// original collection.
 	Filter(predicate func(*Foo4) bool) (result Foo4Collection)
 
 	// Partition returns two new Foo4Collections whose elements return true or false for the predicate, p.
@@ -55,12 +57,13 @@ type Foo4Collection interface {
 	// Omitted if Foo4 is not comparable.
 	Equals(other Foo4Collection) bool
 
-	// Contains tests whether a given value is present in the sequence.
+	// Contains tests whether a given value is present in the collection.
 	// Omitted if Foo4 is not comparable.
 	Contains(value *Foo4) bool
 
-	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
-	// of the elements.
+	//-------------------------------------------------------------------------
+	// String gets a string representation of the collection. "[" and "]" surround
+	// a comma-separated list of the elements.
 	String() string
 
 	// MkString gets a string representation of the collection. "[" and "]" surround a list
@@ -70,6 +73,21 @@ type Foo4Collection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Foo4UnorderedCollection is an interface for collections of unordered types.
+type Foo4UnorderedCollection interface {
+	// Min returns an element of Foo4List containing the minimum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+	// Panics if the collection is empty.
+	Min(less func(*Foo4, *Foo4) bool) *Foo4
+
+	// Max returns an element of Foo4List containing the maximum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+	// Panics if the collection is empty.
+	Max(less func(*Foo4, *Foo4) bool) *Foo4
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -761,14 +779,16 @@ func (list Foo4List) Distinct() Foo4Seq {
 	return result
 }
 
-// Min returns the first element of Foo4List containing the minimum value, when compared to other elements
+//-------------------------------------------------------------------------------------------------
+// These methods are included when Foo4 is not ordered.
+
+// Min returns the first element containing the minimum value, when compared to other elements
 // using a specified comparator function defining ‘less’.
-// Returns an error if the Foo4List is empty.
-func (list Foo4List) Min(less func(*Foo4, *Foo4) bool) (result *Foo4, err error) {
+// Panics if the collection is empty.
+func (list Foo4List) Min(less func(*Foo4, *Foo4) bool) (result *Foo4) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the minimum of an empty list.")
-		return
+		panic("Cannot determine the minimum of an empty list.")
 	}
 	m := 0
 	for i := 1; i < l; i++ {
@@ -780,14 +800,13 @@ func (list Foo4List) Min(less func(*Foo4, *Foo4) bool) (result *Foo4, err error)
 	return
 }
 
-// Max returns the first element of Foo4List containing the maximum value, when compared to other elements
+// Max returns the first element containing the maximum value, when compared to other elements
 // using a specified comparator function defining ‘less’.
-// Returns an error if the Foo4List is empty.
-func (list Foo4List) Max(less func(*Foo4, *Foo4) bool) (result *Foo4, err error) {
+// Panics if the collection is empty.
+func (list Foo4List) Max(less func(*Foo4, *Foo4) bool) (result *Foo4) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the maximum of an empty list.")
-		return
+		panic("Cannot determine the maximum of an empty list.")
 	}
 	m := 0
 	for i := 1; i < l; i++ {

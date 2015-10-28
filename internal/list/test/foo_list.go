@@ -15,33 +15,35 @@ import (
 //-------------------------------------------------------------------------------------------------
 // FooCollection is an interface for collections of type Foo, including sets, lists and options (where present).
 type FooCollection interface {
-	// Size gets the size/length of the sequence.
+	// Size gets the size/length of the collection.
 	Size() int
 
-	// IsEmpty returns true if the sequence is empty.
+	// IsEmpty returns true if the collection is empty.
 	IsEmpty() bool
 
-	// NonEmpty returns true if the sequence is non-empty.
+	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
 	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
+	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Foo) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predicate supplied.
+	// Forall returns true if every element in the collection matches the predicate supplied.
 	Forall(predicate func(Foo) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo))
 
-	// Iter sends all elements along a channel of type Foo.
-	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
-	// it will give the same order each subsequent time it is used.
+	// Iter sends all elements along a channel of type Foo. For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
 	Iter() <-chan Foo
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new FooCollection whose elements return true for a predicate function.
+	// The relative order of the elements in the result is the same as in the
+	// original collection.
 	Filter(predicate func(Foo) bool) (result FooCollection)
 
 	// Partition returns two new FooCollections whose elements return true or false for the predicate, p.
@@ -56,12 +58,13 @@ type FooCollection interface {
 	// Omitted if Foo is not comparable.
 	Equals(other FooCollection) bool
 
-	// Contains tests whether a given value is present in the sequence.
+	// Contains tests whether a given value is present in the collection.
 	// Omitted if Foo is not comparable.
 	Contains(value Foo) bool
 
-	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
-	// of the elements.
+	//-------------------------------------------------------------------------
+	// String gets a string representation of the collection. "[" and "]" surround
+	// a comma-separated list of the elements.
 	String() string
 
 	// MkString gets a string representation of the collection. "[" and "]" surround a list
@@ -71,6 +74,19 @@ type FooCollection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// FooOrderedCollection is an interface for collections of ordered types.
+type FooOrderedCollection interface {
+	// Min returns the minimum value of FooList. In the case of multiple items being equally minimal,
+	// the first such element is returned. Panics if the collection is empty.
+	Min() Foo
+
+	// Max returns the maximum value of FooList. In the case of multiple items being equally maximal,
+	// the first such element is returned. Panics if the collection is empty.
+	Max() Foo
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -563,14 +579,14 @@ func (list FooList) Distinct() FooSeq {
 	return result
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require Foo be ordered.
 
-// Min returns the minimum value of FooList. In the case of multiple items being equally minimal,
-// the first such element is returned. Returns error if no elements.
-func (list FooList) Min() (result Foo, err error) {
+// Min returns the element with the minimum value. In the case of multiple items being equally minimal,
+// the first such element is returned. Panics if the collection is empty.
+func (list FooList) Min() (result Foo) {
 	if len(list) == 0 {
-		err = errors.New("Cannot determine the Min of an empty list.")
-		return
+		panic("Cannot determine the Min of an empty list.")
 	}
 	result = list[0]
 	for _, v := range list {
@@ -581,12 +597,11 @@ func (list FooList) Min() (result Foo, err error) {
 	return
 }
 
-// Max returns the maximum value of FooList. In the case of multiple items being equally maximal,
-// the first such element is returned. Returns error if no elements.
-func (list FooList) Max() (result Foo, err error) {
+// Max returns the element with the maximum value. In the case of multiple items being equally maximal,
+// the first such element is returned. Panics if the collection is empty.
+func (list FooList) Max() (result Foo) {
 	if len(list) == 0 {
-		err = errors.New("Cannot determine the Max of an empty list.")
-		return
+		panic("Cannot determine the Max of an empty list.")
 	}
 	result = list[0]
 	for _, v := range list {

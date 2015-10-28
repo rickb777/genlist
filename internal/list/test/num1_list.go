@@ -15,33 +15,35 @@ import (
 //-------------------------------------------------------------------------------------------------
 // Num1Collection is an interface for collections of type Num1, including sets, lists and options (where present).
 type Num1Collection interface {
-	// Size gets the size/length of the sequence.
+	// Size gets the size/length of the collection.
 	Size() int
 
-	// IsEmpty returns true if the sequence is empty.
+	// IsEmpty returns true if the collection is empty.
 	IsEmpty() bool
 
-	// NonEmpty returns true if the sequence is non-empty.
+	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
 	//-------------------------------------------------------------------------
-	// Exists returns true if there exists at least one element in the sequence that matches
+	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Num1) bool) bool
 
-	// Forall returns true if every element in the sequence matches the predicate supplied.
+	// Forall returns true if every element in the collection matches the predicate supplied.
 	Forall(predicate func(Num1) bool) bool
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Num1))
 
-	// Iter sends all elements along a channel of type Num1.
-	// The first time it is used, order of the elements is not well defined. But the order is stable, which means
-	// it will give the same order each subsequent time it is used.
+	// Iter sends all elements along a channel of type Num1. For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
 	Iter() <-chan Num1
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new Num1Collection whose elements return true for a predicate function.
+	// The relative order of the elements in the result is the same as in the
+	// original collection.
 	Filter(predicate func(Num1) bool) (result Num1Collection)
 
 	// Partition returns two new Num1Collections whose elements return true or false for the predicate, p.
@@ -56,7 +58,7 @@ type Num1Collection interface {
 	// Omitted if Num1 is not comparable.
 	Equals(other Num1Collection) bool
 
-	// Contains tests whether a given value is present in the sequence.
+	// Contains tests whether a given value is present in the collection.
 	// Omitted if Num1 is not comparable.
 	Contains(value Num1) bool
 
@@ -69,8 +71,9 @@ type Num1Collection interface {
 	// Omitted if Num1 is not numeric.
 	Mean() Num1
 
-	// String gets a string representation of the collection. "[" and "]" surround a comma-separated list
-	// of the elements.
+	//-------------------------------------------------------------------------
+	// String gets a string representation of the collection. "[" and "]" surround
+	// a comma-separated list of the elements.
 	String() string
 
 	// MkString gets a string representation of the collection. "[" and "]" surround a list
@@ -80,6 +83,19 @@ type Num1Collection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Num1OrderedCollection is an interface for collections of ordered types.
+type Num1OrderedCollection interface {
+	// Min returns the minimum value of Num1List. In the case of multiple items being equally minimal,
+	// the first such element is returned. Panics if the collection is empty.
+	Min() Num1
+
+	// Max returns the maximum value of Num1List. In the case of multiple items being equally maximal,
+	// the first such element is returned. Panics if the collection is empty.
+	Max() Num1
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -572,6 +588,7 @@ func (list Num1List) Distinct() Num1Seq {
 	return result
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require Num1 be numeric.
 
 // Sum sums all elements in the list.
@@ -592,14 +609,14 @@ func (list Num1List) Mean() Num1 {
 	return list.Sum() / Num1(l)
 }
 
+//-------------------------------------------------------------------------------------------------
 // These methods require Num1 be ordered.
 
-// Min returns the minimum value of Num1List. In the case of multiple items being equally minimal,
-// the first such element is returned. Returns error if no elements.
-func (list Num1List) Min() (result Num1, err error) {
+// Min returns the element with the minimum value. In the case of multiple items being equally minimal,
+// the first such element is returned. Panics if the collection is empty.
+func (list Num1List) Min() (result Num1) {
 	if len(list) == 0 {
-		err = errors.New("Cannot determine the Min of an empty list.")
-		return
+		panic("Cannot determine the Min of an empty list.")
 	}
 	result = list[0]
 	for _, v := range list {
@@ -610,12 +627,11 @@ func (list Num1List) Min() (result Num1, err error) {
 	return
 }
 
-// Max returns the maximum value of Num1List. In the case of multiple items being equally maximal,
-// the first such element is returned. Returns error if no elements.
-func (list Num1List) Max() (result Num1, err error) {
+// Max returns the element with the maximum value. In the case of multiple items being equally maximal,
+// the first such element is returned. Panics if the collection is empty.
+func (list Num1List) Max() (result Num1) {
 	if len(list) == 0 {
-		err = errors.New("Cannot determine the Max of an empty list.")
-		return
+		panic("Cannot determine the Max of an empty list.")
 	}
 	result = list[0]
 	for _, v := range list {
