@@ -177,7 +177,8 @@ type Foo1Seq interface {
  * **Intro**
  * [Lists](List.md)
  * [Options](Option.md)
- * [Joint Lists With Options](Unified.md)
+ * [Joint Lists with Options and/or Sets](Unified.md)
+ * [Plumbing functions](Plumbing.md)
 
 ### See also...
 

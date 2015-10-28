@@ -1,4 +1,4 @@
-# GenList - Options
+# GoList - Options
 
 ## The Option typewriter
 
@@ -92,4 +92,5 @@ sequence of its `Fred` equivalent. This sequence is added to the result set.
  * [Lists](List.md)
  * **Options**
  * [Sets](Set.md)
- * [Using Lists and Options Together](Unified.md)
+ * [Joint Lists with Options  and/or Sets](Unified.md)
+ * [Plumbing functions](Plumbing.md)

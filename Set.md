@@ -1,4 +1,4 @@
-# GenList - Sets
+# GoList - Sets
 
 Sets hold hold a group of items without duplicates. There is no obvious order of the elements in the set.
 
@@ -50,17 +50,18 @@ type Example struct { ... }
 ````
 
 Each tag creates a corresponding `MapToFred`, `MapToJim` etc function. These functions return the corresponding
-`FredSet`, `JimSet` etc values. A mapping function transforms individual `Example` item to its `Fred` equivalent.
+`FredSet`, `JimSet` etc values. A mapping function transforms an individual `Example` item to its `Fred` equivalent.
 
 In addition, a corresponding `FlatMapToFred`, `FlatMapToJim` etc function is generated. These functions return the 
-corresponding `FredSet`, `JimSet` etc values. A mapping function transforms individual `Example` item to a
+corresponding `FredSet`, `JimSet` etc values. A mapping function transforms an individual `Example` item to a
 sequence of its `Fred` equivalent. This sequence is added to the result set.
 
-### Next: [Joint Lists With Options](Unified.md)
+### Next: [Joint Lists with Options and/or Sets](Unified.md)
 #### Contents:
 
  * [Intro](README.md)
  * [Lists](List.md)
  * [Options](Option.md)
  * **Sets**
- * [Joint Lists With Options](Unified.md)
+ * [Joint Lists with Options and/or Sets](Unified.md)
+ * [Plumbing functions](Plumbing.md)

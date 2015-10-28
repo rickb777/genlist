@@ -9,6 +9,7 @@ import (
 const listName = "List"
 const optionName = "Option"
 const setName = "Set"
+const plumbingName = "Plumbing"
 
 func init() {
 	err := typewriter.Register(NewListWriter())
@@ -20,6 +21,10 @@ func init() {
 		panic(err)
 	}
 	err = typewriter.Register(NewSetWriter())
+	if err != nil {
+		panic(err)
+	}
+	err = typewriter.Register(NewPlumbingWriter())
 	if err != nil {
 		panic(err)
 	}
@@ -42,6 +47,10 @@ func NewOptionWriter() *xWriter {
 
 func NewSetWriter() *xWriter {
 	return &xWriter{setName, false, coreSetTemplate, otherSetTemplates}
+}
+
+func NewPlumbingWriter() *xWriter {
+	return &xWriter{plumbingName, false, corePlumbingTemplate, typewriter.TemplateSlice{}}
 }
 
 func (xw *xWriter) Name() string {

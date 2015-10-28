@@ -1,4 +1,4 @@
-# GenList - Lists
+# GoList - Lists
 
 ## The List typewriter
 
@@ -153,7 +153,8 @@ type Example struct { ... }
  * **Lists**
  * [Options](Option.md)
  * [Sets](Set.md)
- * [Joint Lists With Options](Unified.md)
+ * [Joint Lists with Options and/or Sets](Unified.md)
+ * [Plumbing functions](Plumbing.md)
 
 ### Generated Examples
 
