@@ -29,9 +29,9 @@ func (set {{.TName}}Set) Foreach(fn func({{.PName}})) {
 	}
 }
 
-// Iter sends all elements along a channel of type {{.TName}}.
+// Send sends all elements along a channel of type {{.TName}}.
 // The order of the elements is not well defined but is probably repeatably stable until the set is changed.
-func (set {{.TName}}Set) Iter() <-chan {{.PName}} {
+func (set {{.TName}}Set) Send() <-chan {{.PName}} {
 	ch := make(chan {{.PName}})
 	go func() {
 		for v := range set {

@@ -18,6 +18,30 @@ type BarCollection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() *Bar
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []*Bar
+
+	// Send sends all elements along a channel of type Bar.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan *Bar
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -28,11 +52,6 @@ type BarCollection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Bar))
-
-	// Iter sends all elements along a channel of type Bar. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan *Bar
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new BarCollection whose elements return true for a predicate function.
@@ -48,13 +67,24 @@ type BarCollection interface {
 
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another BarCollection has the same type, size and elements as this one.
+	// Equals verifies that another BarCollection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if Bar is not comparable.
 	Equals(other BarCollection) bool
 
 	// Contains tests whether a given value is present in the collection.
 	// Omitted if Bar is not comparable.
 	Contains(value *Bar) bool
+
+	// Min returns an element of BarList containing the minimum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+	// Panics if the collection is empty.
+	Min(less func(*Bar, *Bar) bool) *Bar
+
+	// Max returns an element of BarList containing the maximum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+	// Panics if the collection is empty.
+	Max(less func(*Bar, *Bar) bool) *Bar
 
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
@@ -68,52 +98,6 @@ type BarCollection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// BarUnorderedCollection is an interface for collections of unordered types.
-type BarUnorderedCollection interface {
-	// Min returns an element of BarList containing the minimum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
-	// Panics if the collection is empty.
-	Min(less func(*Bar, *Bar) bool) *Bar
-
-	// Max returns an element of BarList containing the maximum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
-	// Panics if the collection is empty.
-	Max(less func(*Bar, *Bar) bool) *Bar
-}
-
-//-------------------------------------------------------------------------------------------------
-// BarSeq is an interface for sequences of type *Bar, including lists and options (where present).
-type BarSeq interface {
-	BarCollection
-
-	// Len gets the size/length of the sequence - an alias for Size()
-	Len() int
-
-	//-------------------------------------------------------------------------
-	// Gets the first element from the sequence. This panics if the sequence is empty.
-	Head() *Bar
-
-	// Gets the last element from the sequence. This panics if the sequence is empty.
-	Last() *Bar
-
-	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
-	Tail() BarSeq
-
-	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
-	Init() BarSeq
-
-	//-------------------------------------------------------------------------
-	// Find searches for the first value that matches a given predicate. It may or may not find one.
-	Find(predicate func(*Bar) bool) OptionalBar
-
-	//-------------------------------------------------------------------------
-	// Count counts the number of times a given value occurs in the sequence.
-	// Omitted if Bar is not comparable.
-	Count(value *Bar) int
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -147,34 +131,14 @@ func SomeBar(x *Bar) OptionalBar {
 
 // panics if option is empty
 func (o OptionalBar) Head() *Bar {
+	return o.Get()
+}
+
+func (o OptionalBar) Get() *Bar {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
 	return (o.x)
-}
-
-// panics if option is empty
-func (o OptionalBar) Last() *Bar {
-	return o.Head()
-}
-
-// panics if option is empty
-func (o OptionalBar) Tail() BarSeq {
-	if o.IsEmpty() {
-		panic("Attempt to access non-existent value")
-	}
-	return noneBar
-}
-
-// panics if option is empty
-func (o OptionalBar) Init() BarSeq {
-	return o.Tail()
-}
-
-//-------------------------------------------------------------------------------------------------
-
-func (o OptionalBar) Get() *Bar {
-	return o.Head()
 }
 
 func (o OptionalBar) GetOrElse(d func() *Bar) *Bar {
@@ -210,6 +174,16 @@ func (o OptionalBar) IsEmpty() bool {
 
 func (o OptionalBar) NonEmpty() bool {
 	return o.x != nil
+}
+
+// IsSequence returns false for options.
+func (o OptionalBar) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for options.
+func (o OptionalBar) IsSet() bool {
+	return false
 }
 
 // IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
@@ -249,8 +223,8 @@ func (o OptionalBar) Foreach(fn func(*Bar)) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (o OptionalBar) Iter() <-chan *Bar {
+// Send gets a channel that will send all the elements in order.
+func (o OptionalBar) Send() <-chan *Bar {
 	ch := make(chan *Bar)
 	go func() {
 		if o.NonEmpty() {
@@ -275,6 +249,14 @@ func (o OptionalBar) Partition(predicate func(*Bar) bool) (BarCollection, BarCol
 	return noneBar, o
 }
 
+func (o OptionalBar) ToSlice() []*Bar {
+	slice := make([]*Bar, o.Size())
+	if o.NonEmpty() {
+		slice[0] = o.x
+	}
+	return slice
+}
+
 //-------------------------------------------------------------------------------------------------
 // These methods require *Bar be comparable.
 
@@ -286,16 +268,9 @@ func (o OptionalBar) Equals(other BarCollection) bool {
 	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
-	a := o.Head()
-	var b *Bar
-	otherSeq, isSeq := other.(BarSeq)
-	if isSeq {
-		b = otherSeq.Head()
-	} else {
-		o.Foreach(func(x *Bar) {
-			b = x
-		})
-	}
+	a := o.x
+	s := other.ToSlice()
+	b := s[0]
 	return *a == *b
 }
 
@@ -313,10 +288,25 @@ func (o OptionalBar) Count(value *Bar) int {
 	return 0
 }
 
-// Distinct returns a new BarSeq whose elements are all unique. For options, this simply returns the receiver.
+// Distinct returns a new BarCollection whose elements are all unique. For options, this simply returns the
+// receiver.
 // Omitted if Bar is not comparable.
-func (o OptionalBar) Distinct() BarSeq {
+func (o OptionalBar) Distinct() BarCollection {
 	return o
+}
+
+// Min returns an element of BarList containing the minimum value, when compared to other elements
+// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+// Panics if the collection is empty.
+func (o OptionalBar) Min(less func(*Bar, *Bar) bool) *Bar {
+	return o.Get()
+}
+
+// Max returns an element of BarList containing the maximum value, when compared to other elements
+// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+// Panics if the collection is empty.
+func (o OptionalBar) Max(less func(*Bar, *Bar) bool) *Bar {
+	return o.Get()
 }
 
 //-------------------------------------------------------------------------------------------------

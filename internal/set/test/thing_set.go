@@ -22,6 +22,30 @@ type ThingCollection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() Thing
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []Thing
+
+	// Send sends all elements along a channel of type Thing.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan Thing
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -32,11 +56,6 @@ type ThingCollection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Thing))
-
-	// Iter sends all elements along a channel of type Thing. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan Thing
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new ThingCollection whose elements return true for a predicate function.
@@ -52,13 +71,24 @@ type ThingCollection interface {
 
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another ThingCollection has the same type, size and elements as this one.
+	// Equals verifies that another ThingCollection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if Thing is not comparable.
 	Equals(other ThingCollection) bool
 
 	// Contains tests whether a given value is present in the collection.
 	// Omitted if Thing is not comparable.
 	Contains(value Thing) bool
+
+	// Min returns an element of ThingList containing the minimum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+	// Panics if the collection is empty.
+	Min(less func(Thing, Thing) bool) Thing
+
+	// Max returns an element of ThingList containing the maximum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+	// Panics if the collection is empty.
+	Max(less func(Thing, Thing) bool) Thing
 
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
@@ -72,21 +102,6 @@ type ThingCollection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// ThingUnorderedCollection is an interface for collections of unordered types.
-type ThingUnorderedCollection interface {
-	// Min returns an element of ThingList containing the minimum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
-	// Panics if the collection is empty.
-	Min(less func(Thing, Thing) bool) Thing
-
-	// Max returns an element of ThingList containing the maximum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
-	// Panics if the collection is empty.
-	Max(less func(Thing, Thing) bool) Thing
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -120,6 +135,16 @@ func BuildThingSetFrom(source <-chan Thing) ThingSet {
 
 //-------------------------------------------------------------------------------------------------
 
+// IsSequence returns false for sets.
+func (set ThingSet) IsSequence() bool {
+	return false
+}
+
+// IsSet returns true for sets.
+func (set ThingSet) IsSet() bool {
+	return true
+}
+
 func (set ThingSet) Size() int {
 	return len(set)
 }
@@ -132,19 +157,21 @@ func (set ThingSet) NonEmpty() bool {
 	return len(set) > 0
 }
 
-// Any gets an arbitrary element.
-func (set ThingSet) Any() Thing {
+// Head gets an arbitrary element.
+func (set ThingSet) Head() Thing {
 	for v := range set {
 		return v
 	}
 	panic("Set is empty")
 }
 
-// ToSlice gets all the set's elements in a slice.
+// ToSlice gets all the set's elements in a plain slice.
 func (set ThingSet) ToSlice() []Thing {
-	slice := make([]Thing, 0, len(set))
+	slice := make([]Thing, set.Size())
+	i := 0
 	for v := range set {
-		slice = append(slice, v)
+		slice[i] = v
+		i++
 	}
 	return slice
 }
@@ -294,9 +321,9 @@ func (set ThingSet) Foreach(fn func(Thing)) {
 	}
 }
 
-// Iter sends all elements along a channel of type Thing.
+// Send sends all elements along a channel of type Thing.
 // The order of the elements is not well defined but is probably repeatably stable until the set is changed.
-func (set ThingSet) Iter() <-chan Thing {
+func (set ThingSet) Send() <-chan Thing {
 	ch := make(chan Thing)
 	go func() {
 		for v := range set {

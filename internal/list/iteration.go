@@ -28,8 +28,8 @@ func (list {{.TName}}List) Foreach(fn func({{.PName}})) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (list {{.TName}}List) Iter() <-chan {{.PName}} {
+// Send gets a channel that will send all the elements in order.
+func (list {{.TName}}List) Send() <-chan {{.PName}} {
 	ch := make(chan {{.PName}})
 	go func() {
 		for _, v := range list {

@@ -2,12 +2,7 @@
 
 Sets hold hold a group of items without duplicates. There is no obvious order of the elements in the set.
 
-Normally, the generated code *does not provide* any mutation methods.
-
-Tags can, of course, be included in the quotes as a comma-separated list as per usual. There is only one
-tag implemented at present:
-
- * Mutate: changes the Add and Remove methods to mutate the current set, instead of returning a new set.
+Normally, the generated code *does not provide* any mutation methods (but this can be modified, as described below).
 
 Set methods include:
 
@@ -17,7 +12,7 @@ Set methods include:
  * **Equals** - compare with another set
  * **Union**, **Intersection**, **Difference** - provides standard set algebra
  * **Contains** - compare with a specified value
- * **Add**, **Remove** - creates a modified set
+ * **Add**, **Remove** - creates a modified set (n.b. these might mutate the set - see below)
  * **Filter**, **Partition** - get a subset, or two disjoint subsets, of the set
  * **Iter** - get a channel that supplies values in sequence
  * **CountBy**, **MaxBy**, **MinBy**, **DistinctBy** - statistics based on supplied operator functions
@@ -25,7 +20,12 @@ Set methods include:
 
 ### Tags
 
-Extra tags can be included to add more features. You can include a comma-separated list of as many tags as you need.
+Extra tags can be included to add more features. You can include a space-separated list of as many tags as you need.
+
+#### `Mutate` Tag
+
+The Mutate changes the Add and Remove methods to mutate the current set, instead of returning a new set. This
+might be used as a performance optimisation when dealing with large sets.
 
 #### `List` Tag
 

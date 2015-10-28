@@ -6,21 +6,21 @@ func TestInitLastNum1(t *testing.T) {
 	things := num1Collection(3, 5, 8, 13)
 
 	h1 := things.Last()
-	t1 := things.Init()
+	t1 := things.Init().ToList()
 
 	if h1 != 13 {
 		t.Errorf("Last should be 13")
 	}
 
 	h2 := t1.Last()
-	t2 := t1.Init()
+	t2 := t1.Init().ToList()
 
 	if h2 != 8 {
 		t.Errorf("Last should be 8")
 	}
 
 	h3 := t2.Last()
-	t3 := t2.Init()
+	t3 := t2.Init().ToList()
 
 	if h3 != 5 {
 		t.Errorf("Last should be 5")
@@ -42,21 +42,21 @@ func TestInitLastNum2(t *testing.T) {
 	things := num2Collection(ip(3), ip(5), ip(8), ip(13))
 
 	h1 := things.Last()
-	t1 := things.Init()
+	t1 := things.Init().ToList()
 
 	if *h1 != 13 {
 		t.Errorf("Last should be 13")
 	}
 
 	h2 := t1.Last()
-	t2 := t1.Init()
+	t2 := t1.Init().ToList()
 
 	if *h2 != 8 {
 		t.Errorf("Last should be 8")
 	}
 
 	h3 := t2.Last()
-	t3 := t2.Init()
+	t3 := t2.Init().ToList()
 
 	if *h3 != 5 {
 		t.Errorf("Last should be 5")
@@ -82,14 +82,14 @@ func TestInitLastThing(t *testing.T) {
 	}
 
 	h1 := things.Last()
-	t1 := things.Init()
+	t1 := things.Init().ToList()
 
 	if h1.Number != 5 {
 		t.Errorf("Last should be 5")
 	}
 
 	h2 := t1.Last()
-	t2 := t1.Init()
+	t2 := t1.Init().ToList()
 
 	if h2.Number != 3 {
 		t.Errorf("Last should be 3")

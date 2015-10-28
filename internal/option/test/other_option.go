@@ -18,6 +18,30 @@ type OtherCollection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() Other
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []Other
+
+	// Send sends all elements along a channel of type Other.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan Other
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -28,11 +52,6 @@ type OtherCollection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Other))
-
-	// Iter sends all elements along a channel of type Other. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan Other
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new OtherCollection whose elements return true for a predicate function.
@@ -48,7 +67,8 @@ type OtherCollection interface {
 
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another OtherCollection has the same type, size and elements as this one.
+	// Equals verifies that another OtherCollection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if Other is not comparable.
 	Equals(other OtherCollection) bool
 
@@ -65,6 +85,14 @@ type OtherCollection interface {
 	// Omitted if Other is not numeric.
 	Mean() Other
 
+	// Min returns the minimum value of OtherList. In the case of multiple items being equally minimal,
+	// the first such element is returned. Panics if the collection is empty.
+	Min() Other
+
+	// Max returns the maximum value of OtherList. In the case of multiple items being equally maximal,
+	// the first such element is returned. Panics if the collection is empty.
+	Max() Other
+
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
@@ -77,50 +105,6 @@ type OtherCollection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// OtherOrderedCollection is an interface for collections of ordered types.
-type OtherOrderedCollection interface {
-	// Min returns the minimum value of OtherList. In the case of multiple items being equally minimal,
-	// the first such element is returned. Panics if the collection is empty.
-	Min() Other
-
-	// Max returns the maximum value of OtherList. In the case of multiple items being equally maximal,
-	// the first such element is returned. Panics if the collection is empty.
-	Max() Other
-}
-
-//-------------------------------------------------------------------------------------------------
-// OtherSeq is an interface for sequences of type Other, including lists and options (where present).
-type OtherSeq interface {
-	OtherCollection
-
-	// Len gets the size/length of the sequence - an alias for Size()
-	Len() int
-
-	//-------------------------------------------------------------------------
-	// Gets the first element from the sequence. This panics if the sequence is empty.
-	Head() Other
-
-	// Gets the last element from the sequence. This panics if the sequence is empty.
-	Last() Other
-
-	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
-	Tail() OtherSeq
-
-	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
-	Init() OtherSeq
-
-	//-------------------------------------------------------------------------
-	// Find searches for the first value that matches a given predicate. It may or may not find one.
-	Find(predicate func(Other) bool) OptionalOther
-
-	//-------------------------------------------------------------------------
-	// Count counts the number of times a given value occurs in the sequence.
-	// Omitted if Other is not comparable.
-	Count(value Other) int
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -151,34 +135,14 @@ func SomeOther(x Other) OptionalOther {
 
 // panics if option is empty
 func (o OptionalOther) Head() Other {
+	return o.Get()
+}
+
+func (o OptionalOther) Get() Other {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
 	return *(o.x)
-}
-
-// panics if option is empty
-func (o OptionalOther) Last() Other {
-	return o.Head()
-}
-
-// panics if option is empty
-func (o OptionalOther) Tail() OtherSeq {
-	if o.IsEmpty() {
-		panic("Attempt to access non-existent value")
-	}
-	return noneOther
-}
-
-// panics if option is empty
-func (o OptionalOther) Init() OtherSeq {
-	return o.Tail()
-}
-
-//-------------------------------------------------------------------------------------------------
-
-func (o OptionalOther) Get() Other {
-	return o.Head()
 }
 
 func (o OptionalOther) GetOrElse(d func() Other) Other {
@@ -214,6 +178,16 @@ func (o OptionalOther) IsEmpty() bool {
 
 func (o OptionalOther) NonEmpty() bool {
 	return o.x != nil
+}
+
+// IsSequence returns false for options.
+func (o OptionalOther) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for options.
+func (o OptionalOther) IsSet() bool {
+	return false
 }
 
 // IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
@@ -253,8 +227,8 @@ func (o OptionalOther) Foreach(fn func(Other)) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (o OptionalOther) Iter() <-chan Other {
+// Send gets a channel that will send all the elements in order.
+func (o OptionalOther) Send() <-chan Other {
 	ch := make(chan Other)
 	go func() {
 		if o.NonEmpty() {
@@ -279,6 +253,14 @@ func (o OptionalOther) Partition(predicate func(Other) bool) (OtherCollection, O
 	return noneOther, o
 }
 
+func (o OptionalOther) ToSlice() []Other {
+	slice := make([]Other, o.Size())
+	if o.NonEmpty() {
+		slice[0] = *o.x
+	}
+	return slice
+}
+
 //-------------------------------------------------------------------------------------------------
 // These methods require Other be comparable.
 
@@ -290,17 +272,10 @@ func (o OptionalOther) Equals(other OtherCollection) bool {
 	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
-	a := o.Head()
-	var b Other
-	otherSeq, isSeq := other.(OtherSeq)
-	if isSeq {
-		b = otherSeq.Head()
-	} else {
-		o.Foreach(func(x Other) {
-			b = x
-		})
-	}
-	return a == b
+	a := o.x
+	s := other.ToSlice()
+	b := s[0]
+	return *a == b
 }
 
 func (o OptionalOther) Contains(value Other) bool {
@@ -317,10 +292,23 @@ func (o OptionalOther) Count(value Other) int {
 	return 0
 }
 
-// Distinct returns a new OtherSeq whose elements are all unique. For options, this simply returns the receiver.
+// Distinct returns a new OtherCollection whose elements are all unique. For options, this simply returns the
+// receiver.
 // Omitted if Other is not comparable.
-func (o OptionalOther) Distinct() OtherSeq {
+func (o OptionalOther) Distinct() OtherCollection {
 	return o
+}
+
+// Min returns the minimum value of OtherList. In the case of multiple items being equally minimal,
+// the first such element is returned. Panics if the collection is empty.
+func (o OptionalOther) Min() Other {
+	return o.Get()
+}
+
+// Max returns the maximum value of OtherList. In the case of multiple items being equally maximal,
+// the first such element is returned. Panics if the collection is empty.
+func (o OptionalOther) Max() Other {
+	return o.Get()
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -364,7 +352,7 @@ func (o OptionalOther) MkString3(pfx, mid, sfx string) string {
 }
 
 // MapToFoo transforms OptionalOther to OptionalFoo.
-func (o OptionalOther) MapToFoo(fn func(Other) Foo) FooSeq {
+func (o OptionalOther) MapToFoo(fn func(Other) Foo) FooCollection {
 	if o.IsEmpty() {
 		return NoFoo()
 	}
@@ -377,15 +365,11 @@ func (o OptionalOther) MapToFoo(fn func(Other) Foo) FooSeq {
 // FlatMapToFoo transforms OptionalOther to OptionalFoo, by
 // calling the supplied function on the enclosed instance, if any, and returning an option.
 // The result is only defined if *both* the receiver is defined and the function returns a non-empty sequence.
-func (o OptionalOther) FlatMapToFoo(fn func(Other) FooSeq) (result FooSeq) {
+func (o OptionalOther) FlatMapToFoo(fn func(Other) FooCollection) (result FooCollection) {
 	if o.IsEmpty() {
 		return NoFoo()
 	}
-	u := fn(*(o.x))
-	if u.IsEmpty() {
-		return NoFoo()
-	}
-	return SomeFoo(u.Head())
+	return fn(*(o.x))
 }
 
 // Option flags: {Collection:false Sequence:false List:false Option:true Set:false Tag:map[MapTo:true]}

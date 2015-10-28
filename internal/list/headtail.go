@@ -16,13 +16,13 @@ func (list {{.TName}}List) Last() {{.PName}} {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list {{.TName}}List) Tail() {{.TName}}Seq {
+func (list {{.TName}}List) Tail() {{.TName}}Collection {
 	return {{.TName}}List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list {{.TName}}List) Init() {{.TName}}Seq {
+func (list {{.TName}}List) Init() {{.TName}}Collection {
 	return {{.TName}}List(list[:len(list)-1])
 }
 
@@ -36,7 +36,22 @@ func (list {{.TName}}List) NonEmpty() bool {
 	return len(list) > 0
 }
 
-// ToList simply returns the list in this case, but is part of the Seq interface.
+// IsSequence returns true for lists.
+func (list {{.TName}}List) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists.
+func (list {{.TName}}List) IsSet() bool {
+	return false
+}
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+func (list {{.TName}}List) ToSlice() []{{.PName}} {
+	return []{{.PName}}(list)
+}
+
+// ToList simply returns the list in this case, but is part of the Collection interface.
 func (list {{.TName}}List) ToList() {{.TName}}List {
 	return list
 }

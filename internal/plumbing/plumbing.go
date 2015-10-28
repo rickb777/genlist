@@ -69,7 +69,7 @@ func {{.TName}}FlatMap(in <-chan {{.PName}}, out chan<- {{.PName}}, fn func({{.P
 	for vi := range in {
 		c := fn(vi)
 		if c.NonEmpty() {
-			for vo := range c.Iter() {
+			for vo := range c.Send() {
 				out <- vo
 			}
 		}
@@ -95,7 +95,7 @@ func {{.TName}}FlatMapTo{{.TypeParameter.Name}}(in <-chan {{.PName}}, out chan<-
 	for vi := range in {
 		c := fn(vi)
 		if c.NonEmpty() {
-			for vo := range c.Iter() {
+			for vo := range c.Send() {
 				out <- vo
 			}
 		}

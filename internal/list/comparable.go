@@ -45,8 +45,8 @@ func (list {{.TName}}List) Count(value {{.PName}}) (result int) {
 	return
 }
 
-// Distinct returns a new {{.TName}}List whose elements are unique.
-func (list {{.TName}}List) Distinct() {{.TName}}Seq {
+// Distinct returns a new {{.TName}}List whose elements are unique, retaining the original order.
+func (list {{.TName}}List) Distinct() {{.TName}}Collection {
 	result := make({{.TName}}List, 0)
 	appended := make(map[{{.TName}}]bool)
 	for _, v := range list {

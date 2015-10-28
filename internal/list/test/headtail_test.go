@@ -6,21 +6,21 @@ func TestHeadTailNum1(t *testing.T) {
 	things := num1Collection(3, 5, 8, 13)
 
 	h1 := things.Head()
-	t1 := things.Tail()
+	t1 := things.Tail().ToList()
 
 	if h1 != 3 {
 		t.Errorf("Head should be 3")
 	}
 
 	h2 := t1.Head()
-	t2 := t1.Tail()
+	t2 := t1.Tail().ToList()
 
 	if h2 != 5 {
 		t.Errorf("Head should be 5")
 	}
 
 	h3 := t2.Head()
-	t3 := t2.Tail()
+	t3 := t2.Tail().ToList()
 
 	if h3 != 8 {
 		t.Errorf("Head should be 8")
@@ -42,21 +42,21 @@ func TestHeadTailNum2(t *testing.T) {
 	things := num2Collection(ip(3), ip(5), ip(8), ip(13))
 
 	h1 := things.Head()
-	t1 := things.Tail()
+	t1 := things.Tail().ToList()
 
 	if *h1 != 3 {
 		t.Errorf("Head should be 3")
 	}
 
 	h2 := t1.Head()
-	t2 := t1.Tail()
+	t2 := t1.Tail().ToList()
 
 	if *h2 != 5 {
 		t.Errorf("Head should be 5")
 	}
 
 	h3 := t2.Head()
-	t3 := t2.Tail()
+	t3 := t2.Tail().ToList()
 
 	if *h3 != 8 {
 		t.Errorf("Head should be 8")
@@ -82,14 +82,14 @@ func TestHeadTailThing(t *testing.T) {
 	}
 
 	h1 := things.Head()
-	t1 := things.Tail()
+	t1 := things.Tail().ToList()
 
 	if h1.Number != 2 {
 		t.Errorf("Head should be 3")
 	}
 
 	h2 := t1.Head()
-	t2 := t1.Tail()
+	t2 := t1.Tail().ToList()
 
 	if h2.Number != 3 {
 		t.Errorf("Head should be 5")

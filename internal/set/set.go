@@ -34,6 +34,16 @@ func Build{{.TName}}SetFrom(source <-chan {{.PName}}) {{.TName}}Set {
 
 //-------------------------------------------------------------------------------------------------
 
+// IsSequence returns false for sets.
+func (set {{.TName}}Set) IsSequence() bool {
+	return false
+}
+
+// IsSet returns true for sets.
+func (set {{.TName}}Set) IsSet() bool {
+	return true
+}
+
 func (set {{.TName}}Set) Size() int {
 	return len(set)
 }
@@ -46,32 +56,32 @@ func (set {{.TName}}Set) NonEmpty() bool {
 	return len(set) > 0
 }
 
-// Any gets an arbitrary element.
-func (set {{.TName}}Set) Any() {{.PName}} {
+// Head gets an arbitrary element.
+func (set {{.TName}}Set) Head() {{.PName}} {
 	for v := range set {
 		return v
 	}
 	panic("Set is empty")
 }
 
-{{if .Has.List}}
-// ToList gets all the set's elements in a in {{.Name}}List.
-func (set {{.TName}}Set) ToList() {{.TName}}List {
-	slice := make([]{{.PName}}, 0, len(set))
-	for v := range set {
-		slice = append(slice, v)
-	}
-	return {{.TName}}List(slice)
-}
-{{else}}
-// ToSlice gets all the set's elements in a slice.
+// ToSlice gets all the set's elements in a plain slice.
 func (set {{.TName}}Set) ToSlice() []{{.PName}} {
-	slice := make([]{{.PName}}, 0, len(set))
+	slice := make([]{{.PName}}, set.Size())
+	i := 0
 	for v := range set {
-		slice = append(slice, v)
+		slice[i] = v
+		i++
 	}
 	return slice
 }
+
+{{if .Has.List}}
+// ToList gets all the set's elements in a in {{.Name}}List.
+func (set {{.TName}}Set) ToList() {{.TName}}List {
+	return {{.TName}}List(set.ToSlice())
+}
+
 {{end}}
+
 ` + setAlgebra + addRemoveFunctions + iterationFunctions + predicatedFunctions +
 numericFunctions + orderedFunctions + mkstringFunctions

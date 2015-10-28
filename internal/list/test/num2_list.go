@@ -23,6 +23,33 @@ type Num2Collection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() *Num2
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []*Num2
+
+	// ToList gets all the elements in a in List.
+	ToList() Num2List
+
+	// Send sends all elements along a channel of type Num2.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan *Num2
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -33,11 +60,6 @@ type Num2Collection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Num2))
-
-	// Iter sends all elements along a channel of type Num2. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan *Num2
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new Num2Collection whose elements return true for a predicate function.
@@ -53,13 +75,24 @@ type Num2Collection interface {
 
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another Num2Collection has the same type, size and elements as this one.
+	// Equals verifies that another Num2Collection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if Num2 is not comparable.
 	Equals(other Num2Collection) bool
 
 	// Contains tests whether a given value is present in the collection.
 	// Omitted if Num2 is not comparable.
 	Contains(value *Num2) bool
+
+	// Min returns an element of Num2List containing the minimum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+	// Panics if the collection is empty.
+	Min(less func(*Num2, *Num2) bool) *Num2
+
+	// Max returns an element of Num2List containing the maximum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+	// Panics if the collection is empty.
+	Max(less func(*Num2, *Num2) bool) *Num2
 
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
@@ -73,55 +106,6 @@ type Num2Collection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// Num2UnorderedCollection is an interface for collections of unordered types.
-type Num2UnorderedCollection interface {
-	// Min returns an element of Num2List containing the minimum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
-	// Panics if the collection is empty.
-	Min(less func(*Num2, *Num2) bool) *Num2
-
-	// Max returns an element of Num2List containing the maximum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
-	// Panics if the collection is empty.
-	Max(less func(*Num2, *Num2) bool) *Num2
-}
-
-//-------------------------------------------------------------------------------------------------
-// Num2Seq is an interface for sequences of type *Num2, including lists and options (where present).
-type Num2Seq interface {
-	Num2Collection
-
-	// Len gets the size/length of the sequence - an alias for Size()
-	Len() int
-
-	//-------------------------------------------------------------------------
-	// Gets the first element from the sequence. This panics if the sequence is empty.
-	Head() *Num2
-
-	// Gets the last element from the sequence. This panics if the sequence is empty.
-	Last() *Num2
-
-	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
-	Tail() Num2Seq
-
-	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
-	Init() Num2Seq
-
-	// Converts the sequence to a list. For lists, this is merely a type assertion.
-	ToList() Num2List
-
-	//-------------------------------------------------------------------------
-	// Count counts the number of times a given value occurs in the sequence.
-	// Omitted if Num2 is not comparable.
-	Count(value *Num2) int
-
-	// Distinct returns a new Num2Seq whose elements are all unique.
-	// Omitted if Num2 is not comparable.
-	Distinct() Num2Seq
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -159,13 +143,13 @@ func (list Num2List) Last() *Num2 {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list Num2List) Tail() Num2Seq {
+func (list Num2List) Tail() Num2Collection {
 	return Num2List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list Num2List) Init() Num2Seq {
+func (list Num2List) Init() Num2Collection {
 	return Num2List(list[:len(list)-1])
 }
 
@@ -179,7 +163,22 @@ func (list Num2List) NonEmpty() bool {
 	return len(list) > 0
 }
 
-// ToList simply returns the list in this case, but is part of the Seq interface.
+// IsSequence returns true for lists.
+func (list Num2List) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists.
+func (list Num2List) IsSet() bool {
+	return false
+}
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+func (list Num2List) ToSlice() []*Num2 {
+	return []*Num2(list)
+}
+
+// ToList simply returns the list in this case, but is part of the Collection interface.
 func (list Num2List) ToList() Num2List {
 	return list
 }
@@ -228,8 +227,8 @@ func (list Num2List) Foreach(fn func(*Num2)) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (list Num2List) Iter() <-chan *Num2 {
+// Send gets a channel that will send all the elements in order.
+func (list Num2List) Send() <-chan *Num2 {
 	ch := make(chan *Num2)
 	go func() {
 		for _, v := range list {
@@ -533,8 +532,8 @@ func (list Num2List) Count(value *Num2) (result int) {
 	return
 }
 
-// Distinct returns a new Num2List whose elements are unique.
-func (list Num2List) Distinct() Num2Seq {
+// Distinct returns a new Num2List whose elements are unique, retaining the original order.
+func (list Num2List) Distinct() Num2Collection {
 	result := make(Num2List, 0)
 	appended := make(map[Num2]bool)
 	for _, v := range list {

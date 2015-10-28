@@ -1,6 +1,6 @@
 package list
 
-const mkstringFunctions = `
+const mkstring = `
 // String implements the Stringer interface to render the list as a comma-separated array.
 func (list {{.TName}}List) String() string {
 	return list.MkString3("[", ",", "]")

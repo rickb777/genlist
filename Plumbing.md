@@ -11,15 +11,15 @@ None of these functions create a goroutine - this must be done at the call site.
 
 For a type `T`, methods include:
 
- * **TDelta** - duplicate a stream to two channels.
- * **TZip** - interleaves two streams onto a single output.
- * **TBlackhole** - silently consume a stream.
- * **TFilter** - passes along only those elements of the stream that match a given predicate.
- * **TPartition** - divides the stream into two channels, one for elements that matches a given predicate, and the
+ * T**Delta** - duplicate a stream to two channels.
+ * T**Zip** - interleaves two streams onto a single output.
+ * T**Blackhole** - silently consume a stream.
+ * T**Filter** - passes along only those elements of the stream that match a given predicate.
+ * T**Partition** - divides the stream into two channels, one for elements that matches a given predicate, and the
    other for those that don't.
- * **TMap** - transforms a stream by applying a function to each element, where the function maps one input element
+ * T**Map** - transforms a stream by applying a function to each element, where the function maps one input element
    to one output element.
- * **TFlatMap** - transforms a stream by applying a function to each element, where the function maps one input
+ * T**FlatMap** - transforms a stream by applying a function to each element, where the function maps one input
    element to zero or more output elements.
 
 ### Tags

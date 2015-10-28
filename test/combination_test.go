@@ -5,7 +5,7 @@ import "testing"
 func TestCombination(t *testing.T) {
 	list1 := Foo1List{50, 100, 9, 7, 100, 99}
 
-	var seq1 Foo1Seq
+	var seq1 Foo1Collection
 	seq1 = list1
 
 	if seq1.IsEmpty() {

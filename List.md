@@ -7,7 +7,7 @@ its parent trait [IndexedSeq](http://www.scala-lang.org/api/2.11.7/#scala.collec
 
 Although Go slices are mutable, the generated code *does not provide* any mutation methods, by design. Some functions
 make a copy of the list, mutate the copy and return it without changing the original. There is one exception:
-A mutating `Swap` method is needed for efficient list sorting; however, the main sort methods operate on copies
+A mutating `Swap` method is needed for efficient list sorting; however, the main sort methods operate on *copies*
 of the list.
 
 You can manipulate the underlying slice using normal Go syntax when it needs to be changed, of course.

@@ -272,8 +272,8 @@ func TestMapTo(t *testing.T) {
 
 func TestFlatMapTo(t *testing.T) {
 	someThing := SomeOther(60)
-	fn0 := func(o Other) FooSeq { return NoFoo() }
-	fn1 := func(o Other) FooSeq { return SomeFoo(Foo(fmt.Sprintf("%d", o))) }
+	fn0 := func(o Other) FooCollection { return NoFoo() }
+	fn1 := func(o Other) FooCollection { return SomeFoo(Foo(fmt.Sprintf("%d", o))) }
 
 	m0 := someThing.FlatMapToFoo(fn0)
 	if m0.NonEmpty() {

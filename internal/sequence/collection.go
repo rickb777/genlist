@@ -14,6 +14,35 @@ type {{.TName}}Collection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() {{.PName}}
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []{{.PName}}
+
+{{if .Has.List}}
+	// ToList gets all the elements in a in {{.Name}}List.
+	ToList() {{.TName}}List
+
+{{end}}
+	// Send sends all elements along a channel of type {{.TName}}.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan {{.PName}}
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -24,11 +53,6 @@ type {{.TName}}Collection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func({{.PName}}))
-
-	// Iter sends all elements along a channel of type {{.TName}}. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan {{.PName}}
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new {{.TName}}Collection whose elements return true for a predicate function.
@@ -45,7 +69,8 @@ type {{.TName}}Collection interface {
 {{if .Type.Comparable}}
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another {{.TName}}Collection has the same type, size and elements as this one.
+	// Equals verifies that another {{.TName}}Collection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if {{.TName}} is not comparable.
 	Equals(other {{.TName}}Collection) bool
 
@@ -65,6 +90,27 @@ type {{.TName}}Collection interface {
 	Mean() {{.PName}}
 
 {{end}}
+{{if .Type.Ordered}}
+	// Min returns the minimum value of {{.TName}}List. In the case of multiple items being equally minimal,
+	// the first such element is returned. Panics if the collection is empty.
+	Min() {{.PName}}
+
+	// Max returns the maximum value of {{.TName}}List. In the case of multiple items being equally maximal,
+	// the first such element is returned. Panics if the collection is empty.
+	Max() {{.PName}}
+
+{{else}}
+	// Min returns an element of {{.TName}}List containing the minimum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+	// Panics if the collection is empty.
+	Min(less func({{.PName}}, {{.PName}}) bool) {{.PName}}
+
+	// Max returns an element of {{.TName}}List containing the maximum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+	// Panics if the collection is empty.
+	Max(less func({{.PName}}, {{.PName}}) bool) {{.PName}}
+
+{{end}}
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
@@ -80,34 +126,5 @@ type {{.TName}}Collection interface {
 }
 
 
-//-------------------------------------------------------------------------------------------------
-{{if .Type.Ordered}}
-// {{.TName}}OrderedCollection is an interface for collections of ordered types.
-type {{.TName}}OrderedCollection interface {
-	// Min returns the minimum value of {{.TName}}List. In the case of multiple items being equally minimal,
-	// the first such element is returned. Panics if the collection is empty.
-	Min() {{.PName}}
-
-	// Max returns the maximum value of {{.TName}}List. In the case of multiple items being equally maximal,
-	// the first such element is returned. Panics if the collection is empty.
-	Max() {{.PName}}
-}
-
-{{else}}
-// {{.TName}}UnorderedCollection is an interface for collections of unordered types.
-type {{.TName}}UnorderedCollection interface {
-	// Min returns an element of {{.TName}}List containing the minimum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
-	// Panics if the collection is empty.
-	Min(less func({{.PName}}, {{.PName}}) bool) {{.PName}}
-
-	// Max returns an element of {{.TName}}List containing the maximum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
-	// Panics if the collection is empty.
-	Max(less func({{.PName}}, {{.PName}}) bool) {{.PName}}
-}
-
-
-{{end}}
 {{end}}
 `

@@ -233,10 +233,10 @@ func TestDifference(t *testing.T) {
 	}
 }
 
-func TestIterator(t *testing.T) {
+func TestSend(t *testing.T) {
 	a := num1Collection(1, 2, 3, 4)
 	b := num1Collection()
-	for v := range a.Iter() {
+	for v := range a.Send() {
 		b = b.Add(v)
 	}
 

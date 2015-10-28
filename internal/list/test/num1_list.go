@@ -24,6 +24,33 @@ type Num1Collection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() Num1
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []Num1
+
+	// ToList gets all the elements in a in List.
+	ToList() Num1List
+
+	// Send sends all elements along a channel of type Num1.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan Num1
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -34,11 +61,6 @@ type Num1Collection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Num1))
-
-	// Iter sends all elements along a channel of type Num1. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan Num1
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new Num1Collection whose elements return true for a predicate function.
@@ -54,7 +76,8 @@ type Num1Collection interface {
 
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another Num1Collection has the same type, size and elements as this one.
+	// Equals verifies that another Num1Collection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if Num1 is not comparable.
 	Equals(other Num1Collection) bool
 
@@ -71,6 +94,14 @@ type Num1Collection interface {
 	// Omitted if Num1 is not numeric.
 	Mean() Num1
 
+	// Min returns the minimum value of Num1List. In the case of multiple items being equally minimal,
+	// the first such element is returned. Panics if the collection is empty.
+	Min() Num1
+
+	// Max returns the maximum value of Num1List. In the case of multiple items being equally maximal,
+	// the first such element is returned. Panics if the collection is empty.
+	Max() Num1
+
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
@@ -83,53 +114,6 @@ type Num1Collection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// Num1OrderedCollection is an interface for collections of ordered types.
-type Num1OrderedCollection interface {
-	// Min returns the minimum value of Num1List. In the case of multiple items being equally minimal,
-	// the first such element is returned. Panics if the collection is empty.
-	Min() Num1
-
-	// Max returns the maximum value of Num1List. In the case of multiple items being equally maximal,
-	// the first such element is returned. Panics if the collection is empty.
-	Max() Num1
-}
-
-//-------------------------------------------------------------------------------------------------
-// Num1Seq is an interface for sequences of type Num1, including lists and options (where present).
-type Num1Seq interface {
-	Num1Collection
-
-	// Len gets the size/length of the sequence - an alias for Size()
-	Len() int
-
-	//-------------------------------------------------------------------------
-	// Gets the first element from the sequence. This panics if the sequence is empty.
-	Head() Num1
-
-	// Gets the last element from the sequence. This panics if the sequence is empty.
-	Last() Num1
-
-	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
-	Tail() Num1Seq
-
-	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
-	Init() Num1Seq
-
-	// Converts the sequence to a list. For lists, this is merely a type assertion.
-	ToList() Num1List
-
-	//-------------------------------------------------------------------------
-	// Count counts the number of times a given value occurs in the sequence.
-	// Omitted if Num1 is not comparable.
-	Count(value Num1) int
-
-	// Distinct returns a new Num1Seq whose elements are all unique.
-	// Omitted if Num1 is not comparable.
-	Distinct() Num1Seq
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -167,13 +151,13 @@ func (list Num1List) Last() Num1 {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list Num1List) Tail() Num1Seq {
+func (list Num1List) Tail() Num1Collection {
 	return Num1List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list Num1List) Init() Num1Seq {
+func (list Num1List) Init() Num1Collection {
 	return Num1List(list[:len(list)-1])
 }
 
@@ -187,7 +171,22 @@ func (list Num1List) NonEmpty() bool {
 	return len(list) > 0
 }
 
-// ToList simply returns the list in this case, but is part of the Seq interface.
+// IsSequence returns true for lists.
+func (list Num1List) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists.
+func (list Num1List) IsSet() bool {
+	return false
+}
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+func (list Num1List) ToSlice() []Num1 {
+	return []Num1(list)
+}
+
+// ToList simply returns the list in this case, but is part of the Collection interface.
 func (list Num1List) ToList() Num1List {
 	return list
 }
@@ -270,8 +269,8 @@ func (list Num1List) Foreach(fn func(Num1)) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (list Num1List) Iter() <-chan Num1 {
+// Send gets a channel that will send all the elements in order.
+func (list Num1List) Send() <-chan Num1 {
 	ch := make(chan Num1)
 	go func() {
 		for _, v := range list {
@@ -575,8 +574,8 @@ func (list Num1List) Count(value Num1) (result int) {
 	return
 }
 
-// Distinct returns a new Num1List whose elements are unique.
-func (list Num1List) Distinct() Num1Seq {
+// Distinct returns a new Num1List whose elements are unique, retaining the original order.
+func (list Num1List) Distinct() Num1Collection {
 	result := make(Num1List, 0)
 	appended := make(map[Num1]bool)
 	for _, v := range list {
@@ -673,7 +672,7 @@ func (list Num1List) MkString3(pfx, mid, sfx string) string {
 // optionForList
 
 // MapToFoo transforms Num1List to FooList.
-func (list Num1List) MapToFoo(fn func(Num1) Foo) FooSeq {
+func (list Num1List) MapToFoo(fn func(Num1) Foo) FooCollection {
 	result := make(FooList, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
@@ -684,7 +683,7 @@ func (list Num1List) MapToFoo(fn func(Num1) Foo) FooSeq {
 
 // FlatMapToFoo transforms Num1List to FooList, by repeatedly
 // calling the supplied function and concatenating the results as a single flat list.
-func (list Num1List) FlatMapToFoo(fn func(Num1) FooSeq) FooSeq {
+func (list Num1List) FlatMapToFoo(fn func(Num1) FooCollection) FooCollection {
 	result := make(FooList, 0, len(list))
 	for _, v := range list {
 		u := fn(v)

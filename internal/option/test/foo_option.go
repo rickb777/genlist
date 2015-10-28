@@ -18,6 +18,30 @@ type FooCollection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() Foo
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []Foo
+
+	// Send sends all elements along a channel of type Foo.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan Foo
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -28,11 +52,6 @@ type FooCollection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo))
-
-	// Iter sends all elements along a channel of type Foo. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan Foo
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new FooCollection whose elements return true for a predicate function.
@@ -48,13 +67,22 @@ type FooCollection interface {
 
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another FooCollection has the same type, size and elements as this one.
+	// Equals verifies that another FooCollection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if Foo is not comparable.
 	Equals(other FooCollection) bool
 
 	// Contains tests whether a given value is present in the collection.
 	// Omitted if Foo is not comparable.
 	Contains(value Foo) bool
+
+	// Min returns the minimum value of FooList. In the case of multiple items being equally minimal,
+	// the first such element is returned. Panics if the collection is empty.
+	Min() Foo
+
+	// Max returns the maximum value of FooList. In the case of multiple items being equally maximal,
+	// the first such element is returned. Panics if the collection is empty.
+	Max() Foo
 
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
@@ -68,50 +96,6 @@ type FooCollection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// FooOrderedCollection is an interface for collections of ordered types.
-type FooOrderedCollection interface {
-	// Min returns the minimum value of FooList. In the case of multiple items being equally minimal,
-	// the first such element is returned. Panics if the collection is empty.
-	Min() Foo
-
-	// Max returns the maximum value of FooList. In the case of multiple items being equally maximal,
-	// the first such element is returned. Panics if the collection is empty.
-	Max() Foo
-}
-
-//-------------------------------------------------------------------------------------------------
-// FooSeq is an interface for sequences of type Foo, including lists and options (where present).
-type FooSeq interface {
-	FooCollection
-
-	// Len gets the size/length of the sequence - an alias for Size()
-	Len() int
-
-	//-------------------------------------------------------------------------
-	// Gets the first element from the sequence. This panics if the sequence is empty.
-	Head() Foo
-
-	// Gets the last element from the sequence. This panics if the sequence is empty.
-	Last() Foo
-
-	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
-	Tail() FooSeq
-
-	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
-	Init() FooSeq
-
-	//-------------------------------------------------------------------------
-	// Find searches for the first value that matches a given predicate. It may or may not find one.
-	Find(predicate func(Foo) bool) OptionalFoo
-
-	//-------------------------------------------------------------------------
-	// Count counts the number of times a given value occurs in the sequence.
-	// Omitted if Foo is not comparable.
-	Count(value Foo) int
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -142,34 +126,14 @@ func SomeFoo(x Foo) OptionalFoo {
 
 // panics if option is empty
 func (o OptionalFoo) Head() Foo {
+	return o.Get()
+}
+
+func (o OptionalFoo) Get() Foo {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
 	return *(o.x)
-}
-
-// panics if option is empty
-func (o OptionalFoo) Last() Foo {
-	return o.Head()
-}
-
-// panics if option is empty
-func (o OptionalFoo) Tail() FooSeq {
-	if o.IsEmpty() {
-		panic("Attempt to access non-existent value")
-	}
-	return noneFoo
-}
-
-// panics if option is empty
-func (o OptionalFoo) Init() FooSeq {
-	return o.Tail()
-}
-
-//-------------------------------------------------------------------------------------------------
-
-func (o OptionalFoo) Get() Foo {
-	return o.Head()
 }
 
 func (o OptionalFoo) GetOrElse(d func() Foo) Foo {
@@ -205,6 +169,16 @@ func (o OptionalFoo) IsEmpty() bool {
 
 func (o OptionalFoo) NonEmpty() bool {
 	return o.x != nil
+}
+
+// IsSequence returns false for options.
+func (o OptionalFoo) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for options.
+func (o OptionalFoo) IsSet() bool {
+	return false
 }
 
 // IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
@@ -244,8 +218,8 @@ func (o OptionalFoo) Foreach(fn func(Foo)) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (o OptionalFoo) Iter() <-chan Foo {
+// Send gets a channel that will send all the elements in order.
+func (o OptionalFoo) Send() <-chan Foo {
 	ch := make(chan Foo)
 	go func() {
 		if o.NonEmpty() {
@@ -270,6 +244,14 @@ func (o OptionalFoo) Partition(predicate func(Foo) bool) (FooCollection, FooColl
 	return noneFoo, o
 }
 
+func (o OptionalFoo) ToSlice() []Foo {
+	slice := make([]Foo, o.Size())
+	if o.NonEmpty() {
+		slice[0] = *o.x
+	}
+	return slice
+}
+
 //-------------------------------------------------------------------------------------------------
 // These methods require Foo be comparable.
 
@@ -281,17 +263,10 @@ func (o OptionalFoo) Equals(other FooCollection) bool {
 	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
-	a := o.Head()
-	var b Foo
-	otherSeq, isSeq := other.(FooSeq)
-	if isSeq {
-		b = otherSeq.Head()
-	} else {
-		o.Foreach(func(x Foo) {
-			b = x
-		})
-	}
-	return a == b
+	a := o.x
+	s := other.ToSlice()
+	b := s[0]
+	return *a == b
 }
 
 func (o OptionalFoo) Contains(value Foo) bool {
@@ -308,10 +283,23 @@ func (o OptionalFoo) Count(value Foo) int {
 	return 0
 }
 
-// Distinct returns a new FooSeq whose elements are all unique. For options, this simply returns the receiver.
+// Distinct returns a new FooCollection whose elements are all unique. For options, this simply returns the
+// receiver.
 // Omitted if Foo is not comparable.
-func (o OptionalFoo) Distinct() FooSeq {
+func (o OptionalFoo) Distinct() FooCollection {
 	return o
+}
+
+// Min returns the minimum value of FooList. In the case of multiple items being equally minimal,
+// the first such element is returned. Panics if the collection is empty.
+func (o OptionalFoo) Min() Foo {
+	return o.Get()
+}
+
+// Max returns the maximum value of FooList. In the case of multiple items being equally maximal,
+// the first such element is returned. Panics if the collection is empty.
+func (o OptionalFoo) Max() Foo {
+	return o.Get()
 }
 
 //-------------------------------------------------------------------------------------------------

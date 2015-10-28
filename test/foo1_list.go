@@ -24,6 +24,33 @@ type Foo1Collection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() Foo1
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []Foo1
+
+	// ToList gets all the elements in a in List.
+	ToList() Foo1List
+
+	// Send sends all elements along a channel of type Foo1.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan Foo1
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -34,11 +61,6 @@ type Foo1Collection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo1))
-
-	// Iter sends all elements along a channel of type Foo1. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan Foo1
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new Foo1Collection whose elements return true for a predicate function.
@@ -54,7 +76,8 @@ type Foo1Collection interface {
 
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another Foo1Collection has the same type, size and elements as this one.
+	// Equals verifies that another Foo1Collection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if Foo1 is not comparable.
 	Equals(other Foo1Collection) bool
 
@@ -71,6 +94,14 @@ type Foo1Collection interface {
 	// Omitted if Foo1 is not numeric.
 	Mean() Foo1
 
+	// Min returns the minimum value of Foo1List. In the case of multiple items being equally minimal,
+	// the first such element is returned. Panics if the collection is empty.
+	Min() Foo1
+
+	// Max returns the maximum value of Foo1List. In the case of multiple items being equally maximal,
+	// the first such element is returned. Panics if the collection is empty.
+	Max() Foo1
+
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
@@ -83,57 +114,6 @@ type Foo1Collection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// Foo1OrderedCollection is an interface for collections of ordered types.
-type Foo1OrderedCollection interface {
-	// Min returns the minimum value of Foo1List. In the case of multiple items being equally minimal,
-	// the first such element is returned. Panics if the collection is empty.
-	Min() Foo1
-
-	// Max returns the maximum value of Foo1List. In the case of multiple items being equally maximal,
-	// the first such element is returned. Panics if the collection is empty.
-	Max() Foo1
-}
-
-//-------------------------------------------------------------------------------------------------
-// Foo1Seq is an interface for sequences of type Foo1, including lists and options (where present).
-type Foo1Seq interface {
-	Foo1Collection
-
-	// Len gets the size/length of the sequence - an alias for Size()
-	Len() int
-
-	//-------------------------------------------------------------------------
-	// Gets the first element from the sequence. This panics if the sequence is empty.
-	Head() Foo1
-
-	// Gets the last element from the sequence. This panics if the sequence is empty.
-	Last() Foo1
-
-	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
-	Tail() Foo1Seq
-
-	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
-	Init() Foo1Seq
-
-	//-------------------------------------------------------------------------
-	// Find searches for the first value that matches a given predicate. It may or may not find one.
-	Find(predicate func(Foo1) bool) OptionalFoo1
-
-	// Converts the sequence to a list. For lists, this is merely a type assertion.
-	ToList() Foo1List
-
-	//-------------------------------------------------------------------------
-	// Count counts the number of times a given value occurs in the sequence.
-	// Omitted if Foo1 is not comparable.
-	Count(value Foo1) int
-
-	// Distinct returns a new Foo1Seq whose elements are all unique.
-	// Omitted if Foo1 is not comparable.
-	Distinct() Foo1Seq
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -171,13 +151,13 @@ func (list Foo1List) Last() Foo1 {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list Foo1List) Tail() Foo1Seq {
+func (list Foo1List) Tail() Foo1Collection {
 	return Foo1List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list Foo1List) Init() Foo1Seq {
+func (list Foo1List) Init() Foo1Collection {
 	return Foo1List(list[:len(list)-1])
 }
 
@@ -191,7 +171,22 @@ func (list Foo1List) NonEmpty() bool {
 	return len(list) > 0
 }
 
-// ToList simply returns the list in this case, but is part of the Seq interface.
+// IsSequence returns true for lists.
+func (list Foo1List) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists.
+func (list Foo1List) IsSet() bool {
+	return false
+}
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+func (list Foo1List) ToSlice() []Foo1 {
+	return []Foo1(list)
+}
+
+// ToList simply returns the list in this case, but is part of the Collection interface.
 func (list Foo1List) ToList() Foo1List {
 	return list
 }
@@ -274,8 +269,8 @@ func (list Foo1List) Foreach(fn func(Foo1)) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (list Foo1List) Iter() <-chan Foo1 {
+// Send gets a channel that will send all the elements in order.
+func (list Foo1List) Send() <-chan Foo1 {
 	ch := make(chan Foo1)
 	go func() {
 		for _, v := range list {
@@ -579,8 +574,8 @@ func (list Foo1List) Count(value Foo1) (result int) {
 	return
 }
 
-// Distinct returns a new Foo1List whose elements are unique.
-func (list Foo1List) Distinct() Foo1Seq {
+// Distinct returns a new Foo1List whose elements are unique, retaining the original order.
+func (list Foo1List) Distinct() Foo1Collection {
 	result := make(Foo1List, 0)
 	appended := make(map[Foo1]bool)
 	for _, v := range list {
@@ -743,34 +738,14 @@ func SomeFoo1(x Foo1) OptionalFoo1 {
 
 // panics if option is empty
 func (o OptionalFoo1) Head() Foo1 {
+	return o.Get()
+}
+
+func (o OptionalFoo1) Get() Foo1 {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
 	return *(o.x)
-}
-
-// panics if option is empty
-func (o OptionalFoo1) Last() Foo1 {
-	return o.Head()
-}
-
-// panics if option is empty
-func (o OptionalFoo1) Tail() Foo1Seq {
-	if o.IsEmpty() {
-		panic("Attempt to access non-existent value")
-	}
-	return noneFoo1
-}
-
-// panics if option is empty
-func (o OptionalFoo1) Init() Foo1Seq {
-	return o.Tail()
-}
-
-//-------------------------------------------------------------------------------------------------
-
-func (o OptionalFoo1) Get() Foo1 {
-	return o.Head()
 }
 
 func (o OptionalFoo1) GetOrElse(d func() Foo1) Foo1 {
@@ -806,6 +781,16 @@ func (o OptionalFoo1) IsEmpty() bool {
 
 func (o OptionalFoo1) NonEmpty() bool {
 	return o.x != nil
+}
+
+// IsSequence returns false for options.
+func (o OptionalFoo1) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for options.
+func (o OptionalFoo1) IsSet() bool {
+	return false
 }
 
 // IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
@@ -845,8 +830,8 @@ func (o OptionalFoo1) Foreach(fn func(Foo1)) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (o OptionalFoo1) Iter() <-chan Foo1 {
+// Send gets a channel that will send all the elements in order.
+func (o OptionalFoo1) Send() <-chan Foo1 {
 	ch := make(chan Foo1)
 	go func() {
 		if o.NonEmpty() {
@@ -871,6 +856,18 @@ func (o OptionalFoo1) Partition(predicate func(Foo1) bool) (Foo1Collection, Foo1
 	return noneFoo1, o
 }
 
+func (o OptionalFoo1) ToSlice() []Foo1 {
+	slice := make([]Foo1, o.Size())
+	if o.NonEmpty() {
+		slice[0] = *o.x
+	}
+	return slice
+}
+
+func (o OptionalFoo1) ToList() Foo1List {
+	return Foo1List(o.ToSlice())
+}
+
 //-------------------------------------------------------------------------------------------------
 // These methods require Foo1 be comparable.
 
@@ -882,17 +879,10 @@ func (o OptionalFoo1) Equals(other Foo1Collection) bool {
 	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
-	a := o.Head()
-	var b Foo1
-	otherSeq, isSeq := other.(Foo1Seq)
-	if isSeq {
-		b = otherSeq.Head()
-	} else {
-		o.Foreach(func(x Foo1) {
-			b = x
-		})
-	}
-	return a == b
+	a := o.x
+	s := other.ToSlice()
+	b := s[0]
+	return *a == b
 }
 
 func (o OptionalFoo1) Contains(value Foo1) bool {
@@ -909,10 +899,23 @@ func (o OptionalFoo1) Count(value Foo1) int {
 	return 0
 }
 
-// Distinct returns a new Foo1Seq whose elements are all unique. For options, this simply returns the receiver.
+// Distinct returns a new Foo1Collection whose elements are all unique. For options, this simply returns the
+// receiver.
 // Omitted if Foo1 is not comparable.
-func (o OptionalFoo1) Distinct() Foo1Seq {
+func (o OptionalFoo1) Distinct() Foo1Collection {
 	return o
+}
+
+// Min returns the minimum value of Foo1List. In the case of multiple items being equally minimal,
+// the first such element is returned. Panics if the collection is empty.
+func (o OptionalFoo1) Min() Foo1 {
+	return o.Get()
+}
+
+// Max returns the maximum value of Foo1List. In the case of multiple items being equally maximal,
+// the first such element is returned. Panics if the collection is empty.
+func (o OptionalFoo1) Max() Foo1 {
+	return o.Get()
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -934,13 +937,6 @@ func (o OptionalFoo1) Mean() Foo1 {
 		panic("Cannot compute the arithmetic mean of zero-length OptionalFoo1")
 	}
 	return o.Sum()
-}
-
-func (o OptionalFoo1) ToList() Foo1List {
-	if o.IsEmpty() {
-		return Foo1List{}
-	}
-	return Foo1List{*o.x}
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -993,6 +989,16 @@ func BuildFoo1SetFrom(source <-chan Foo1) Foo1Set {
 
 //-------------------------------------------------------------------------------------------------
 
+// IsSequence returns false for sets.
+func (set Foo1Set) IsSequence() bool {
+	return false
+}
+
+// IsSet returns true for sets.
+func (set Foo1Set) IsSet() bool {
+	return true
+}
+
 func (set Foo1Set) Size() int {
 	return len(set)
 }
@@ -1005,21 +1011,28 @@ func (set Foo1Set) NonEmpty() bool {
 	return len(set) > 0
 }
 
-// Any gets an arbitrary element.
-func (set Foo1Set) Any() Foo1 {
+// Head gets an arbitrary element.
+func (set Foo1Set) Head() Foo1 {
 	for v := range set {
 		return v
 	}
 	panic("Set is empty")
 }
 
+// ToSlice gets all the set's elements in a plain slice.
+func (set Foo1Set) ToSlice() []Foo1 {
+	slice := make([]Foo1, set.Size())
+	i := 0
+	for v := range set {
+		slice[i] = v
+		i++
+	}
+	return slice
+}
+
 // ToList gets all the set's elements in a in SetList.
 func (set Foo1Set) ToList() Foo1List {
-	slice := make([]Foo1, 0, len(set))
-	for v := range set {
-		slice = append(slice, v)
-	}
-	return Foo1List(slice)
+	return Foo1List(set.ToSlice())
 }
 
 // Contains tests whether an item is already in the Foo1Set.
@@ -1167,9 +1180,9 @@ func (set Foo1Set) Foreach(fn func(Foo1)) {
 	}
 }
 
-// Iter sends all elements along a channel of type Foo1.
+// Send sends all elements along a channel of type Foo1.
 // The order of the elements is not well defined but is probably repeatably stable until the set is changed.
-func (set Foo1Set) Iter() <-chan Foo1 {
+func (set Foo1Set) Send() <-chan Foo1 {
 	ch := make(chan Foo1)
 	go func() {
 		for v := range set {
@@ -1349,7 +1362,7 @@ func (set Foo1Set) MkString3(pfx, mid, sfx string) string {
 }
 
 // MapToFoo2 transforms Foo1List to Foo2List.
-func (list Foo1List) MapToFoo2(fn func(Foo1) Foo2) Foo2Seq {
+func (list Foo1List) MapToFoo2(fn func(Foo1) Foo2) Foo2Collection {
 	result := make(Foo2List, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
@@ -1360,7 +1373,7 @@ func (list Foo1List) MapToFoo2(fn func(Foo1) Foo2) Foo2Seq {
 
 // FlatMapToFoo2 transforms Foo1List to Foo2List, by repeatedly
 // calling the supplied function and concatenating the results as a single flat list.
-func (list Foo1List) FlatMapToFoo2(fn func(Foo1) Foo2Seq) Foo2Seq {
+func (list Foo1List) FlatMapToFoo2(fn func(Foo1) Foo2Collection) Foo2Collection {
 	result := make(Foo2List, 0, len(list))
 	for _, v := range list {
 		u := fn(v)

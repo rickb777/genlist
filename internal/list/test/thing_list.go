@@ -23,6 +23,33 @@ type ThingCollection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() Thing
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []Thing
+
+	// ToList gets all the elements in a in List.
+	ToList() ThingList
+
+	// Send sends all elements along a channel of type Thing.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan Thing
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -33,11 +60,6 @@ type ThingCollection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Thing))
-
-	// Iter sends all elements along a channel of type Thing. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan Thing
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new ThingCollection whose elements return true for a predicate function.
@@ -53,13 +75,24 @@ type ThingCollection interface {
 
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another ThingCollection has the same type, size and elements as this one.
+	// Equals verifies that another ThingCollection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if Thing is not comparable.
 	Equals(other ThingCollection) bool
 
 	// Contains tests whether a given value is present in the collection.
 	// Omitted if Thing is not comparable.
 	Contains(value Thing) bool
+
+	// Min returns an element of ThingList containing the minimum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+	// Panics if the collection is empty.
+	Min(less func(Thing, Thing) bool) Thing
+
+	// Max returns an element of ThingList containing the maximum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+	// Panics if the collection is empty.
+	Max(less func(Thing, Thing) bool) Thing
 
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
@@ -73,55 +106,6 @@ type ThingCollection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// ThingUnorderedCollection is an interface for collections of unordered types.
-type ThingUnorderedCollection interface {
-	// Min returns an element of ThingList containing the minimum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
-	// Panics if the collection is empty.
-	Min(less func(Thing, Thing) bool) Thing
-
-	// Max returns an element of ThingList containing the maximum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
-	// Panics if the collection is empty.
-	Max(less func(Thing, Thing) bool) Thing
-}
-
-//-------------------------------------------------------------------------------------------------
-// ThingSeq is an interface for sequences of type Thing, including lists and options (where present).
-type ThingSeq interface {
-	ThingCollection
-
-	// Len gets the size/length of the sequence - an alias for Size()
-	Len() int
-
-	//-------------------------------------------------------------------------
-	// Gets the first element from the sequence. This panics if the sequence is empty.
-	Head() Thing
-
-	// Gets the last element from the sequence. This panics if the sequence is empty.
-	Last() Thing
-
-	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
-	Tail() ThingSeq
-
-	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
-	Init() ThingSeq
-
-	// Converts the sequence to a list. For lists, this is merely a type assertion.
-	ToList() ThingList
-
-	//-------------------------------------------------------------------------
-	// Count counts the number of times a given value occurs in the sequence.
-	// Omitted if Thing is not comparable.
-	Count(value Thing) int
-
-	// Distinct returns a new ThingSeq whose elements are all unique.
-	// Omitted if Thing is not comparable.
-	Distinct() ThingSeq
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -159,13 +143,13 @@ func (list ThingList) Last() Thing {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list ThingList) Tail() ThingSeq {
+func (list ThingList) Tail() ThingCollection {
 	return ThingList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list ThingList) Init() ThingSeq {
+func (list ThingList) Init() ThingCollection {
 	return ThingList(list[:len(list)-1])
 }
 
@@ -179,7 +163,22 @@ func (list ThingList) NonEmpty() bool {
 	return len(list) > 0
 }
 
-// ToList simply returns the list in this case, but is part of the Seq interface.
+// IsSequence returns true for lists.
+func (list ThingList) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists.
+func (list ThingList) IsSet() bool {
+	return false
+}
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+func (list ThingList) ToSlice() []Thing {
+	return []Thing(list)
+}
+
+// ToList simply returns the list in this case, but is part of the Collection interface.
 func (list ThingList) ToList() ThingList {
 	return list
 }
@@ -228,8 +227,8 @@ func (list ThingList) Foreach(fn func(Thing)) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (list ThingList) Iter() <-chan Thing {
+// Send gets a channel that will send all the elements in order.
+func (list ThingList) Send() <-chan Thing {
 	ch := make(chan Thing)
 	go func() {
 		for _, v := range list {
@@ -533,8 +532,8 @@ func (list ThingList) Count(value Thing) (result int) {
 	return
 }
 
-// Distinct returns a new ThingList whose elements are unique.
-func (list ThingList) Distinct() ThingSeq {
+// Distinct returns a new ThingList whose elements are unique, retaining the original order.
+func (list ThingList) Distinct() ThingCollection {
 	result := make(ThingList, 0)
 	appended := make(map[Thing]bool)
 	for _, v := range list {
@@ -616,7 +615,7 @@ func (list ThingList) MkString3(pfx, mid, sfx string) string {
 // optionForList
 
 // MapToNum1 transforms ThingList to Num1List.
-func (list ThingList) MapToNum1(fn func(Thing) Num1) Num1Seq {
+func (list ThingList) MapToNum1(fn func(Thing) Num1) Num1Collection {
 	result := make(Num1List, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
@@ -627,7 +626,7 @@ func (list ThingList) MapToNum1(fn func(Thing) Num1) Num1Seq {
 
 // FlatMapToNum1 transforms ThingList to Num1List, by repeatedly
 // calling the supplied function and concatenating the results as a single flat list.
-func (list ThingList) FlatMapToNum1(fn func(Thing) Num1Seq) Num1Seq {
+func (list ThingList) FlatMapToNum1(fn func(Thing) Num1Collection) Num1Collection {
 	result := make(Num1List, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
@@ -639,7 +638,7 @@ func (list ThingList) FlatMapToNum1(fn func(Thing) Num1Seq) Num1Seq {
 }
 
 // MapToNum2 transforms ThingList to Num2List.
-func (list ThingList) MapToNum2(fn func(Thing) *Num2) Num2Seq {
+func (list ThingList) MapToNum2(fn func(Thing) *Num2) Num2Collection {
 	result := make(Num2List, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
@@ -650,7 +649,7 @@ func (list ThingList) MapToNum2(fn func(Thing) *Num2) Num2Seq {
 
 // FlatMapToNum2 transforms ThingList to Num2List, by repeatedly
 // calling the supplied function and concatenating the results as a single flat list.
-func (list ThingList) FlatMapToNum2(fn func(Thing) Num2Seq) Num2Seq {
+func (list ThingList) FlatMapToNum2(fn func(Thing) Num2Collection) Num2Collection {
 	result := make(Num2List, 0, len(list))
 	for _, v := range list {
 		u := fn(v)

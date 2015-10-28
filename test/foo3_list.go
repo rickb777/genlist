@@ -23,6 +23,33 @@ type Foo3Collection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() *Foo3
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []*Foo3
+
+	// ToList gets all the elements in a in List.
+	ToList() Foo3List
+
+	// Send sends all elements along a channel of type Foo3.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan *Foo3
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -33,11 +60,6 @@ type Foo3Collection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Foo3))
-
-	// Iter sends all elements along a channel of type Foo3. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan *Foo3
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new Foo3Collection whose elements return true for a predicate function.
@@ -53,13 +75,24 @@ type Foo3Collection interface {
 
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another Foo3Collection has the same type, size and elements as this one.
+	// Equals verifies that another Foo3Collection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if Foo3 is not comparable.
 	Equals(other Foo3Collection) bool
 
 	// Contains tests whether a given value is present in the collection.
 	// Omitted if Foo3 is not comparable.
 	Contains(value *Foo3) bool
+
+	// Min returns an element of Foo3List containing the minimum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+	// Panics if the collection is empty.
+	Min(less func(*Foo3, *Foo3) bool) *Foo3
+
+	// Max returns an element of Foo3List containing the maximum value, when compared to other elements
+	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+	// Panics if the collection is empty.
+	Max(less func(*Foo3, *Foo3) bool) *Foo3
 
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
@@ -73,59 +106,6 @@ type Foo3Collection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// Foo3UnorderedCollection is an interface for collections of unordered types.
-type Foo3UnorderedCollection interface {
-	// Min returns an element of Foo3List containing the minimum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
-	// Panics if the collection is empty.
-	Min(less func(*Foo3, *Foo3) bool) *Foo3
-
-	// Max returns an element of Foo3List containing the maximum value, when compared to other elements
-	// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
-	// Panics if the collection is empty.
-	Max(less func(*Foo3, *Foo3) bool) *Foo3
-}
-
-//-------------------------------------------------------------------------------------------------
-// Foo3Seq is an interface for sequences of type *Foo3, including lists and options (where present).
-type Foo3Seq interface {
-	Foo3Collection
-
-	// Len gets the size/length of the sequence - an alias for Size()
-	Len() int
-
-	//-------------------------------------------------------------------------
-	// Gets the first element from the sequence. This panics if the sequence is empty.
-	Head() *Foo3
-
-	// Gets the last element from the sequence. This panics if the sequence is empty.
-	Last() *Foo3
-
-	// Gets the remainder after the first element from the sequence. This panics if the sequence is empty.
-	Tail() Foo3Seq
-
-	// Gets everything except the last element from the sequence. This panics if the sequence is empty.
-	Init() Foo3Seq
-
-	//-------------------------------------------------------------------------
-	// Find searches for the first value that matches a given predicate. It may or may not find one.
-	Find(predicate func(*Foo3) bool) OptionalFoo3
-
-	// Converts the sequence to a list. For lists, this is merely a type assertion.
-	ToList() Foo3List
-
-	//-------------------------------------------------------------------------
-	// Count counts the number of times a given value occurs in the sequence.
-	// Omitted if Foo3 is not comparable.
-	Count(value *Foo3) int
-
-	// Distinct returns a new Foo3Seq whose elements are all unique.
-	// Omitted if Foo3 is not comparable.
-	Distinct() Foo3Seq
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -163,13 +143,13 @@ func (list Foo3List) Last() *Foo3 {
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
 // panics if list is empty
-func (list Foo3List) Tail() Foo3Seq {
+func (list Foo3List) Tail() Foo3Collection {
 	return Foo3List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
 // panics if list is empty
-func (list Foo3List) Init() Foo3Seq {
+func (list Foo3List) Init() Foo3Collection {
 	return Foo3List(list[:len(list)-1])
 }
 
@@ -183,7 +163,22 @@ func (list Foo3List) NonEmpty() bool {
 	return len(list) > 0
 }
 
-// ToList simply returns the list in this case, but is part of the Seq interface.
+// IsSequence returns true for lists.
+func (list Foo3List) IsSequence() bool {
+	return true
+}
+
+// IsSet returns false for lists.
+func (list Foo3List) IsSet() bool {
+	return false
+}
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+func (list Foo3List) ToSlice() []*Foo3 {
+	return []*Foo3(list)
+}
+
+// ToList simply returns the list in this case, but is part of the Collection interface.
 func (list Foo3List) ToList() Foo3List {
 	return list
 }
@@ -232,8 +227,8 @@ func (list Foo3List) Foreach(fn func(*Foo3)) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (list Foo3List) Iter() <-chan *Foo3 {
+// Send gets a channel that will send all the elements in order.
+func (list Foo3List) Send() <-chan *Foo3 {
 	ch := make(chan *Foo3)
 	go func() {
 		for _, v := range list {
@@ -537,8 +532,8 @@ func (list Foo3List) Count(value *Foo3) (result int) {
 	return
 }
 
-// Distinct returns a new Foo3List whose elements are unique.
-func (list Foo3List) Distinct() Foo3Seq {
+// Distinct returns a new Foo3List whose elements are unique, retaining the original order.
+func (list Foo3List) Distinct() Foo3Collection {
 	result := make(Foo3List, 0)
 	appended := make(map[Foo3]bool)
 	for _, v := range list {
@@ -680,34 +675,14 @@ func SomeFoo3(x *Foo3) OptionalFoo3 {
 
 // panics if option is empty
 func (o OptionalFoo3) Head() *Foo3 {
+	return o.Get()
+}
+
+func (o OptionalFoo3) Get() *Foo3 {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
 	return (o.x)
-}
-
-// panics if option is empty
-func (o OptionalFoo3) Last() *Foo3 {
-	return o.Head()
-}
-
-// panics if option is empty
-func (o OptionalFoo3) Tail() Foo3Seq {
-	if o.IsEmpty() {
-		panic("Attempt to access non-existent value")
-	}
-	return noneFoo3
-}
-
-// panics if option is empty
-func (o OptionalFoo3) Init() Foo3Seq {
-	return o.Tail()
-}
-
-//-------------------------------------------------------------------------------------------------
-
-func (o OptionalFoo3) Get() *Foo3 {
-	return o.Head()
 }
 
 func (o OptionalFoo3) GetOrElse(d func() *Foo3) *Foo3 {
@@ -743,6 +718,16 @@ func (o OptionalFoo3) IsEmpty() bool {
 
 func (o OptionalFoo3) NonEmpty() bool {
 	return o.x != nil
+}
+
+// IsSequence returns false for options.
+func (o OptionalFoo3) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for options.
+func (o OptionalFoo3) IsSet() bool {
+	return false
 }
 
 // IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
@@ -782,8 +767,8 @@ func (o OptionalFoo3) Foreach(fn func(*Foo3)) {
 	}
 }
 
-// Iter gets a channel that will send all the elements in order.
-func (o OptionalFoo3) Iter() <-chan *Foo3 {
+// Send gets a channel that will send all the elements in order.
+func (o OptionalFoo3) Send() <-chan *Foo3 {
 	ch := make(chan *Foo3)
 	go func() {
 		if o.NonEmpty() {
@@ -808,6 +793,18 @@ func (o OptionalFoo3) Partition(predicate func(*Foo3) bool) (Foo3Collection, Foo
 	return noneFoo3, o
 }
 
+func (o OptionalFoo3) ToSlice() []*Foo3 {
+	slice := make([]*Foo3, o.Size())
+	if o.NonEmpty() {
+		slice[0] = o.x
+	}
+	return slice
+}
+
+func (o OptionalFoo3) ToList() Foo3List {
+	return Foo3List(o.ToSlice())
+}
+
 //-------------------------------------------------------------------------------------------------
 // These methods require *Foo3 be comparable.
 
@@ -819,16 +816,9 @@ func (o OptionalFoo3) Equals(other Foo3Collection) bool {
 	if other.IsEmpty() || other.Size() > 1 {
 		return false
 	}
-	a := o.Head()
-	var b *Foo3
-	otherSeq, isSeq := other.(Foo3Seq)
-	if isSeq {
-		b = otherSeq.Head()
-	} else {
-		o.Foreach(func(x *Foo3) {
-			b = x
-		})
-	}
+	a := o.x
+	s := other.ToSlice()
+	b := s[0]
 	return *a == *b
 }
 
@@ -846,17 +836,25 @@ func (o OptionalFoo3) Count(value *Foo3) int {
 	return 0
 }
 
-// Distinct returns a new Foo3Seq whose elements are all unique. For options, this simply returns the receiver.
+// Distinct returns a new Foo3Collection whose elements are all unique. For options, this simply returns the
+// receiver.
 // Omitted if Foo3 is not comparable.
-func (o OptionalFoo3) Distinct() Foo3Seq {
+func (o OptionalFoo3) Distinct() Foo3Collection {
 	return o
 }
 
-func (o OptionalFoo3) ToList() Foo3List {
-	if o.IsEmpty() {
-		return Foo3List{}
-	}
-	return Foo3List{o.x}
+// Min returns an element of Foo3List containing the minimum value, when compared to other elements
+// using a specified comparator function defining ‘less’. For ordered sequences, Min returns the first such element.
+// Panics if the collection is empty.
+func (o OptionalFoo3) Min(less func(*Foo3, *Foo3) bool) *Foo3 {
+	return o.Get()
+}
+
+// Max returns an element of Foo3List containing the maximum value, when compared to other elements
+// using a specified comparator function defining ‘less’. For ordered sequences, Max returns the first such element.
+// Panics if the collection is empty.
+func (o OptionalFoo3) Max(less func(*Foo3, *Foo3) bool) *Foo3 {
+	return o.Get()
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -879,7 +877,7 @@ func (o OptionalFoo3) MkString3(pfx, mid, sfx string) string {
 }
 
 // MapToFoo4 transforms Foo3List to Foo4List.
-func (list Foo3List) MapToFoo4(fn func(*Foo3) Foo4) Foo4Seq {
+func (list Foo3List) MapToFoo4(fn func(*Foo3) Foo4) Foo4Collection {
 	result := make(Foo4List, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
@@ -890,7 +888,7 @@ func (list Foo3List) MapToFoo4(fn func(*Foo3) Foo4) Foo4Seq {
 
 // FlatMapToFoo4 transforms Foo3List to Foo4List, by repeatedly
 // calling the supplied function and concatenating the results as a single flat list.
-func (list Foo3List) FlatMapToFoo4(fn func(*Foo3) Foo4Seq) Foo4Seq {
+func (list Foo3List) FlatMapToFoo4(fn func(*Foo3) Foo4Collection) Foo4Collection {
 	result := make(Foo4List, 0, len(list))
 	for _, v := range list {
 		u := fn(v)

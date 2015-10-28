@@ -22,6 +22,30 @@ type Num1Collection interface {
 	// NonEmpty returns true if the collection is non-empty.
 	NonEmpty() bool
 
+	// IsSequence returns true for lists, but false otherwise.
+	IsSequence() bool
+
+	// IsSet returns true for sets, but false otherwise.
+	IsSet() bool
+
+	// Head returns the first element of a list or an arbitrary element of a set or the contents of an option.
+	// Panics if the collection is empty.
+	Head() Num1
+
+	//-------------------------------------------------------------------------
+	// ToSlice returns a plain slice containing all the elements in the collection.
+	// This is useful for bespoke iteration etc.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	ToSlice() []Num1
+
+	// Send sends all elements along a channel of type Num1.
+	// For sequences, the order is well defined.
+	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
+	// the order is stable, which means it will give the same order each subsequent time it is used.
+	Send() <-chan Num1
+
 	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
@@ -32,11 +56,6 @@ type Num1Collection interface {
 
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Num1))
-
-	// Iter sends all elements along a channel of type Num1. For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
-	Iter() <-chan Num1
 
 	//-------------------------------------------------------------------------
 	// Filter returns a new Num1Collection whose elements return true for a predicate function.
@@ -52,7 +71,8 @@ type Num1Collection interface {
 
 	//-------------------------------------------------------------------------
 
-	// Equals verifies that another Num1Collection has the same type, size and elements as this one.
+	// Equals verifies that another Num1Collection has the same size and elements as this one. Also,
+	// if the collection is a sequence, the order must be the same.
 	// Omitted if Num1 is not comparable.
 	Equals(other Num1Collection) bool
 
@@ -69,6 +89,14 @@ type Num1Collection interface {
 	// Omitted if Num1 is not numeric.
 	Mean() Num1
 
+	// Min returns the minimum value of Num1List. In the case of multiple items being equally minimal,
+	// the first such element is returned. Panics if the collection is empty.
+	Min() Num1
+
+	// Max returns the maximum value of Num1List. In the case of multiple items being equally maximal,
+	// the first such element is returned. Panics if the collection is empty.
+	Max() Num1
+
 	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
@@ -81,19 +109,6 @@ type Num1Collection interface {
 	// MkString3 gets a string representation of the collection. 'pfx' and 'sfx' surround a list
 	// of the elements joined by the 'mid' separator you provide.
 	MkString3(pfx, mid, sfx string) string
-}
-
-//-------------------------------------------------------------------------------------------------
-
-// Num1OrderedCollection is an interface for collections of ordered types.
-type Num1OrderedCollection interface {
-	// Min returns the minimum value of Num1List. In the case of multiple items being equally minimal,
-	// the first such element is returned. Panics if the collection is empty.
-	Min() Num1
-
-	// Max returns the maximum value of Num1List. In the case of multiple items being equally maximal,
-	// the first such element is returned. Panics if the collection is empty.
-	Max() Num1
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -127,6 +142,16 @@ func BuildNum1SetFrom(source <-chan Num1) Num1Set {
 
 //-------------------------------------------------------------------------------------------------
 
+// IsSequence returns false for sets.
+func (set Num1Set) IsSequence() bool {
+	return false
+}
+
+// IsSet returns true for sets.
+func (set Num1Set) IsSet() bool {
+	return true
+}
+
 func (set Num1Set) Size() int {
 	return len(set)
 }
@@ -139,19 +164,21 @@ func (set Num1Set) NonEmpty() bool {
 	return len(set) > 0
 }
 
-// Any gets an arbitrary element.
-func (set Num1Set) Any() Num1 {
+// Head gets an arbitrary element.
+func (set Num1Set) Head() Num1 {
 	for v := range set {
 		return v
 	}
 	panic("Set is empty")
 }
 
-// ToSlice gets all the set's elements in a slice.
+// ToSlice gets all the set's elements in a plain slice.
 func (set Num1Set) ToSlice() []Num1 {
-	slice := make([]Num1, 0, len(set))
+	slice := make([]Num1, set.Size())
+	i := 0
 	for v := range set {
-		slice = append(slice, v)
+		slice[i] = v
+		i++
 	}
 	return slice
 }
@@ -301,9 +328,9 @@ func (set Num1Set) Foreach(fn func(Num1)) {
 	}
 }
 
-// Iter sends all elements along a channel of type Num1.
+// Send sends all elements along a channel of type Num1.
 // The order of the elements is not well defined but is probably repeatably stable until the set is changed.
-func (set Num1Set) Iter() <-chan Num1 {
+func (set Num1Set) Send() <-chan Num1 {
 	ch := make(chan Num1)
 	go func() {
 		for v := range set {

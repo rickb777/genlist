@@ -20,28 +20,24 @@ type Example struct { ... }
 #### Core methods
 
 This creates a optional example type `OptionalExample` to hold `Example` values. It provides all the
-*T*Seq methods, including:
+*T*Collection methods, including:
 
- * **Head**, **Tail** - get the first element and the rest
- * **Init**, **Last** - get the last element and the rest
- * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
+ * **Get**, **GetOrElse**, **OrElse** - get the current value
+ * **Head** - an alias for **Get**
+ * **Len**, **Size** - get simple properties (these are aliases)
+ * **IsEmpty**, **NonEmpty** - get simple properties
  * **IsDefined** - an alias for NonEmpty
  * **Exists**, **Forall** - test whether any or all elements match some specified condition
  * **Foreach** - apply a function to every element in turn, typically causing side-effects
- * **Reverse**, **Shuffle** - get a new list that is reversed or shuffled
- * **Take**, **TakeWhile**, **DropLast** - get a new list without some trailing elements
- * **Drop**, **DropWhile**, **TakeLast** - get a new list without some leading elements
  * **Filter**, **Partition** - get a subset, or two disjoint subsets, of the option
- * **Iter** - get a channel that supplies values in sequence
- * **MkString**, **MkString3**, **String** - constructs a string representation of the option (like a list)
+ * **Send** - get a channel that supplies values in sequence
+ * **MkString**, **MkString3**, **String** - constructs a string representation of the option (just like a list)
 
 #### Comparable Methods
 
 If the element type is *comparable*, it adds:
 
  * **Equals** - compare with another list
- * **IndexOf**, **IndexOf2** - find the index of the first match
- * **LastIndexOf**, **LastIndexOf2** - find the index of the last match
  * **Contains**, **Count** - compare with a specified value
  * **Distinct** - remove duplicates
 

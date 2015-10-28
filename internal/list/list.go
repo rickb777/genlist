@@ -2,7 +2,7 @@ package list
 
 import "github.com/rickb777/golist/internal/sequence"
 
-const List = sequence.Collection + sequence.Sequence + `
+const List = sequence.Collection + `
 //-------------------------------------------------------------------------------------------------
 // {{.TName}}List is a slice of type {{.PName}}. Use it where you would use []{{.PName}}.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
@@ -26,7 +26,7 @@ func Build{{.TName}}ListFrom(source <-chan {{.PName}}) {{.TName}}List {
 ` + headTail + sortable +
 iterationFunctions + takeDropFunctions + predicatedFunctions +
 equalsFunctions + comparableFunctions + numericFunctions + orderedFunctions +
-mkstringFunctions + optionForList
+mkstring + optionForList
 
 
 // TODO diff

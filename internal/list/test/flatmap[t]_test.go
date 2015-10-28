@@ -12,7 +12,7 @@ func TestFlatMapToNum(t *testing.T) {
 		{"Third", 100},
 	}
 
-	number0 := func(x Thing) Num1Seq {
+	number0 := func(x Thing) Num1Collection {
 		return num1Collection()
 	}
 
@@ -23,7 +23,7 @@ func TestFlatMapToNum(t *testing.T) {
 		t.Errorf("FlatMapToNum1 should result in %#v, got %d %#v", expected0, r0.Size(), r0)
 	}
 
-	number1 := func(x Thing) Num1Seq {
+	number1 := func(x Thing) Num1Collection {
 		return num1Collection(x.Number, x.Number)
 	}
 
@@ -34,7 +34,7 @@ func TestFlatMapToNum(t *testing.T) {
 		t.Errorf("FlatMapToNum1 should result in %#v, got %#v", expected1, r1)
 	}
 
-	number2 := func(x Thing) Num2Seq {
+	number2 := func(x Thing) Num2Collection {
 		v := Num2(x.Number)
 		return num2Collection(&v, &v)
 	}
