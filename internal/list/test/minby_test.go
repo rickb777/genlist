@@ -27,11 +27,15 @@ func TestMinByNum(t *testing.T) {
 }
 
 func TestMinByThing(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"Fee", 3},
+		Thing{"Fie", 2},
+		Thing{"Foe", 1},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	min1, err1 := things.MinBy(func(a, b Thing) bool {
 		return a.Number < b.Number
@@ -41,7 +45,7 @@ func TestMinByThing(t *testing.T) {
 		t.Errorf("MinBy Number should succeed")
 	}
 
-	expected1 := Thing{"Second", -20}
+	expected1 := Thing{"Foe", 1}
 	if min1 != expected1 {
 		t.Errorf("MinBy Number should return %#v, got %#v", expected1, min1)
 	}

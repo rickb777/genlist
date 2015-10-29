@@ -34,21 +34,22 @@ func TestDistinctByNum2(t *testing.T) {
 }
 
 func TestDistinctByThing(t *testing.T) {
-	things := ThingList{
-		{"First", 0},
-		{"Second", 9},
-		{"First", 4},
-		{"Third", 9},
-		{"Fourth", 5},
-		{"Fifth", 4},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 4},
+		Thing{"Boo", 4},
+		Thing{"Bam", 4},
+		Thing{"Bam", 4},
+	)
 
-	expected := ThingList{
-		{"First", 0},
-		{"Second", 9},
-		{"First", 4},
-		{"Fourth", 5},
-	}
+	expected := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 4},
+	)
 
 	distinctby1 := things.DistinctBy(func(a, b Thing) bool {
 		return a.Number == b.Number

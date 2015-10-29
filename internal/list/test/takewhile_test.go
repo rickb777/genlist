@@ -44,23 +44,24 @@ func TestTakeWhileNum(t *testing.T) {
 }
 
 func TestTakeWhileThing(t *testing.T) {
-	things := ThingList{
-		{"Fee", 1},
-		{"Fie", 2},
-		{"Foe", 3},
-		{"Boo", 4},
-		{"Bam", 5},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Boo", 5},
+		Thing{"Foe", 3},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	where1 := things.TakeWhile(func(x Thing) bool {
 		return x.Name[0] == 'F'
 	})
 
-	expected1 := ThingList{
-		{"Fee", 1},
-		{"Fie", 2},
-		{"Foe", 3},
-	}
+	expected1 := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+	)
 
 	if !reflect.DeepEqual(where1, expected1) {
 		t.Errorf("TakeWhile should result in %#v, got %#v", expected1, where1)
@@ -82,7 +83,7 @@ func TestTakeWhileThing(t *testing.T) {
 		t.Errorf("TakeWhile should result in %#v, got %#v", things, where3)
 	}
 
-	where4 := ThingList{}.TakeWhile(func(x Thing) bool {
+	where4 := thingCollection().TakeWhile(func(x Thing) bool {
 		return true
 	})
 

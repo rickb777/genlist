@@ -50,26 +50,34 @@ func TestPartitionNum(t *testing.T) {
 }
 
 func TestPartitionThing(t *testing.T) {
-	things := ThingList{
-		{"First", 0},
-		{"Second", 0},
-		{"Third", 0},
-		{"Second", 10},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	m1, o1 := things.Partition(func(x Thing) bool {
-		return x.Name == "Second"
+		return x.Name[0] == 'F'
 	})
 
-	expected1 := ThingList{
-		{"Second", 0},
-		{"Second", 10},
-	}
+	expected1 := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+	)
 
-	others1 := ThingList{
-		{"First", 0},
-		{"Third", 0},
-	}
+
+	others1 := thingCollection(
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
+
 
 	if !reflect.DeepEqual(m1, expected1) {
 		t.Errorf("Partition should result in %#v, got %#v", expected1, m1)

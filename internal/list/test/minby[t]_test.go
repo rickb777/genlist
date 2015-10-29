@@ -6,18 +6,22 @@ import (
 )
 
 func TestMinByNum1(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"Fee", 3},
+		Thing{"Fie", 2},
+		Thing{"Foe", 1},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	number := func(x Thing) Num1 {
 		return x.Number
 	}
 
 	min1, err := things.MinByNum1(number)
-	expected1 := Thing{"Second", -20}
+	expected1 := Thing{"Foe", 1}
 
 	if err != nil {
 		t.Errorf("MinNum should succeed")
@@ -35,20 +39,22 @@ func TestMinByNum1(t *testing.T) {
 }
 
 func TestMinByFoo(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-		{"Fourth", 1},
-		{"Fifth", 17},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	number := func(x Thing) Foo {
 		return Foo(x.Name)
 	}
 
 	min1, err := things.MinByFoo(number)
-	expected1 := Thing{"Fifth", 17}
+	expected1 := Thing{"Bam", 13}
 
 	if err != nil {
 		t.Errorf("MinFoo should succeed")

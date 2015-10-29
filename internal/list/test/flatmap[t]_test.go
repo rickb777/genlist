@@ -6,11 +6,11 @@ import (
 )
 
 func TestFlatMapToNum(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"First", 60},
+		Thing{"Second", -20},
+		Thing{"Third", 100},
+	)
 
 	number0 := func(x Thing) Num1Collection {
 		return num1Collection()
@@ -48,11 +48,15 @@ func TestFlatMapToNum(t *testing.T) {
 }
 
 func TestFlatMapToString(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	fn0 := func(x Thing) []string {
 		return []string{}
@@ -70,7 +74,7 @@ func TestFlatMapToString(t *testing.T) {
 	}
 
 	r1 := things.FlatMapToString(fn1)
-	expected1 := []string{"First", "First", "Second", "Second", "Third", "Third"}
+	expected1 := []string{"Fee", "Fee", "Fie", "Fie", "Foe", "Foe", "Boo", "Boo", "Boo", "Boo", "Bam", "Bam", "Bam", "Bam"}
 
 	if !reflect.DeepEqual(r1, expected1) {
 		t.Errorf("FlatMapToNum1 should result in %#v, got %#v", expected1, r1)

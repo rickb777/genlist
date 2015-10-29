@@ -75,34 +75,38 @@ func TestHeadTailNum2(t *testing.T) {
 }
 
 func TestHeadTailThing(t *testing.T) {
-	things := ThingList{
-		{"First", 2},
-		{"Second", 3},
-		{"Third", 5},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	h1 := things.Head()
 	t1 := things.Tail().ToList()
 
-	if h1.Number != 2 {
-		t.Errorf("Head should be 3")
+	if h1.Number != 1 {
+		t.Errorf("Head should be 1")
 	}
 
 	h2 := t1.Head()
 	t2 := t1.Tail().ToList()
 
-	if h2.Number != 3 {
-		t.Errorf("Head should be 5")
+	if h2.Number != 2 {
+		t.Errorf("Head should be 2")
 	}
 
 	h3 := t2.Head()
-	t3 := t2.Tail()
+	t3 := t2.Tail().ToList()
 
-	if h3.Number != 5 {
-		t.Errorf("Head should be 8")
+	if h3.Number != 3 {
+		t.Errorf("Head should be 3")
 	}
 
-	if t3.Size() != 0 {
-		t.Errorf("Tail should be an empty list")
+	if t3.Size() != 4 {
+		t.Errorf("Tail size should be 4 not %d", t3.Size())
 	}
 }

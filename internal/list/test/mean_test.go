@@ -7,7 +7,7 @@ func TestMean(t *testing.T) {
 
 	mean1 := others.Mean()
 
-	avg1 := Num1(60)
+	avg1 := 365.0 / 6.0
 
 	if mean1 != avg1 {
 		t.Errorf("Mean should be %#v, got %#v", avg1, mean1)

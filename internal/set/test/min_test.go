@@ -15,19 +15,22 @@ func TestMinOrdered(t *testing.T) {
 
 func TestMinNotOrdered(t *testing.T) {
 	things := thingCollection(
-		Thing{"First", 10},
-		Thing{"Second", -10},
-		Thing{"Third", 100},
-		Thing{"Second", 50},
+		Thing{"Fee", 3},
+		Thing{"Fie", 2},
+		Thing{"Foe", 1},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
 	)
 
-	m1 := things.Min(func(a, b Thing) bool {
+	max1 := things.Min(func(a, b Thing) bool {
 		return a.Number < b.Number
 	})
 
-	expected1 := Thing{"Second", -10}
+	expected1 := Thing{"Foe", 1}
 
-	if m1 != expected1 {
-		t.Errorf("Min Number should return %#v, got %#v", expected1, m1)
+	if max1 != expected1 {
+		t.Errorf("Min Number should return %#v, got %#v", expected1, max1)
 	}
 }

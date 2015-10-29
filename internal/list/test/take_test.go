@@ -36,21 +36,23 @@ func TestTakeNum(t *testing.T) {
 }
 
 func TestTakeThing(t *testing.T) {
-	things := ThingList{
-		{"Fee", 1},
-		{"Fie", 2},
-		{"Foe", 3},
-		{"Boo", 4},
-		{"Bam", 5},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	where1 := things.Take(3)
 
-	expected1 := ThingList{
-		{"Fee", 1},
-		{"Fie", 2},
-		{"Foe", 3},
-	}
+	expected1  := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+	)
 
 	if !reflect.DeepEqual(where1, expected1) {
 		t.Errorf("Take should result in %#v, got %#v", expected1, where1)
@@ -62,13 +64,13 @@ func TestTakeThing(t *testing.T) {
 		t.Errorf("Take should result in empty list, got %#v", where2)
 	}
 
-	where3 := things.Take(5)
+	where3 := things.Take(100)
 
 	if !reflect.DeepEqual(where3, things) {
 		t.Errorf("Take should result in %#v, got %#v", things, where3)
 	}
 
-	where4 := ThingList{}.Take(100)
+	where4 := thingCollection().Take(100)
 
 	if len(where4) != 0 {
 		t.Errorf("Take should result in empty list, got %#v", where4)

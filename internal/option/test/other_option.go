@@ -83,7 +83,7 @@ type OtherCollection interface {
 
 	// Mean computes the arithmetic mean of all elements. Panics if the collection is empty.
 	// Omitted if Other is not numeric.
-	Mean() Other
+	Mean() float64
 
 	// Min returns the minimum value of OtherList. In the case of multiple items being equally minimal,
 	// the first such element is returned. Panics if the collection is empty.
@@ -325,11 +325,11 @@ func (o OptionalOther) Sum() Other {
 
 // Mean computes the arithmetic mean of all elements.
 // Panics if the list is empty.
-func (o OptionalOther) Mean() Other {
+func (o OptionalOther) Mean() float64 {
 	if o.IsEmpty() {
 		panic("Cannot compute the arithmetic mean of zero-length OptionalOther")
 	}
-	return o.Sum()
+	return float64(*(o.x))
 }
 
 //-------------------------------------------------------------------------------------------------

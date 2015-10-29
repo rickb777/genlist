@@ -1,8 +1,7 @@
 package main
 
 import (
-"testing"
-"strings"
+	"testing"
 )
 
 func TestForeachNum1(t *testing.T) {
@@ -20,29 +19,21 @@ func TestForeachNum1(t *testing.T) {
 
 func TestForeachThing(t *testing.T) {
 	things := thingCollection(
-		Thing{"First", 60},
-		Thing{"Second", -20},
-		Thing{"Third", 100},
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
 	)
 
-	concat := ""
+	sum := Num1(0)
 	things.Foreach(func(x Thing) {
-		concat += x.Name
+		sum += x.Number
 	})
 
-	if len(concat) != len("FirstSecondThird") {
-		t.Errorf("Foreach should concatenate: %s", concat)
-	}
-
-	if !strings.Contains(concat, "First") {
-		t.Errorf("Foreach should concatenate: %s", concat)
-	}
-
-	if !strings.Contains(concat, "Second") {
-		t.Errorf("Foreach should concatenate: %s", concat)
-	}
-
-	if !strings.Contains(concat, "Third") {
-		t.Errorf("Foreach should concatenate: %s", concat)
+	if sum != 53 {
+		t.Errorf("Foreach should concatenate: %d", 53)
 	}
 }

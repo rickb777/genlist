@@ -30,18 +30,23 @@ func TestDistinctNum2(t *testing.T) {
 }
 
 func TestDistinctThing(t *testing.T) {
-	things := ThingList{
-		{"First", 0},
-		{"Second", 0},
-		{"First", 0},
-		{"Third", 0},
-	}
+	things := thingCollection(
+		Thing{"Fee", 0},
+		Thing{"Fie", 0},
+		Thing{"Foe", 0},
+		Thing{"Boo", 0},
+		Thing{"Boo", 0},
+		Thing{"Bam", 0},
+		Thing{"Bam", 0},
+	)
 
-	should := ThingList{
-		{"First", 0},
-		{"Second", 0},
-		{"Third", 0},
-	}
+	should := thingCollection(
+		Thing{"Fee", 0},
+		Thing{"Fie", 0},
+		Thing{"Foe", 0},
+		Thing{"Boo", 0},
+		Thing{"Bam", 0},
+	)
 
 	distinct1 := things.Distinct()
 

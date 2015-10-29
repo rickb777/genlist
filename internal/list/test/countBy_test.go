@@ -51,14 +51,18 @@ func TestCountByNum2(t *testing.T) {
 }
 
 func TestCountByThing(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", 20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	count1 := things.CountBy(func(x Thing) bool {
-		return x.Name == "Second"
+		return x.Name == "Fie"
 	})
 
 	if count1 != 1 {
@@ -66,11 +70,11 @@ func TestCountByThing(t *testing.T) {
 	}
 
 	count2 := things.CountBy(func(x Thing) bool {
-		return x.Number > 50
+		return x.Number >= 10
 	})
 
 	if count2 != 2 {
-		t.Errorf("CountBy should find 2 items for Number > 50")
+		t.Errorf("CountBy should find 2 items for Number >= 6")
 	}
 
 	count3 := things.CountBy(func(x Thing) bool {

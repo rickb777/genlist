@@ -32,21 +32,25 @@ func TestForallNum1(t *testing.T) {
 
 func TestForallThing(t *testing.T) {
 	things := thingCollection(
-		Thing{"First", 60},
-		Thing{"Second", -20},
-		Thing{"Third", 100},
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
 	)
 
 	all1 := things.Forall(func(x Thing) bool {
-		return x.Name == "First"
+		return x.Name == "Boo"
 	})
 
 	if all1 {
-		t.Errorf("Forall should be false for Name == 'First'")
+		t.Errorf("Forall should be false for Name == 'Boo'")
 	}
 
 	all2 := things.Forall(func(x Thing) bool {
-		return x.Name == "First" || x.Name == "Second" || x.Name == "Third"
+		return len(x.Name) == 3
 	})
 
 	if !all2 {

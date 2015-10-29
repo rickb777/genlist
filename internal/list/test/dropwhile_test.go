@@ -44,22 +44,27 @@ func TestDropWhileNum(t *testing.T) {
 }
 
 func TestDropWhileThing(t *testing.T) {
-	things := ThingList{
-		{"Fee", 1},
-		{"Fie", 2},
-		{"Foe", 3},
-		{"Boo", 4},
-		{"Bam", 5},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	where1 := things.DropWhile(func(x Thing) bool {
 		return x.Name[0] == 'F'
 	})
 
-	expected1 := ThingList{
-		{"Boo", 4},
-		{"Bam", 5},
-	}
+	expected1 := thingCollection(
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
+
 
 	if !reflect.DeepEqual(where1, expected1) {
 		t.Errorf("DropWhile should result in %#v, got %#v", expected1, where1)

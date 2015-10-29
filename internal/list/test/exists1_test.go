@@ -32,9 +32,13 @@ func TestExistsNum1(t *testing.T) {
 
 func TestExistsThing(t *testing.T) {
 	things := thingCollection(
-		Thing{"First", 60},
-		Thing{"Second", -20},
-		Thing{"Third", 100},
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
 	)
 
 	any1 := things.Exists(func(x Thing) bool {
@@ -46,11 +50,11 @@ func TestExistsThing(t *testing.T) {
 	}
 
 	any2 := things.Exists(func(x Thing) bool {
-		return x.Number > 50
+		return x.Number > 5
 	})
 
 	if !any2 {
-		t.Errorf("Exists should evaluate true for Number > 50")
+		t.Errorf("Exists should evaluate true for Number > 5")
 	}
 
 	any3 := thingCollection().Exists(func(x Thing) bool {

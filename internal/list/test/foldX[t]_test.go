@@ -44,11 +44,11 @@ func TestFoldLeftFoo(t *testing.T) {
 }
 
 func TestFoldRightNum1(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"First", 60},
+		Thing{"Second", -20},
+		Thing{"Third", 100},
+	)
 
 	sum := func(state Num1, x Thing) Num1 {
 		return state + x.Number
@@ -63,18 +63,22 @@ func TestFoldRightNum1(t *testing.T) {
 }
 
 func TestFoldRightFoo(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	sum := func(state Foo, x Thing) Foo {
 		return Foo(fmt.Sprintf("%s:%d", state, x.Number))
 	}
 
 	aggregate1 := things.FoldRightFoo(Foo("red"), sum)
-	expected1 := Foo("red:100:-20:60")
+	expected1 := Foo("red:21:13:8:5:3:2:1")
 
 	if aggregate1 != expected1 {
 		t.Errorf("FoldRightFoo should be %#v, got %#v", expected1, aggregate1)

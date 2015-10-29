@@ -27,11 +27,15 @@ func TestMaxByNum(t *testing.T) {
 }
 
 func TestMaxByThing(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 21},
+		Thing{"Bam", 13},
+		Thing{"Bam", 8},
+	)
 
 	min1, err1 := things.MaxBy(func(a, b Thing) bool {
 		return a.Number < b.Number
@@ -41,7 +45,7 @@ func TestMaxByThing(t *testing.T) {
 		t.Errorf("MaxBy Number should succeed")
 	}
 
-	expected1 := Thing{"Third", 100}
+	expected1 := Thing{"Boo", 21}
 	if min1 != expected1 {
 		t.Errorf("MaxBy Number should return %#v, got %#v", expected1, min1)
 	}

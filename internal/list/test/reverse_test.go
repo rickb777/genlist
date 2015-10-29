@@ -23,18 +23,24 @@ func TestReverseNum(t *testing.T) {
 }
 
 func TestReverseThing(t *testing.T) {
-	things := ThingList{
-		{"First", 0},
-		{"Second", 0},
-		{"Third", 0},
-		{"Second", 10},
-	}
-	expected := ThingList{
-		{"Second", 10},
-		{"Third", 0},
-		{"Second", 0},
-		{"First", 0},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
+	expected := thingCollection(
+		Thing{"Bam", 21},
+		Thing{"Bam", 13},
+		Thing{"Boo", 8},
+		Thing{"Boo", 5},
+		Thing{"Foe", 3},
+		Thing{"Fie", 2},
+		Thing{"Fee", 1},
+	)
 
 	rev1 := things.Reverse()
 

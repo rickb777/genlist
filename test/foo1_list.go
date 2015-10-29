@@ -92,7 +92,7 @@ type Foo1Collection interface {
 
 	// Mean computes the arithmetic mean of all elements. Panics if the collection is empty.
 	// Omitted if Foo1 is not numeric.
-	Mean() Foo1
+	Mean() float64
 
 	// Min returns the minimum value of Foo1List. In the case of multiple items being equally minimal,
 	// the first such element is returned. Panics if the collection is empty.
@@ -600,12 +600,13 @@ func (list Foo1List) Sum() (result Foo1) {
 
 // Mean computes the arithmetic mean of all elements.
 // Panics if the list is empty.
-func (list Foo1List) Mean() Foo1 {
+func (list Foo1List) Mean() float64 {
 	l := len(list)
 	if l == 0 {
 		panic("Cannot compute the arithmetic mean of zero-length Foo1List")
 	}
-	return list.Sum() / Foo1(l)
+	sum := list.Sum()
+	return float64(sum) / float64(l)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -932,11 +933,11 @@ func (o OptionalFoo1) Sum() Foo1 {
 
 // Mean computes the arithmetic mean of all elements.
 // Panics if the list is empty.
-func (o OptionalFoo1) Mean() Foo1 {
+func (o OptionalFoo1) Mean() float64 {
 	if o.IsEmpty() {
 		panic("Cannot compute the arithmetic mean of zero-length OptionalFoo1")
 	}
-	return o.Sum()
+	return float64(*(o.x))
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1287,12 +1288,13 @@ func (set Foo1Set) Sum() (result Foo1) {
 
 // Mean computes the arithmetic mean of all elements.
 // Panics if the set is empty.
-func (set Foo1Set) Mean() Foo1 {
+func (set Foo1Set) Mean() float64 {
 	l := len(set)
 	if l == 0 {
 		panic("Cannot compute the arithmetic mean of zero-length Foo1Set")
 	}
-	return set.Sum() / Foo1(l)
+	sum := set.Sum()
+	return float64(sum) / float64(l)
 }
 
 //-------------------------------------------------------------------------------------------------

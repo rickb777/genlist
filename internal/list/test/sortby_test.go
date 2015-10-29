@@ -16,15 +16,15 @@ func TestSortBy(t *testing.T) {
 	seventh := Thing{"Seventh", 50}
 	eighth := Thing{"Eighth", 110}
 
-	things := ThingList{
+	things := thingCollection(
 		first,
 		second,
 		third,
 		anotherThird,
 		fourth,
-	}
+	)
 
-	lotsOfThings := ThingList{
+	lotsOfThings := thingCollection(
 		first,
 		second,
 		third,
@@ -33,7 +33,7 @@ func TestSortBy(t *testing.T) {
 		sixth,
 		seventh,
 		eighth,
-	}
+	)
 
 	name := func(a, b Thing) bool {
 		return a.Name < b.Name

@@ -37,19 +37,22 @@ func TestFilterNum1(t *testing.T) {
 
 func TestFilterThing(t *testing.T) {
 	things := thingCollection(
-		Thing{"First", 0},
-		Thing{"Second", 0},
-		Thing{"Third", 0},
-		Thing{"Second", 10},
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
 	)
 
 	where1 := things.Filter(func(x Thing) bool {
-		return x.Name == "Second"
+		return x.Name == "Boo"
 	})
 
 	expected1 := thingCollection(
-		Thing{"Second", 0},
-		Thing{"Second", 10},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
 	)
 
 	if !reflect.DeepEqual(where1, expected1) {

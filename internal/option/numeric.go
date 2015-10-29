@@ -22,11 +22,11 @@ func (o Optional{{.TName}}) Sum() {{.PName}} {
 
 // Mean computes the arithmetic mean of all elements.
 // Panics if the list is empty.
-func (o Optional{{.TName}}) Mean() {{.PName}} {
+func (o Optional{{.TName}}) Mean() float64 {
 	if o.IsEmpty() {
 		panic("Cannot compute the arithmetic mean of zero-length Optional{{.TName}}")
 	}
-	return o.Sum()
+	return float64(*(o.x))
 }
 
 {{end}}

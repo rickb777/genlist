@@ -37,18 +37,22 @@ func TestMapToNum(t *testing.T) {
 }
 
 func TestMapToString(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	name1 := func(x Thing) string {
 		return x.Name
 	}
 
 	r1 := things.MapToString(name1)
-	expected1 := []string{"First", "Second", "Third"}
+	expected1 := []string{"Fee", "Fie", "Foe", "Boo", "Boo", "Bam", "Bam"}
 
 	if !reflect.DeepEqual(r1, expected1) {
 		t.Errorf("MapToNum1 should result in %#v, got %#v", expected1, r1)

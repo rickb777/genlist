@@ -87,7 +87,7 @@ type {{.TName}}Collection interface {
 
 	// Mean computes the arithmetic mean of all elements. Panics if the collection is empty.
 	// Omitted if {{.TName}} is not numeric.
-	Mean() {{.PName}}
+	Mean() float64
 
 {{end}}
 {{if .Type.Ordered}}

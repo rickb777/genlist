@@ -14,18 +14,21 @@ func TestMaxOrdered(t *testing.T) {
 }
 
 func TestMaxNotOrdered(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-		{"Fourth", 10},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 21},
+		Thing{"Bam", 13},
+		Thing{"Bam", 8},
+	)
 
 	max1 := things.Max(func(a, b Thing) bool {
 		return a.Number < b.Number
 	})
 
-	expected1 := Thing{"Third", 100}
+	expected1 := Thing{"Boo", 21}
 
 	if max1 != expected1 {
 		t.Errorf("Max Number should return %#v, got %#v", expected1, max1)

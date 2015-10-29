@@ -48,21 +48,24 @@ func TestDropLastNum2(t *testing.T) {
 }
 
 func TestDropLastThing(t *testing.T) {
-	things := ThingList{
-		{"Fee", 1},
-		{"Fie", 2},
-		{"Foe", 3},
-		{"Boo", 4},
-		{"Bam", 5},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
-	where1 := things.DropLast(2)
+	where1 := things.DropLast(4)
 
-	expected1 := ThingList{
-		{"Fee", 1},
-		{"Fie", 2},
-		{"Foe", 3},
-	}
+	expected1 := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+	)
+
 
 	if !reflect.DeepEqual(where1, expected1) {
 		t.Errorf("DropLast should result in %#v, got %#v", expected1, where1)

@@ -92,7 +92,7 @@ type Num1Collection interface {
 
 	// Mean computes the arithmetic mean of all elements. Panics if the collection is empty.
 	// Omitted if Num1 is not numeric.
-	Mean() Num1
+	Mean() float64
 
 	// Min returns the minimum value of Num1List. In the case of multiple items being equally minimal,
 	// the first such element is returned. Panics if the collection is empty.
@@ -600,12 +600,13 @@ func (list Num1List) Sum() (result Num1) {
 
 // Mean computes the arithmetic mean of all elements.
 // Panics if the list is empty.
-func (list Num1List) Mean() Num1 {
+func (list Num1List) Mean() float64 {
 	l := len(list)
 	if l == 0 {
 		panic("Cannot compute the arithmetic mean of zero-length Num1List")
 	}
-	return list.Sum() / Num1(l)
+	sum := list.Sum()
+	return float64(sum) / float64(l)
 }
 
 //-------------------------------------------------------------------------------------------------

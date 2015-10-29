@@ -75,34 +75,38 @@ func TestInitLastNum2(t *testing.T) {
 }
 
 func TestInitLastThing(t *testing.T) {
-	things := ThingList{
-		{"First", 2},
-		{"Second", 3},
-		{"Third", 5},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	h1 := things.Last()
 	t1 := things.Init().ToList()
 
-	if h1.Number != 5 {
-		t.Errorf("Last should be 5")
+	if h1.Number != 21 {
+		t.Errorf("Last should be 21")
 	}
 
 	h2 := t1.Last()
 	t2 := t1.Init().ToList()
 
-	if h2.Number != 3 {
-		t.Errorf("Last should be 3")
+	if h2.Number != 13 {
+		t.Errorf("Last should be 13")
 	}
 
 	h3 := t2.Last()
 	t3 := t2.Init()
 
-	if h3.Number != 2 {
-		t.Errorf("Last should be 2")
+	if h3.Number != 8 {
+		t.Errorf("Last should be 8")
 	}
 
-	if t3.Size() != 0 {
-		t.Errorf("Init should be an empty list")
+	if t3.Size() != 4 {
+		t.Errorf("Init should leave 4 items not %d", t3.Size())
 	}
 }

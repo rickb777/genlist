@@ -30,14 +30,22 @@ func TestEqualsNum1(t *testing.T) {
 
 func TestEqualsThing(t *testing.T) {
 	listA := thingCollection(
-		Thing{"First", 60},
-		Thing{"Second", -20},
-		Thing{"Third", 100},
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
 	)
 	listB := thingCollection(
-		Thing{"First", 60},
-		Thing{"Second", -20},
-		Thing{"Fourth", 10},
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Zzz", 13},
+		Thing{"Zzz", 21},
 	)
 	listC := thingCollection()
 

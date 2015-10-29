@@ -22,11 +22,15 @@ func TestShuffleNum(t *testing.T) {
 }
 
 func TestShuffleThing(t *testing.T) {
-	original := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	original := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
 	shuffled := original.Shuffle()
 

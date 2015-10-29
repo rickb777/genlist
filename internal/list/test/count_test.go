@@ -47,25 +47,29 @@ func TestCountNum2(t *testing.T) {
 }
 
 func TestCountThing(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", 20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
-	count1 := things.Count(Thing{"Second", 20})
+	count1 := things.Count(Thing{"Fie", 2})
 
 	if count1 != 1 {
 		t.Errorf("Count should find one item Name == Second")
 	}
 
-	count2 := things.Count(Thing{"Dummy", 20})
+	count2 := things.Count(Thing{"Dummy", 111})
 
 	if count2 != 0 {
 		t.Errorf("Count should no items for Name == Dummy")
 	}
 
-	count3 := ThingList{}.Count(Thing{"Second", 20})
+	count3 := ThingList{}.Count(Thing{"Fie", 200})
 
 	if count3 != 0 {
 		t.Errorf("Count should find no items in an empty list")

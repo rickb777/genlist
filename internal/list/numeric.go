@@ -15,12 +15,13 @@ func (list {{.TName}}List) Sum() (result {{.PName}}) {
 
 // Mean computes the arithmetic mean of all elements.
 // Panics if the list is empty.
-func (list {{.TName}}List) Mean() {{.PName}} {
+func (list {{.TName}}List) Mean() float64 {
 	l := len(list)
 	if l == 0 {
 		panic("Cannot compute the arithmetic mean of zero-length {{.TName}}List")
 	}
-	return list.Sum() / {{.PName}}(l)
+	sum := {{if .Type.Ptr}}*(list.Sum()){{else}}list.Sum(){{end}}
+	return float64(sum) / float64(l)
 }
 {{end}}
 `

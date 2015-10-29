@@ -15,19 +15,22 @@ func TestMaxOrdered(t *testing.T) {
 
 func TestMaxNotOrdered(t *testing.T) {
 	things := thingCollection(
-		Thing{"First", 10},
-		Thing{"Second", -10},
-		Thing{"Third", 100},
-		Thing{"Second", 50},
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 21},
+		Thing{"Bam", 13},
+		Thing{"Bam", 8},
 	)
 
-	m1 := things.Max(func(a, b Thing) bool {
+	max1 := things.Max(func(a, b Thing) bool {
 		return a.Number < b.Number
 	})
 
-	expected1 := Thing{"Third", 100}
+	expected1 := Thing{"Boo", 21}
 
-	if m1 != expected1 {
-		t.Errorf("Max Number should return %#v, got %#v", expected1, m1)
+	if max1 != expected1 {
+		t.Errorf("Max Number should return %#v, got %#v", expected1, max1)
 	}
 }

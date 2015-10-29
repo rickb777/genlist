@@ -28,9 +28,13 @@ func TestContainsNum1(t *testing.T) {
 
 func TestContainsThing(t *testing.T) {
 	things := thingCollection(
-		Thing{"First", 60},
-		Thing{"Second", -20},
-		Thing{"Third", 100},
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
 	)
 
 	has1 := things.Contains(Thing{"Dummy", 9})
@@ -39,10 +43,10 @@ func TestContainsThing(t *testing.T) {
 		t.Errorf("Contains should not evaluate true for Name == Dummy")
 	}
 
-	has2 := things.Contains(Thing{"Second", -20})
+	has2 := things.Contains(Thing{"Fie", 2})
 
 	if !has2 {
-		t.Errorf("Contains should evaluate true for Second,-20")
+		t.Errorf("Contains should evaluate true for Fie,2")
 	}
 
 	has3 := thingCollection().Contains(Thing{"A", 1})

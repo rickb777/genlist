@@ -41,14 +41,18 @@ func TestLenNum(t *testing.T) {
 }
 
 func TestLenThing(t *testing.T) {
-	things := ThingList{
-		{"First", 60},
-		{"Second", -20},
-		{"Third", 100},
-	}
+	things := thingCollection(
+		Thing{"Fee", 1},
+		Thing{"Fie", 2},
+		Thing{"Foe", 3},
+		Thing{"Boo", 5},
+		Thing{"Boo", 8},
+		Thing{"Bam", 13},
+		Thing{"Bam", 21},
+	)
 
-	if things.Size() != 3 {
-		t.Errorf("Size should be 3")
+	if things.Size() != 7 {
+		t.Errorf("Size should be 7")
 	}
 
 	if things.IsEmpty() {
@@ -59,8 +63,8 @@ func TestLenThing(t *testing.T) {
 		t.Errorf("NonEmpty should be true")
 	}
 
-	if things.ToList().Size() != 3 {
-		t.Errorf("Size should be 3")
+	if things.ToList().Size() != 7 {
+		t.Errorf("Size should be 7")
 	}
 
 	noThings := ThingList{}
