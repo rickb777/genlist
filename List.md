@@ -27,14 +27,15 @@ The generated code is a list to hold `Example` values. It provides methods inclu
 
  * **Head**, **Tail** - get the first element and the rest
  * **Init**, **Last** - get the last element and the rest
- * **IsEmpty**, **NonEmpty**, **Len** - get simple properties
+ * **IsEmpty**, **NonEmpty** - get simple properties
+ * **Size**, **Len** - get simple properties (these are aliases)
  * **Exists**, **Forall** - test whether any or all elements match some specified condition
  * **Foreach** - apply a function to every element in turn, typically causing side-effects
  * **Reverse**, **Shuffle** - get a new list that is reversed or shuffled
  * **Take**, **TakeWhile**, **DropLast** - get a new list without some trailing elements
  * **Drop**, **DropWhile**, **TakeLast** - get a new list without some leading elements
  * **Filter**, **Partition** - get a subset, or two disjoint subsets, of the list
- * **Iter** - get a channel that supplies values in sequence
+ * **Send** - get a channel that supplies values in sequence
  * **CountBy**, **MaxBy**, **MinBy**, **DistinctBy** - statistics based on supplied operator functions
  * **IndexWhere**, **IndexWhere2** - find the index of the first match using a predicate function
  * **LastIndexWhere**, **LastIndexWhere2** - find the index of the last match using a predicate function

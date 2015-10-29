@@ -1,6 +1,6 @@
 package main
 
-// +test List:"MapTo[Num1], MapTo[*Num2], With[Num1], With[Foo], SortWith"
+// +test List:"MapTo[Num1], MapTo[*Num2], MapTo[string], With[Num1], With[Foo], SortWith"
 type Thing struct {
 	Name   string
 	Number Num1

@@ -660,6 +660,29 @@ func (list ThingList) FlatMapToNum2(fn func(Thing) Num2Collection) Num2Collectio
 	return result
 }
 
+// MapToString transforms ThingList to []string.
+func (list ThingList) MapToString(fn func(Thing) string) []string {
+	result := make([]string, 0, len(list))
+	for _, v := range list {
+		u := fn(v)
+		result = append(result, u)
+	}
+	return result
+}
+
+// FlatMapToString transforms ThingList to stringList, by repeatedly
+// calling the supplied function and concatenating the results as a single flat list.
+func (list ThingList) FlatMapToString(fn func(Thing) []string) []string {
+	result := make([]string, 0, len(list))
+	for _, v := range list {
+		u := fn(v)
+		if len(u) > 0 {
+			result = append(result, u...)
+		}
+	}
+	return result
+}
+
 // FoldLeftNum1 applies a binary operator to a start value and all elements of this list, going left to right.
 func (list ThingList) FoldLeftNum1(zero Num1, fn func(Num1, Thing) Num1) Num1 {
 	sum := zero
