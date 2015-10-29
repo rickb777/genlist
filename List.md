@@ -107,15 +107,26 @@ between options and sets.
 
 #### `MapTo` Tag
 
-`MapTo[T]` adds code to transform the original list to a new 
-list by transforming each element using a function you provide. `MapTo[T]` can be used more than once: 
+`MapTo[T]` adds code to transform the original list to a new list by transforming each element using a function you provide.
+`MapTo[T]` can be used more than once: 
 
 ````go
 // +gen List:"MapTo[Fred], MapTo[Jim]"
 type Example struct { ... }
 ````
 
-Each tag creates a corresponding `MapToFred`, `MapToJim` etc function.
+This adds methods according to the parameter type `T` (e.g. `Fred` and `Jim` above):
+
+ * **MapTo**T - converts to type `T`
+ * **FlatMapTo**T - converts to collections of `T`
+
+For `MapToT`, a mapping function transforms an individual `Example` item to its `Fred` equivalent.
+
+For `FlatMapToT`, a mapping function transforms an individual `Example` item to a
+sequence of its `T` equivalent. This sequence is added to the result set.
+
+Normally the result is a `TCollection`. 
+But if the target type is a basic type, such as `string` or `int`, the result is a slice of the basic type instead.
 
 #### `With[T]` Tag
 

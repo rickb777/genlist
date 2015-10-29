@@ -66,20 +66,26 @@ between options and sets.
 
 #### `MapTo` Tag
 
-`MapTo[T]` adds code to transform the original option to a new 
-option by transforming its element using a function you provide. `MapTo[T]` can be used more than once: 
+`MapTo[T]` adds code to transform the original option to a new option by transforming its element using a function you provide.
+`MapTo[T]` can be used more than once: 
 
 ````go
 // +gen Option:"MapTo[Fred], MapTo[Jim]"
 type Example struct { ... }
 ````
 
-Each tag creates a corresponding `MapToFred`, `MapToJim` etc function. These functions return the corresponding
-`OptionalFred`, `OptionalJim` etc values.
+This adds methods according to the parameter type `T` (e.g. `Fred` and `Jim` above):
 
-In addition, a corresponding `FlatMapToFred`, `FlatMapToJim` etc function is generated. These functions return the 
-corresponding `OptionalFred`, `OptionalJim` etc values. A mapping function transforms individual `Example` item to a
-sequence of its `Fred` equivalent. This sequence is added to the result set.
+ * **MapTo**T - converts to type `T`
+ * **FlatMapTo**T - converts to collections of `T`
+
+For `MapToT`, a mapping function transforms an individual `Example` item to its `Fred` equivalent.
+
+For `FlatMapToT`, a mapping function transforms an individual `Example` item to a
+sequence of its `T` equivalent. This sequence is added to the result set.
+
+Normally the result is a `TCollection`. 
+But if the target type is a basic type, such as `string` or `int`, the result is a slice of the basic type instead.
 
 ### Next: [Sets](Set.md)
 #### Contents:
