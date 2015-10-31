@@ -6,7 +6,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"math/rand"
 )
@@ -373,12 +372,11 @@ func (list Num2List) CountBy(predicate func(*Num2) bool) (result int) {
 
 // MinBy returns an element of Num2List containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Returns error if no elements.
-func (list Num2List) MinBy(less func(*Num2, *Num2) bool) (result *Num2, err error) {
+// element is returned. Panics if there are no elements.
+func (list Num2List) MinBy(less func(*Num2, *Num2) bool) (result *Num2) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty list.")
-		return
+		panic("Cannot determine the minimum of an empty list.")
 	}
 	m := 0
 	for i := 1; i < l; i++ {
@@ -392,12 +390,11 @@ func (list Num2List) MinBy(less func(*Num2, *Num2) bool) (result *Num2, err erro
 
 // MaxBy returns an element of Num2List containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements.
-func (list Num2List) MaxBy(less func(*Num2, *Num2) bool) (result *Num2, err error) {
+// element is returned. Panics if there are no elements.
+func (list Num2List) MaxBy(less func(*Num2, *Num2) bool) (result *Num2) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the MaxBy of an empty list.")
-		return
+		panic("Cannot determine the maximum of an empty list.")
 	}
 	m := 0
 	for i := 1; i < l; i++ {

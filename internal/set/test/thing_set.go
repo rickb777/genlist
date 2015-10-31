@@ -6,7 +6,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 )
 
@@ -39,6 +38,9 @@ type ThingCollection interface {
 	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Thing
+
+	// ToSet gets all the elements in a in Set.
+	ToSet() ThingSet
 
 	// Send sends all elements along a channel of type Thing.
 	// For sequences, the order is well defined.
@@ -174,6 +176,11 @@ func (set ThingSet) ToSlice() []Thing {
 		i++
 	}
 	return slice
+}
+
+// ToSet gets the current set, which requires no further conversion.
+func (set ThingSet) ToSet() ThingSet {
+	return set
 }
 
 // Contains tests whether an item is already in the ThingSet.
@@ -374,21 +381,19 @@ func (set ThingSet) CountBy(predicate func(Thing) bool) (result int) {
 
 // MinBy returns an element of ThingSet containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Returns error if no elements.
-func (set ThingSet) MinBy(less func(Thing, Thing) bool) (result Thing, err error) {
+// element is returned. Panics if there are no elements.
+func (set ThingSet) MinBy(less func(Thing, Thing) bool) (result Thing) {
 	l := len(set)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty set.")
-		return
+		panic("Cannot determine the minimum of an empty set.")
 	}
 	first := true
-	var min Thing
 	for v := range set {
 		if first {
 			first = false
-			min = v
-		} else if less(min, v) {
-			min = v
+			result = v
+		} else if less(v, result) {
+			result = v
 		}
 	}
 	return
@@ -396,21 +401,19 @@ func (set ThingSet) MinBy(less func(Thing, Thing) bool) (result Thing, err error
 
 // MaxBy returns an element of ThingSet containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements.
-func (set ThingSet) MaxBy(less func(Thing, Thing) bool) (result Thing, err error) {
+// element is returned. Panics if there are no elements.
+func (set ThingSet) MaxBy(less func(Thing, Thing) bool) (result Thing) {
 	l := len(set)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty set.")
-		return
+		panic("Cannot determine the maximum of an empty set.")
 	}
 	first := true
-	var max Thing
 	for v := range set {
 		if first {
 			first = false
-			max = v
-		} else if less(v, max) {
-			max = v
+			result = v
+		} else if less(result, v) {
+			result = v
 		}
 	}
 	return
@@ -509,4 +512,198 @@ func (set ThingSet) FlatMapToNum1(fn func(Thing) Num1Collection) Num1Collection 
 	return Num1Set(result)
 }
 
-// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[MapTo:true]}
+// GroupByNum1 groups elements into a map keyed by Num1.
+// This method requires Num1 be comparable.
+func (set ThingSet) GroupByNum1(fn func(Thing) Num1) map[Num1]ThingSet {
+	result := make(map[Num1]ThingSet)
+	for v := range set {
+		key := fn(v)
+		group, exists := result[key]
+		if !exists {
+			group = NewThingSet()
+		}
+		group[v] = struct{}{}
+		result[key] = group
+	}
+	return result
+}
+
+// MapToString transforms ThingSet to []string.
+func (set ThingSet) MapToString(fn func(Thing) string) []string {
+	result := make([]string, 0, len(set))
+	for v := range set {
+		u := fn(v)
+		result = append(result, u)
+	}
+	return result
+}
+
+// FlatMapToString transforms ThingSet to []string, by repeatedly
+// calling the supplied function and concatenating the results as a single flat slice.
+func (set ThingSet) FlatMapToString(fn func(Thing) []string) []string {
+	result := make([]string, 0, len(set))
+	for v := range set {
+		u := fn(v)
+		if len(u) > 0 {
+			result = append(result, u...)
+		}
+	}
+	return result
+}
+
+// FoldLeftNum1 applies a binary operator to a start value and all elements of this set, going left to right.
+// Note: the result is well-defined only if the operator function is associative and commutative.
+func (set ThingSet) FoldLeftNum1(zero Num1, fn func(Num1, Thing) Num1) Num1 {
+	sum := zero
+	for v := range set {
+		sum = fn(sum, v)
+	}
+	return sum
+}
+
+// FoldRightNum1 applies a binary operator to a start value and all elements of this set, going right to left.
+// This is an alias for FoldLeftNum1.
+// Note: the result is well-defined only if the operator function is associative and commutative.
+func (set ThingSet) FoldRightNum1(zero Num1, fn func(Num1, Thing) Num1) Num1 {
+	return set.FoldLeftNum1(zero, fn)
+}
+
+// SumNum1 sums Thing over elements in ThingSet.
+// This method requires Thing be numeric.
+func (set ThingSet) SumNum1(fn func(Thing) Num1) (result Num1) {
+	for v := range set {
+		result += fn(v)
+	}
+	return
+}
+
+// MeanNum1 sums Num1 over all elements and divides by len(ThingSet).
+// This method requires Thing be numeric.
+// Panics if there are no elements.
+func (set ThingSet) MeanNum1(fn func(Thing) Num1) (result Num1) {
+	l := len(set)
+	if l == 0 {
+		panic("Cannot determine the maximum of an empty set.")
+		return
+	}
+	for v := range set {
+		result += fn(v)
+	}
+	result = result / Num1(l)
+	return
+}
+
+// MinByNum1 finds the first element which yields the smallest value measured by function fn.
+// fn is usually called a projection or measuring function.
+// Panics if there are no elements.
+// This method requires Num1 be ordered.
+func (set ThingSet) MinByNum1(fn func(Thing) Num1) (result Thing) {
+	if len(set) == 0 {
+		panic("Cannot determine the minimum of an empty set.")
+	}
+	var m Num1
+	first := true
+	for v := range set {
+		f := fn(v)
+		if first {
+			first = false
+			result = v
+			m = f
+		} else if m > f {
+			result = v
+			m = f
+		}
+	}
+	return
+}
+
+// MaxByNum1 finds the first element which yields the largest value measured by function fn.
+// fn is usually called a projection or measuring function.
+// Panics if there are no elements.
+// This method requires Num1 be ordered.
+func (set ThingSet) MaxByNum1(fn func(Thing) Num1) (result Thing) {
+	if len(set) == 0 {
+		panic("Cannot determine the maximum of an empty set.")
+	}
+	var m Num1
+	first := true
+	for v := range set {
+		f := fn(v)
+		if first {
+			first = false
+			result = v
+			m = f
+		} else if m < f {
+			result = v
+			m = f
+		}
+	}
+	return
+}
+
+// FoldLeftFoo applies a binary operator to a start value and all elements of this set, going left to right.
+// Note: the result is well-defined only if the operator function is associative and commutative.
+func (set ThingSet) FoldLeftFoo(zero Foo, fn func(Foo, Thing) Foo) Foo {
+	sum := zero
+	for v := range set {
+		sum = fn(sum, v)
+	}
+	return sum
+}
+
+// FoldRightFoo applies a binary operator to a start value and all elements of this set, going right to left.
+// This is an alias for FoldLeftFoo.
+// Note: the result is well-defined only if the operator function is associative and commutative.
+func (set ThingSet) FoldRightFoo(zero Foo, fn func(Foo, Thing) Foo) Foo {
+	return set.FoldLeftFoo(zero, fn)
+}
+
+// MinByFoo finds the first element which yields the smallest value measured by function fn.
+// fn is usually called a projection or measuring function.
+// Panics if there are no elements.
+// This method requires Foo be ordered.
+func (set ThingSet) MinByFoo(fn func(Thing) Foo) (result Thing) {
+	if len(set) == 0 {
+		panic("Cannot determine the minimum of an empty set.")
+	}
+	var m Foo
+	first := true
+	for v := range set {
+		f := fn(v)
+		if first {
+			first = false
+			result = v
+			m = f
+		} else if m > f {
+			result = v
+			m = f
+		}
+	}
+	return
+}
+
+// MaxByFoo finds the first element which yields the largest value measured by function fn.
+// fn is usually called a projection or measuring function.
+// Panics if there are no elements.
+// This method requires Foo be ordered.
+func (set ThingSet) MaxByFoo(fn func(Thing) Foo) (result Thing) {
+	if len(set) == 0 {
+		panic("Cannot determine the maximum of an empty set.")
+	}
+	var m Foo
+	first := true
+	for v := range set {
+		f := fn(v)
+		if first {
+			first = false
+			result = v
+			m = f
+		} else if m < f {
+			result = v
+			m = f
+		}
+	}
+	return
+}
+
+// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[MapTo:true With:true]}

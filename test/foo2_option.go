@@ -6,7 +6,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"math/rand"
 	"sort"
@@ -44,6 +43,9 @@ type Foo2Collection interface {
 
 	// ToList gets all the elements in a in List.
 	ToList() Foo2List
+
+	// ToSet gets all the elements in a in Set.
+	ToSet() Foo2Set
 
 	// Send sends all elements along a channel of type Foo2.
 	// For sequences, the order is well defined.
@@ -439,6 +441,11 @@ func (list Foo2List) ToList() Foo2List {
 	return list
 }
 
+// ToSet converts the list to an equivalent set, i.e. without duplicates.
+func (list Foo2List) ToSet() Foo2Set {
+	return NewFoo2Set(list)
+}
+
 // Size returns the number of items in the list - an alias of Len().
 func (list Foo2List) Size() int {
 	return len(list)
@@ -663,12 +670,11 @@ func (list Foo2List) CountBy(predicate func(Foo2) bool) (result int) {
 
 // MinBy returns an element of Foo2List containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Returns error if no elements.
-func (list Foo2List) MinBy(less func(Foo2, Foo2) bool) (result Foo2, err error) {
+// element is returned. Panics if there are no elements.
+func (list Foo2List) MinBy(less func(Foo2, Foo2) bool) (result Foo2) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty list.")
-		return
+		panic("Cannot determine the minimum of an empty list.")
 	}
 	m := 0
 	for i := 1; i < l; i++ {
@@ -682,12 +688,11 @@ func (list Foo2List) MinBy(less func(Foo2, Foo2) bool) (result Foo2, err error) 
 
 // MaxBy returns an element of Foo2List containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements.
-func (list Foo2List) MaxBy(less func(Foo2, Foo2) bool) (result Foo2, err error) {
+// element is returned. Panics if there are no elements.
+func (list Foo2List) MaxBy(less func(Foo2, Foo2) bool) (result Foo2) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the MaxBy of an empty list.")
-		return
+		panic("Cannot determine the maximum of an empty list.")
 	}
 	m := 0
 	for i := 1; i < l; i++ {
@@ -920,7 +925,7 @@ func (list Foo2List) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
-// First returns the first element that returns true for the passed func. Returns error if no elements return true.
+// First returns the first element that returns true for the passed func. Returns none if no elements return true.
 func (list Foo2List) Find(fn func(Foo2) bool) OptionalFoo2 {
 	for _, v := range list {
 		if fn(v) {
@@ -1034,6 +1039,11 @@ func (set Foo2Set) ToSlice() []Foo2 {
 // ToList gets all the set's elements in a in SetList.
 func (set Foo2Set) ToList() Foo2List {
 	return Foo2List(set.ToSlice())
+}
+
+// ToSet gets the current set, which requires no further conversion.
+func (set Foo2Set) ToSet() Foo2Set {
+	return set
 }
 
 // Contains tests whether an item is already in the Foo2Set.
@@ -1234,21 +1244,19 @@ func (set Foo2Set) CountBy(predicate func(Foo2) bool) (result int) {
 
 // MinBy returns an element of Foo2Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Returns error if no elements.
-func (set Foo2Set) MinBy(less func(Foo2, Foo2) bool) (result Foo2, err error) {
+// element is returned. Panics if there are no elements.
+func (set Foo2Set) MinBy(less func(Foo2, Foo2) bool) (result Foo2) {
 	l := len(set)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty set.")
-		return
+		panic("Cannot determine the minimum of an empty set.")
 	}
 	first := true
-	var min Foo2
 	for v := range set {
 		if first {
 			first = false
-			min = v
-		} else if less(min, v) {
-			min = v
+			result = v
+		} else if less(v, result) {
+			result = v
 		}
 	}
 	return
@@ -1256,21 +1264,19 @@ func (set Foo2Set) MinBy(less func(Foo2, Foo2) bool) (result Foo2, err error) {
 
 // MaxBy returns an element of Foo2Set containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements.
-func (set Foo2Set) MaxBy(less func(Foo2, Foo2) bool) (result Foo2, err error) {
+// element is returned. Panics if there are no elements.
+func (set Foo2Set) MaxBy(less func(Foo2, Foo2) bool) (result Foo2) {
 	l := len(set)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty set.")
-		return
+		panic("Cannot determine the maximum of an empty set.")
 	}
 	first := true
-	var max Foo2
 	for v := range set {
 		if first {
 			first = false
-			max = v
-		} else if less(v, max) {
-			max = v
+			result = v
+		} else if less(result, v) {
+			result = v
 		}
 	}
 	return

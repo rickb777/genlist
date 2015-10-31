@@ -83,7 +83,7 @@ func TestDropThing(t *testing.T) {
 		t.Errorf("Drop should result in %#v, got %#v", things, where3)
 	}
 
-	where4 := ThingList{}.Drop(10)
+	where4 := thingCollection().Drop(10)
 
 	if len(where4) != 0 {
 		t.Errorf("Drop should result in empty list, got %#v", where4)

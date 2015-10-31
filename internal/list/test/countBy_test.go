@@ -85,7 +85,7 @@ func TestCountByThing(t *testing.T) {
 		t.Errorf("CountBy should no items for Name == Dummy")
 	}
 
-	count4 := ThingList{}.CountBy(func(x Thing) bool {
+	count4 := thingCollection().CountBy(func(x Thing) bool {
 		return true
 	})
 

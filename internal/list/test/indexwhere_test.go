@@ -59,7 +59,7 @@ func TestIndexWhereThing(t *testing.T) {
 		t.Errorf("IndexWhere should be -1, got %#v", where2)
 	}
 
-	where3 := ThingList{}.IndexWhere(func(x Thing) bool {
+	where3 := thingCollection().IndexWhere(func(x Thing) bool {
 		return true
 	})
 

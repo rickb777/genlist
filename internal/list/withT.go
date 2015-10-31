@@ -45,11 +45,11 @@ func (list {{.TName}}List) Sum{{.TypeParameter.LongName}}(fn func({{.PName}}) {{
 }
 
 // Mean{{.TypeParameter.LongName}} sums {{.TypeParameter}} over all elements and divides by len({{.TName}}List).
-func (list {{.TName}}List) Mean{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.TypeParameter}}, err error) {
+// Panics if there are no elements.
+func (list {{.TName}}List) Mean{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Mean[{{.TypeParameter}}] of zero-length {{.TName}}List")
-		return
+		panic("Cannot determine the mean of an empty list.")
 	}
 	for _, v := range list {
 		result += fn(v)
@@ -64,11 +64,11 @@ func (list {{.TName}}List) Mean{{.TypeParameter.LongName}}(fn func({{.PName}}) {
 
 // MinBy{{.TypeParameter.LongName}} finds the first element which yields the smallest value measured by function fn.
 // fn is usually called a projection or measuring function.
-// Returns an error if the {{.TName}}List is empty.
-func (list {{.TName}}List) MinBy{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.PName}}, err error) {
+// Panics if there are no elements.
+func (list {{.TName}}List) MinBy{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.PName}}) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Min of zero-length {{.TName}}List")
+		panic("Cannot determine the minimum of an empty list.")
 		return
 	}
 	result = list[0]
@@ -88,12 +88,11 @@ func (list {{.TName}}List) MinBy{{.TypeParameter.LongName}}(fn func({{.PName}}) 
 
 // MaxBy{{.TypeParameter.LongName}} finds the first element which yields the largest value measured by function fn.
 // fn is usually called a projection or measuring function.
-// Returns an error if the {{.TName}}List is empty.
-func (list {{.TName}}List) MaxBy{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.PName}}, err error) {
+// Panics if there are no elements.
+func (list {{.TName}}List) MaxBy{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.PName}}) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Max of zero-length {{.TName}}List")
-		return
+		panic("Cannot determine the maximum of an empty list.")
 	}
 	result = list[0]
 	if l > 1 {

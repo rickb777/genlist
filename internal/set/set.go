@@ -82,6 +82,11 @@ func (set {{.TName}}Set) ToList() {{.TName}}List {
 }
 
 {{end}}
+// ToSet gets the current set, which requires no further conversion.
+func (set {{.TName}}Set) ToSet() {{.TName}}Set {
+	return set
+}
+
 
 ` + setAlgebra + addRemoveFunctions + iterationFunctions + predicatedFunctions +
 numericFunctions + orderedFunctions + mkstringFunctions

@@ -86,7 +86,7 @@ func TestDropWhileThing(t *testing.T) {
 		t.Errorf("DropWhile should result in %#v, got %#v", things, where3)
 	}
 
-	where4 := ThingList{}.DropWhile(func(x Thing) bool {
+	where4 := thingCollection().DropWhile(func(x Thing) bool {
 		return true
 	})
 

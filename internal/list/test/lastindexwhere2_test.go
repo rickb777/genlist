@@ -67,7 +67,7 @@ func TestLastIndexWhere2Thing(t *testing.T) {
 		t.Errorf("LastIndexWhere2 should be -1, got %#v", where2)
 	}
 
-	where3 := ThingList{}.LastIndexWhere2(func(x Thing) bool {
+	where3 := thingCollection().LastIndexWhere2(func(x Thing) bool {
 		return true
 	}, 10)
 

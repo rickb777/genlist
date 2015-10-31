@@ -1,6 +1,6 @@
 package main
 
-// +test Set:"MapTo[Num1]"
+// +test Set:"MapTo[Num1], MapTo[string], With[Num1], With[Foo]"
 type Thing struct {
 	Name   string
 	Number Num1

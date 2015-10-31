@@ -41,21 +41,19 @@ func (set {{.TName}}Set) CountBy(predicate func({{.PName}}) bool) (result int) {
 
 // MinBy returns an element of {{.TName}}Set containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Returns error if no elements.
-func (set {{.TName}}Set) MinBy(less func({{.PName}}, {{.PName}}) bool) (result {{.PName}}, err error) {
+// element is returned. Panics if there are no elements.
+func (set {{.TName}}Set) MinBy(less func({{.PName}}, {{.PName}}) bool) (result {{.PName}}) {
 	l := len(set)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty set.")
-		return
+		panic("Cannot determine the minimum of an empty set.")
 	}
 	first := true
-	var min {{.PName}}
 	for v := range set {
 		if first {
 			first = false
-			min = v
-		} else if less(min, v) {
-			min = v
+			result = v
+		} else if less(v, result) {
+			result = v
 		}
 	}
 	return
@@ -63,21 +61,19 @@ func (set {{.TName}}Set) MinBy(less func({{.PName}}, {{.PName}}) bool) (result {
 
 // MaxBy returns an element of {{.TName}}Set containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements.
-func (set {{.TName}}Set) MaxBy(less func({{.PName}}, {{.PName}}) bool) (result {{.PName}}, err error) {
+// element is returned. Panics if there are no elements.
+func (set {{.TName}}Set) MaxBy(less func({{.PName}}, {{.PName}}) bool) (result {{.PName}}) {
 	l := len(set)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty set.")
-		return
+		panic("Cannot determine the maximum of an empty set.")
 	}
 	first := true
-	var max {{.PName}}
 	for v := range set {
 		if first {
 			first = false
-			max = v
-		} else if less(v, max) {
-			max = v
+			result = v
+		} else if less(result, v) {
+			result = v
 		}
 	}
 	return

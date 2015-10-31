@@ -37,6 +37,11 @@ type {{.TName}}Collection interface {
 	ToList() {{.TName}}List
 
 {{end}}
+{{if .Has.Set}}
+	// ToSet gets all the elements in a in {{.Name}}Set.
+	ToSet() {{.TName}}Set
+
+{{end}}
 	// Send sends all elements along a channel of type {{.TName}}.
 	// For sequences, the order is well defined.
 	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But

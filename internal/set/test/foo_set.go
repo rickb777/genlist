@@ -6,7 +6,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 )
 
@@ -39,6 +38,9 @@ type FooCollection interface {
 	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Foo
+
+	// ToSet gets all the elements in a in Set.
+	ToSet() FooSet
 
 	// Send sends all elements along a channel of type Foo.
 	// For sequences, the order is well defined.
@@ -172,6 +174,11 @@ func (set FooSet) ToSlice() []Foo {
 		i++
 	}
 	return slice
+}
+
+// ToSet gets the current set, which requires no further conversion.
+func (set FooSet) ToSet() FooSet {
+	return set
 }
 
 // Contains tests whether an item is already in the FooSet.
@@ -372,21 +379,19 @@ func (set FooSet) CountBy(predicate func(Foo) bool) (result int) {
 
 // MinBy returns an element of FooSet containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Returns error if no elements.
-func (set FooSet) MinBy(less func(Foo, Foo) bool) (result Foo, err error) {
+// element is returned. Panics if there are no elements.
+func (set FooSet) MinBy(less func(Foo, Foo) bool) (result Foo) {
 	l := len(set)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty set.")
-		return
+		panic("Cannot determine the minimum of an empty set.")
 	}
 	first := true
-	var min Foo
 	for v := range set {
 		if first {
 			first = false
-			min = v
-		} else if less(min, v) {
-			min = v
+			result = v
+		} else if less(v, result) {
+			result = v
 		}
 	}
 	return
@@ -394,21 +399,19 @@ func (set FooSet) MinBy(less func(Foo, Foo) bool) (result Foo, err error) {
 
 // MaxBy returns an element of FooSet containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements.
-func (set FooSet) MaxBy(less func(Foo, Foo) bool) (result Foo, err error) {
+// element is returned. Panics if there are no elements.
+func (set FooSet) MaxBy(less func(Foo, Foo) bool) (result Foo) {
 	l := len(set)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty set.")
-		return
+		panic("Cannot determine the maximum of an empty set.")
 	}
 	first := true
-	var max Foo
 	for v := range set {
 		if first {
 			first = false
-			max = v
-		} else if less(v, max) {
-			max = v
+			result = v
+		} else if less(result, v) {
+			result = v
 		}
 	}
 	return
@@ -501,6 +504,22 @@ func (set FooSet) FlatMapToNum1(fn func(Foo) Num1Collection) Num1Collection {
 		})
 	}
 	return Num1Set(result)
+}
+
+// GroupByNum1 groups elements into a map keyed by Num1.
+// This method requires Num1 be comparable.
+func (set FooSet) GroupByNum1(fn func(Foo) Num1) map[Num1]FooSet {
+	result := make(map[Num1]FooSet)
+	for v := range set {
+		key := fn(v)
+		group, exists := result[key]
+		if !exists {
+			group = NewFooSet()
+		}
+		group[v] = struct{}{}
+		result[key] = group
+	}
+	return result
 }
 
 // Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[MapTo:true]}

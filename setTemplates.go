@@ -12,12 +12,20 @@ var coreSetTemplate = &typewriter.Template{
 
 var otherSetTemplates = typewriter.TemplateSlice{
 	setMapToT,
+	setWithT,
 	coreListTemplate,
 }
 
 var setMapToT = &typewriter.Template{
 	Name: "MapTo",
 	Text: set.SetMapToParamFunctions,
+	// exactly one type parameter is required, but no constraints on that type
+	TypeParameterConstraints: []typewriter.Constraint{{}},
+}
+
+var setWithT = &typewriter.Template{
+	Name: "With",
+	Text: set.WithParamFunctions,
 	// exactly one type parameter is required, but no constraints on that type
 	TypeParameterConstraints: []typewriter.Constraint{{}},
 }

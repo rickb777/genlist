@@ -99,7 +99,7 @@ func TestPartitionThing(t *testing.T) {
 		t.Errorf("Partition should result in %#v, got %#v", things, o2)
 	}
 
-	m3, o3 := ThingList{}.Partition(func(x Thing) bool {
+	m3, o3 := thingCollection().Partition(func(x Thing) bool {
 		return true
 	})
 

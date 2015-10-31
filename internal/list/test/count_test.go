@@ -69,7 +69,7 @@ func TestCountThing(t *testing.T) {
 		t.Errorf("Count should no items for Name == Dummy")
 	}
 
-	count3 := ThingList{}.Count(Thing{"Fie", 200})
+	count3 := thingCollection().Count(Thing{"Fie", 200})
 
 	if count3 != 0 {
 		t.Errorf("Count should find no items in an empty list")

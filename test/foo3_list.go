@@ -6,7 +6,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"math/rand"
 )
@@ -373,12 +372,11 @@ func (list Foo3List) CountBy(predicate func(*Foo3) bool) (result int) {
 
 // MinBy returns an element of Foo3List containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Returns error if no elements.
-func (list Foo3List) MinBy(less func(*Foo3, *Foo3) bool) (result *Foo3, err error) {
+// element is returned. Panics if there are no elements.
+func (list Foo3List) MinBy(less func(*Foo3, *Foo3) bool) (result *Foo3) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty list.")
-		return
+		panic("Cannot determine the minimum of an empty list.")
 	}
 	m := 0
 	for i := 1; i < l; i++ {
@@ -392,12 +390,11 @@ func (list Foo3List) MinBy(less func(*Foo3, *Foo3) bool) (result *Foo3, err erro
 
 // MaxBy returns an element of Foo3List containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements.
-func (list Foo3List) MaxBy(less func(*Foo3, *Foo3) bool) (result *Foo3, err error) {
+// element is returned. Panics if there are no elements.
+func (list Foo3List) MaxBy(less func(*Foo3, *Foo3) bool) (result *Foo3) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the MaxBy of an empty list.")
-		return
+		panic("Cannot determine the maximum of an empty list.")
 	}
 	m := 0
 	for i := 1; i < l; i++ {
@@ -614,7 +611,7 @@ func (list Foo3List) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
-// First returns the first element that returns true for the passed func. Returns error if no elements return true.
+// First returns the first element that returns true for the passed func. Returns none if no elements return true.
 func (list Foo3List) Find(fn func(*Foo3) bool) OptionalFoo3 {
 	for _, v := range list {
 		if fn(v) {

@@ -6,7 +6,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"math/rand"
 )
@@ -373,12 +372,11 @@ func (list ThingList) CountBy(predicate func(Thing) bool) (result int) {
 
 // MinBy returns an element of ThingList containing the minimum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
-// element is returned. Returns error if no elements.
-func (list ThingList) MinBy(less func(Thing, Thing) bool) (result Thing, err error) {
+// element is returned. Panics if there are no elements.
+func (list ThingList) MinBy(less func(Thing, Thing) bool) (result Thing) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the MinBy of an empty list.")
-		return
+		panic("Cannot determine the minimum of an empty list.")
 	}
 	m := 0
 	for i := 1; i < l; i++ {
@@ -392,12 +390,11 @@ func (list ThingList) MinBy(less func(Thing, Thing) bool) (result Thing, err err
 
 // MaxBy returns an element of ThingList containing the maximum value, when compared to other elements
 // using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
-// element is returned. Returns error if no elements.
-func (list ThingList) MaxBy(less func(Thing, Thing) bool) (result Thing, err error) {
+// element is returned. Panics if there are no elements.
+func (list ThingList) MaxBy(less func(Thing, Thing) bool) (result Thing) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("Cannot determine the MaxBy of an empty list.")
-		return
+		panic("Cannot determine the maximum of an empty list.")
 	}
 	m := 0
 	for i := 1; i < l; i++ {
@@ -724,11 +721,11 @@ func (list ThingList) SumNum1(fn func(Thing) Num1) (result Num1) {
 }
 
 // MeanNum1 sums Num1 over all elements and divides by len(ThingList).
-func (list ThingList) MeanNum1(fn func(Thing) Num1) (result Num1, err error) {
+// Panics if there are no elements.
+func (list ThingList) MeanNum1(fn func(Thing) Num1) (result Num1) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Mean[Num1] of zero-length ThingList")
-		return
+		panic("Cannot determine the mean of an empty list.")
 	}
 	for _, v := range list {
 		result += fn(v)
@@ -741,11 +738,11 @@ func (list ThingList) MeanNum1(fn func(Thing) Num1) (result Num1, err error) {
 
 // MinByNum1 finds the first element which yields the smallest value measured by function fn.
 // fn is usually called a projection or measuring function.
-// Returns an error if the ThingList is empty.
-func (list ThingList) MinByNum1(fn func(Thing) Num1) (result Thing, err error) {
+// Panics if there are no elements.
+func (list ThingList) MinByNum1(fn func(Thing) Num1) (result Thing) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Min of zero-length ThingList")
+		panic("Cannot determine the minimum of an empty list.")
 		return
 	}
 	result = list[0]
@@ -765,12 +762,11 @@ func (list ThingList) MinByNum1(fn func(Thing) Num1) (result Thing, err error) {
 
 // MaxByNum1 finds the first element which yields the largest value measured by function fn.
 // fn is usually called a projection or measuring function.
-// Returns an error if the ThingList is empty.
-func (list ThingList) MaxByNum1(fn func(Thing) Num1) (result Thing, err error) {
+// Panics if there are no elements.
+func (list ThingList) MaxByNum1(fn func(Thing) Num1) (result Thing) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Max of zero-length ThingList")
-		return
+		panic("Cannot determine the maximum of an empty list.")
 	}
 	result = list[0]
 	if l > 1 {
@@ -821,11 +817,11 @@ func (list ThingList) GroupByFoo(fn func(Thing) Foo) map[Foo]ThingList {
 
 // MinByFoo finds the first element which yields the smallest value measured by function fn.
 // fn is usually called a projection or measuring function.
-// Returns an error if the ThingList is empty.
-func (list ThingList) MinByFoo(fn func(Thing) Foo) (result Thing, err error) {
+// Panics if there are no elements.
+func (list ThingList) MinByFoo(fn func(Thing) Foo) (result Thing) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Min of zero-length ThingList")
+		panic("Cannot determine the minimum of an empty list.")
 		return
 	}
 	result = list[0]
@@ -845,12 +841,11 @@ func (list ThingList) MinByFoo(fn func(Thing) Foo) (result Thing, err error) {
 
 // MaxByFoo finds the first element which yields the largest value measured by function fn.
 // fn is usually called a projection or measuring function.
-// Returns an error if the ThingList is empty.
-func (list ThingList) MaxByFoo(fn func(Thing) Foo) (result Thing, err error) {
+// Panics if there are no elements.
+func (list ThingList) MaxByFoo(fn func(Thing) Foo) (result Thing) {
 	l := len(list)
 	if l == 0 {
-		err = errors.New("cannot determine Max of zero-length ThingList")
-		return
+		panic("Cannot determine the maximum of an empty list.")
 	}
 	result = list[0]
 	if l > 1 {

@@ -55,4 +55,12 @@ func (list {{.TName}}List) ToSlice() []{{.PName}} {
 func (list {{.TName}}List) ToList() {{.TName}}List {
 	return list
 }
+
+{{if .Has.Set}}
+// ToSet converts the list to an equivalent set, i.e. without duplicates.
+func (list {{.TName}}List) ToSet() {{.TName}}Set {
+	return New{{.TName}}Set(list)
+}
+
+{{end}}
 `
