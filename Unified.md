@@ -51,6 +51,20 @@ The set has the following extra methods:
 
  * **ToList** - returns a list containing the set elements in some arbitrary order.
 
+### Equals
+
+Two collections are considered equal if they are the same size, have the same elements, and for sequences, have
+the same order of their elements.
+
+Therefore be careful comparing a list with a set - they will typically not be equal even if they have the same size
+and elements. Often, it is useful to treat them both as sets:
+
+````go
+    if list.ToSet().Equals(set) {
+        ...
+    }
+````
+
 ### Next: [Plumbing functions](Plumbing.md)
 #### Contents:
 
