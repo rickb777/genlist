@@ -86,6 +86,19 @@ func (set {{.TName}}Set) ToSlice() []{{.PName}} {
 	return slice
 }
 
+{{if .Type.Underlying.IsBasic}}
+// To{{.Type.Underlying.LongName}}s gets all the elements in a []{{.Type.Underlying}}.
+func (set {{.TName}}Set) To{{.Type.Underlying.LongName}}s() []{{.Type.Underlying}} {
+	slice := make([]{{.Type.Underlying}}, len(set))
+	i := 0
+	for v := range set {
+		slice[i] = {{.Type.Underlying}}(v)
+		i++
+	}
+	return slice
+}
+
+{{end}}
 {{if .Has.List}}
 // ToList gets all the set's elements in a in {{.Name}}List.
 func (set {{.TName}}Set) ToList() {{.TName}}List {

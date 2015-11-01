@@ -32,13 +32,18 @@ type {{.TName}}Collection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []{{.PName}}
 
+{{if .Type.Underlying.IsBasic}}
+	// To{{.Type.Underlying.LongName}}s gets all the elements in a slice of the underlying type, []{{.Type.Underlying}}.
+	To{{.Type.Underlying.LongName}}s() []{{.Type.Underlying}}
+
+{{end}}
 {{if .Has.List}}
-	// ToList gets all the elements in a in {{.Name}}List.
+	// ToList gets all the elements in a {{.Name}}List.
 	ToList() {{.TName}}List
 
 {{end}}
 {{if .Has.Set}}
-	// ToSet gets all the elements in a in {{.Name}}Set.
+	// ToSet gets all the elements in a {{.Name}}Set.
 	ToSet() {{.TName}}Set
 
 {{end}}

@@ -40,7 +40,7 @@ type Foo4Collection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []*Foo4
 
-	// ToList gets all the elements in a in List.
+	// ToList gets all the elements in a List.
 	ToList() Foo4List
 
 	// Send sends all elements along a channel of type Foo4.
@@ -145,7 +145,7 @@ func (o OptionalFoo4) Get() *Foo4 {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return (o.x)
+	return o.x
 }
 
 func (o OptionalFoo4) GetOrElse(d func() *Foo4) *Foo4 {
@@ -349,9 +349,18 @@ func (o OptionalFoo4) MkString3(pfx, mid, sfx string) string {
 type Foo4List []*Foo4
 
 //-------------------------------------------------------------------------------------------------
-// BuildFoo4ListFrom constructs a new Foo4List from a channel that supplies values
-// until it is closed.
-func BuildFoo4ListFrom(source <-chan *Foo4) Foo4List {
+// NewFoo4List constructs a new list containing the supplied values, if any.
+func NewFoo4List(values ...*Foo4) Foo4List {
+	list := make(Foo4List, len(values))
+	for i, v := range values {
+		list[i] = v
+	}
+	return list
+}
+
+// BuildFoo4ListFromChan constructs a new Foo4List from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildFoo4ListFromChan(source <-chan *Foo4) Foo4List {
 	result := make(Foo4List, 0)
 	for v := range source {
 		result = append(result, v)

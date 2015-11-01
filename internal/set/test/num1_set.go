@@ -39,7 +39,10 @@ type Num1Collection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Num1
 
-	// ToSet gets all the elements in a in Set.
+	// ToInts gets all the elements in a []int.
+	ToInts() []int
+
+	// ToSet gets all the elements in a Set.
 	ToSet() Num1Set
 
 	// Send sends all elements along a channel of type Num1.
@@ -124,9 +127,9 @@ type Num1Set map[Num1]struct{}
 
 //-------------------------------------------------------------------------------------------------
 // NewNum1Set constructs a new set containing the supplied values, if any.
-func NewNum1Set(e ...Num1) Num1Set {
+func NewNum1Set(values ...Num1) Num1Set {
 	set := make(map[Num1]struct{})
-	for _, v := range e {
+	for _, v := range values {
 		set[v] = struct{}{}
 	}
 	return Num1Set(set)
@@ -180,6 +183,17 @@ func (set Num1Set) ToSlice() []Num1 {
 	i := 0
 	for v := range set {
 		slice[i] = v
+		i++
+	}
+	return slice
+}
+
+// ToInts gets all the elements in a []int.
+func (set Num1Set) ToInts() []int {
+	slice := make([]int, len(set))
+	i := 0
+	for v := range set {
+		slice[i] = int(v)
 		i++
 	}
 	return slice

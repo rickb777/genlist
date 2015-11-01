@@ -40,7 +40,7 @@ type Foo3Collection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []*Foo3
 
-	// ToList gets all the elements in a in List.
+	// ToList gets all the elements in a List.
 	ToList() Foo3List
 
 	// Send sends all elements along a channel of type Foo3.
@@ -116,9 +116,18 @@ type Foo3Collection interface {
 type Foo3List []*Foo3
 
 //-------------------------------------------------------------------------------------------------
-// BuildFoo3ListFrom constructs a new Foo3List from a channel that supplies values
-// until it is closed.
-func BuildFoo3ListFrom(source <-chan *Foo3) Foo3List {
+// NewFoo3List constructs a new list containing the supplied values, if any.
+func NewFoo3List(values ...*Foo3) Foo3List {
+	list := make(Foo3List, len(values))
+	for i, v := range values {
+		list[i] = v
+	}
+	return list
+}
+
+// BuildFoo3ListFromChan constructs a new Foo3List from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildFoo3ListFromChan(source <-chan *Foo3) Foo3List {
 	result := make(Foo3List, 0)
 	for v := range source {
 		result = append(result, v)
@@ -679,7 +688,7 @@ func (o OptionalFoo3) Get() *Foo3 {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return (o.x)
+	return o.x
 }
 
 func (o OptionalFoo3) GetOrElse(d func() *Foo3) *Foo3 {

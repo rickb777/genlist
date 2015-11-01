@@ -41,10 +41,13 @@ type Foo1Collection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Foo1
 
-	// ToList gets all the elements in a in List.
+	// ToInts gets all the elements in a []int.
+	ToInts() []int
+
+	// ToList gets all the elements in a List.
 	ToList() Foo1List
 
-	// ToSet gets all the elements in a in Set.
+	// ToSet gets all the elements in a Set.
 	ToSet() Foo1Set
 
 	// Send sends all elements along a channel of type Foo1.
@@ -127,9 +130,27 @@ type Foo1Collection interface {
 type Foo1List []Foo1
 
 //-------------------------------------------------------------------------------------------------
-// BuildFoo1ListFrom constructs a new Foo1List from a channel that supplies values
-// until it is closed.
-func BuildFoo1ListFrom(source <-chan Foo1) Foo1List {
+// NewFoo1List constructs a new list containing the supplied values, if any.
+func NewFoo1List(values ...Foo1) Foo1List {
+	list := make(Foo1List, len(values))
+	for i, v := range values {
+		list[i] = v
+	}
+	return list
+}
+
+// NewFoo1ListFromInts constructs a new Foo1List from a []int.
+func NewFoo1ListFromInts(values []int) Foo1List {
+	list := make(Foo1List, len(values))
+	for i, v := range values {
+		list[i] = Foo1(v)
+	}
+	return list
+}
+
+// BuildFoo1ListFromChan constructs a new Foo1List from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildFoo1ListFromChan(source <-chan Foo1) Foo1List {
 	result := make(Foo1List, 0)
 	for v := range source {
 		result = append(result, v)
@@ -186,6 +207,15 @@ func (list Foo1List) IsSet() bool {
 // ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
 func (list Foo1List) ToSlice() []Foo1 {
 	return []Foo1(list)
+}
+
+// ToInts gets all the elements in a []int.
+func (list Foo1List) ToInts() []int {
+	slice := make([]int, len(list))
+	for i, v := range list {
+		slice[i] = int(v)
+	}
+	return slice
 }
 
 // ToList simply returns the list in this case, but is part of the Collection interface.
@@ -746,7 +776,7 @@ func (o OptionalFoo1) Get() Foo1 {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return *(o.x)
+	return *o.x
 }
 
 func (o OptionalFoo1) GetOrElse(d func() Foo1) Foo1 {
@@ -865,6 +895,15 @@ func (o OptionalFoo1) ToSlice() []Foo1 {
 	return slice
 }
 
+// ToInts gets all the elements in a []int.
+func (o OptionalFoo1) ToInts() []int {
+	slice := make([]int, o.Size())
+	if o.NonEmpty() {
+		slice[0] = int(*o.x)
+	}
+	return slice
+}
+
 // ToList gets the option's element in a Foo1List.
 func (o OptionalFoo1) ToList() Foo1List {
 	return Foo1List(o.ToSlice())
@@ -976,9 +1015,9 @@ type Foo1Set map[Foo1]struct{}
 
 //-------------------------------------------------------------------------------------------------
 // NewFoo1Set constructs a new set containing the supplied values, if any.
-func NewFoo1Set(e ...Foo1) Foo1Set {
+func NewFoo1Set(values ...Foo1) Foo1Set {
 	set := make(map[Foo1]struct{})
-	for _, v := range e {
+	for _, v := range values {
 		set[v] = struct{}{}
 	}
 	return Foo1Set(set)
@@ -1032,6 +1071,17 @@ func (set Foo1Set) ToSlice() []Foo1 {
 	i := 0
 	for v := range set {
 		slice[i] = v
+		i++
+	}
+	return slice
+}
+
+// ToInts gets all the elements in a []int.
+func (set Foo1Set) ToInts() []int {
+	slice := make([]int, len(set))
+	i := 0
+	for v := range set {
+		slice[i] = int(v)
 		i++
 	}
 	return slice

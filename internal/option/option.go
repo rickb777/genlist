@@ -43,7 +43,7 @@ func (o Optional{{.TName}}) Get() {{.PName}} {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return {{.Deref}}(o.x)
+	return {{.Deref}}o.x
 }
 
 func (o Optional{{.TName}}) GetOrElse(d func() {{.PName}}) {{.PName}} {
@@ -162,6 +162,17 @@ func (o Optional{{.TName}}) ToSlice() []{{.PName}} {
 	return slice
 }
 
+{{if .Type.Underlying.IsBasic}}
+// To{{.Type.Underlying.LongName}}s gets all the elements in a []{{.Type.Underlying}}.
+func (o Optional{{.TName}}) To{{.Type.Underlying.LongName}}s() []{{.Type.Underlying}} {
+	slice := make([]{{.Type.Underlying}}, o.Size())
+	if o.NonEmpty() {
+		slice[0] = {{.Type.Underlying}}({{.Deref}}o.x)
+	}
+	return slice
+}
+
+{{end}}
 {{if .Has.List}}
 // ToList gets the option's element in a {{.TName}}List.
 func (o Optional{{.TName}}) ToList() {{.TName}}List {

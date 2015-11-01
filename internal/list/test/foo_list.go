@@ -41,7 +41,10 @@ type FooCollection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Foo
 
-	// ToList gets all the elements in a in List.
+	// ToStrings gets all the elements in a []string.
+	ToStrings() []string
+
+	// ToList gets all the elements in a List.
 	ToList() FooList
 
 	// Send sends all elements along a channel of type Foo.
@@ -192,6 +195,15 @@ func (list FooList) IsSet() bool {
 // ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
 func (list FooList) ToSlice() []Foo {
 	return []Foo(list)
+}
+
+// ToStrings gets all the elements in a []string.
+func (list FooList) ToStrings() []string {
+	slice := make([]string, len(list))
+	for i, v := range list {
+		slice[i] = string(v)
+	}
+	return slice
 }
 
 // ToList simply returns the list in this case, but is part of the Collection interface.
@@ -656,9 +668,9 @@ func (list FooList) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
-// MapToNum1 transforms FooList to []Num1.
-func (list FooList) MapToNum1(fn func(Foo) Num1) []Num1 {
-	result := make([]Num1, 0, len(list))
+// MapToNum1 transforms FooList to Num1List.
+func (list FooList) MapToNum1(fn func(Foo) Num1) Num1Collection {
+	result := make(Num1List, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
 		result = append(result, u)
@@ -668,12 +680,12 @@ func (list FooList) MapToNum1(fn func(Foo) Num1) []Num1 {
 
 // FlatMapToNum1 transforms FooList to Num1List, by repeatedly
 // calling the supplied function and concatenating the results as a single flat list.
-func (list FooList) FlatMapToNum1(fn func(Foo) []Num1) []Num1 {
-	result := make([]Num1, 0, len(list))
+func (list FooList) FlatMapToNum1(fn func(Foo) Num1Collection) Num1Collection {
+	result := make(Num1List, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
-		if len(u) > 0 {
-			result = append(result, u...)
+		if u.NonEmpty() {
+			result = append(result, (u.ToList())...)
 		}
 	}
 	return result

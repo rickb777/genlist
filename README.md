@@ -84,7 +84,10 @@ type Num1Collection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Num1
 
-	// ToList gets all the elements in a in List.
+	// ToInts gets all the elements in a slice of the underlying type, []int.
+	ToInts() []int
+
+	// ToList gets all the elements in a List.
 	ToList() Num1List
 
 	// Send sends all elements along a channel of type Num1.
@@ -134,7 +137,7 @@ type Num1Collection interface {
 
 	// Mean computes the arithmetic mean of all elements. Panics if the collection is empty.
 	// Omitted if Num1 is not numeric.
-	Mean() Num1
+	Mean() float64
 
 	// Min returns the minimum value of Num1List. In the case of multiple items being equally minimal,
 	// the first such element is returned. Panics if the collection is empty.

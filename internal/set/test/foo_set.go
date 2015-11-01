@@ -39,7 +39,10 @@ type FooCollection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Foo
 
-	// ToSet gets all the elements in a in Set.
+	// ToStrings gets all the elements in a []string.
+	ToStrings() []string
+
+	// ToSet gets all the elements in a Set.
 	ToSet() FooSet
 
 	// Send sends all elements along a channel of type Foo.
@@ -115,9 +118,9 @@ type FooSet map[Foo]struct{}
 
 //-------------------------------------------------------------------------------------------------
 // NewFooSet constructs a new set containing the supplied values, if any.
-func NewFooSet(e ...Foo) FooSet {
+func NewFooSet(values ...Foo) FooSet {
 	set := make(map[Foo]struct{})
-	for _, v := range e {
+	for _, v := range values {
 		set[v] = struct{}{}
 	}
 	return FooSet(set)
@@ -171,6 +174,17 @@ func (set FooSet) ToSlice() []Foo {
 	i := 0
 	for v := range set {
 		slice[i] = v
+		i++
+	}
+	return slice
+}
+
+// ToStrings gets all the elements in a []string.
+func (set FooSet) ToStrings() []string {
+	slice := make([]string, len(set))
+	i := 0
+	for v := range set {
+		slice[i] = string(v)
 		i++
 	}
 	return slice

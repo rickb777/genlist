@@ -21,7 +21,7 @@ func New{{.TName}}List(values ...{{.PName}}) {{.TName}}List {
 	return list
 }
 
-{{if .Type.IsBasic}}
+{{if .Type.Underlying.IsBasic}}
 // New{{.TName}}ListFrom{{.Type.Underlying.LongName}}s constructs a new {{.TName}}List from a []{{.Type.Underlying}}.
 func New{{.TName}}ListFrom{{.Type.Underlying.LongName}}s(values []{{.Type.Underlying}}) {{.TName}}List {
 	list := make({{.TName}}List, len(values))

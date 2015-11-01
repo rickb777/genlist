@@ -36,6 +36,9 @@ type FooCollection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Foo
 
+	// ToStrings gets all the elements in a []string.
+	ToStrings() []string
+
 	// Send sends all elements along a channel of type Foo.
 	// For sequences, the order is well defined.
 	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
@@ -133,7 +136,7 @@ func (o OptionalFoo) Get() Foo {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return *(o.x)
+	return *o.x
 }
 
 func (o OptionalFoo) GetOrElse(d func() Foo) Foo {
@@ -248,6 +251,15 @@ func (o OptionalFoo) ToSlice() []Foo {
 	slice := make([]Foo, o.Size())
 	if o.NonEmpty() {
 		slice[0] = *o.x
+	}
+	return slice
+}
+
+// ToStrings gets all the elements in a []string.
+func (o OptionalFoo) ToStrings() []string {
+	slice := make([]string, o.Size())
+	if o.NonEmpty() {
+		slice[0] = string(*o.x)
 	}
 	return slice
 }

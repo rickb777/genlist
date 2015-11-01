@@ -39,7 +39,7 @@ type ThingCollection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Thing
 
-	// ToSet gets all the elements in a in Set.
+	// ToSet gets all the elements in a Set.
 	ToSet() ThingSet
 
 	// Send sends all elements along a channel of type Thing.
@@ -117,9 +117,9 @@ type ThingSet map[Thing]struct{}
 
 //-------------------------------------------------------------------------------------------------
 // NewThingSet constructs a new set containing the supplied values, if any.
-func NewThingSet(e ...Thing) ThingSet {
+func NewThingSet(values ...Thing) ThingSet {
 	set := make(map[Thing]struct{})
-	for _, v := range e {
+	for _, v := range values {
 		set[v] = struct{}{}
 	}
 	return ThingSet(set)

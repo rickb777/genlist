@@ -138,7 +138,7 @@ func (o OptionalBar) Get() *Bar {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return (o.x)
+	return o.x
 }
 
 func (o OptionalBar) GetOrElse(d func() *Bar) *Bar {

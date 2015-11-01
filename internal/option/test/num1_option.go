@@ -36,6 +36,9 @@ type Num1Collection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Num1
 
+	// ToInts gets all the elements in a []int.
+	ToInts() []int
+
 	// Send sends all elements along a channel of type Num1.
 	// For sequences, the order is well defined.
 	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
@@ -142,7 +145,7 @@ func (o OptionalNum1) Get() Num1 {
 	if o.IsEmpty() {
 		panic("Attempt to access non-existent value")
 	}
-	return *(o.x)
+	return *o.x
 }
 
 func (o OptionalNum1) GetOrElse(d func() Num1) Num1 {
@@ -257,6 +260,15 @@ func (o OptionalNum1) ToSlice() []Num1 {
 	slice := make([]Num1, o.Size())
 	if o.NonEmpty() {
 		slice[0] = *o.x
+	}
+	return slice
+}
+
+// ToInts gets all the elements in a []int.
+func (o OptionalNum1) ToInts() []int {
+	slice := make([]int, o.Size())
+	if o.NonEmpty() {
+		slice[0] = int(*o.x)
 	}
 	return slice
 }

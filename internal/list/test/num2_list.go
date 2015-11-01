@@ -40,7 +40,7 @@ type Num2Collection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []*Num2
 
-	// ToList gets all the elements in a in List.
+	// ToList gets all the elements in a List.
 	ToList() Num2List
 
 	// Send sends all elements along a channel of type Num2.
