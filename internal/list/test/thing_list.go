@@ -116,9 +116,18 @@ type ThingCollection interface {
 type ThingList []Thing
 
 //-------------------------------------------------------------------------------------------------
-// BuildThingListFrom constructs a new ThingList from a channel that supplies values
-// until it is closed.
-func BuildThingListFrom(source <-chan Thing) ThingList {
+// NewThingList constructs a new list containing the supplied values, if any.
+func NewThingList(values ...Thing) ThingList {
+	list := make(ThingList, len(values))
+	for i, v := range values {
+		list[i] = v
+	}
+	return list
+}
+
+// BuildThingListFromChan constructs a new ThingList from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildThingListFromChan(source <-chan Thing) ThingList {
 	result := make(ThingList, 0)
 	for v := range source {
 		result = append(result, v)
@@ -611,9 +620,9 @@ func (list ThingList) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
-// MapToNum1 transforms ThingList to Num1List.
-func (list ThingList) MapToNum1(fn func(Thing) Num1) Num1Collection {
-	result := make(Num1List, 0, len(list))
+// MapToNum1 transforms ThingList to []Num1.
+func (list ThingList) MapToNum1(fn func(Thing) Num1) []Num1 {
+	result := make([]Num1, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
 		result = append(result, u)
@@ -623,12 +632,12 @@ func (list ThingList) MapToNum1(fn func(Thing) Num1) Num1Collection {
 
 // FlatMapToNum1 transforms ThingList to Num1List, by repeatedly
 // calling the supplied function and concatenating the results as a single flat list.
-func (list ThingList) FlatMapToNum1(fn func(Thing) Num1Collection) Num1Collection {
-	result := make(Num1List, 0, len(list))
+func (list ThingList) FlatMapToNum1(fn func(Thing) []Num1) []Num1 {
+	result := make([]Num1, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
-		if u.NonEmpty() {
-			result = append(result, (u.ToList())...)
+		if len(u) > 0 {
+			result = append(result, u...)
 		}
 	}
 	return result
@@ -1085,4 +1094,4 @@ func quickSortThingList(list ThingList, less func(Thing, Thing) bool, a, b, maxD
 	}
 }
 
-// List flags: {Collection:false Sequence:false List:true Option:false Set:false Tag:map[MapTo:true With:true SortWith:true]}
+// List flags: {Collection:false Sequence:false List:true Option:false Set:false Tag:map[With:true SortWith:true MapTo:true]}

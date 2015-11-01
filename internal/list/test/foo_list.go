@@ -115,9 +115,27 @@ type FooCollection interface {
 type FooList []Foo
 
 //-------------------------------------------------------------------------------------------------
-// BuildFooListFrom constructs a new FooList from a channel that supplies values
-// until it is closed.
-func BuildFooListFrom(source <-chan Foo) FooList {
+// NewFooList constructs a new list containing the supplied values, if any.
+func NewFooList(values ...Foo) FooList {
+	list := make(FooList, len(values))
+	for i, v := range values {
+		list[i] = v
+	}
+	return list
+}
+
+// NewFooListFromStrings constructs a new FooList from a []string.
+func NewFooListFromStrings(values []string) FooList {
+	list := make(FooList, len(values))
+	for i, v := range values {
+		list[i] = Foo(v)
+	}
+	return list
+}
+
+// BuildFooListFromChan constructs a new FooList from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildFooListFromChan(source <-chan Foo) FooList {
 	result := make(FooList, 0)
 	for v := range source {
 		result = append(result, v)
@@ -638,9 +656,9 @@ func (list FooList) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
-// MapToNum1 transforms FooList to Num1List.
-func (list FooList) MapToNum1(fn func(Foo) Num1) Num1Collection {
-	result := make(Num1List, 0, len(list))
+// MapToNum1 transforms FooList to []Num1.
+func (list FooList) MapToNum1(fn func(Foo) Num1) []Num1 {
+	result := make([]Num1, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
 		result = append(result, u)
@@ -650,12 +668,12 @@ func (list FooList) MapToNum1(fn func(Foo) Num1) Num1Collection {
 
 // FlatMapToNum1 transforms FooList to Num1List, by repeatedly
 // calling the supplied function and concatenating the results as a single flat list.
-func (list FooList) FlatMapToNum1(fn func(Foo) Num1Collection) Num1Collection {
-	result := make(Num1List, 0, len(list))
+func (list FooList) FlatMapToNum1(fn func(Foo) []Num1) []Num1 {
+	result := make([]Num1, 0, len(list))
 	for _, v := range list {
 		u := fn(v)
-		if u.NonEmpty() {
-			result = append(result, (u.ToList())...)
+		if len(u) > 0 {
+			result = append(result, u...)
 		}
 	}
 	return result

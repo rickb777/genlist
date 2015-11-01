@@ -116,9 +116,18 @@ type Num2Collection interface {
 type Num2List []*Num2
 
 //-------------------------------------------------------------------------------------------------
-// BuildNum2ListFrom constructs a new Num2List from a channel that supplies values
-// until it is closed.
-func BuildNum2ListFrom(source <-chan *Num2) Num2List {
+// NewNum2List constructs a new list containing the supplied values, if any.
+func NewNum2List(values ...*Num2) Num2List {
+	list := make(Num2List, len(values))
+	for i, v := range values {
+		list[i] = v
+	}
+	return list
+}
+
+// BuildNum2ListFromChan constructs a new Num2List from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func BuildNum2ListFromChan(source <-chan *Num2) Num2List {
 	result := make(Num2List, 0)
 	for v := range source {
 		result = append(result, v)

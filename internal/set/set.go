@@ -14,14 +14,25 @@ type {{.TName}}Set map[{{.TName}}]struct{}
 
 //-------------------------------------------------------------------------------------------------
 // New{{.TName}}Set constructs a new set containing the supplied values, if any.
-func New{{.TName}}Set(e ...{{.PName}}) {{.TName}}Set {
+func New{{.TName}}Set(values ...{{.PName}}) {{.TName}}Set {
 	set := make(map[{{.TName}}]struct{})
-	for _, v := range e {
+	for _, v := range values {
 		set[v] = struct{}{}
 	}
 	return {{.TName}}Set(set)
 }
 
+{{if .Type.IsBasic}}
+// New{{.TName}}SetFrom{{.Type.Underlying.LongName}}s constructs a new {{.TName}}Set from a []{{.Type.Underlying}}.
+func New{{.TName}}SetFrom{{.Type.Underlying.LongName}}s(values []{{.Type.Underlying}}) {{.TName}}Set {
+	set := make(map[{{.TName}}]struct{})
+	for _, v := range values {
+		set[{{.TName}}(v)] = struct{}{}
+	}
+	return {{.TName}}Set(set)
+}
+
+{{end}}
 // Build{{.TName}}SetFrom constructs a new {{.TName}}Set from a channel that supplies values
 // until it is closed.
 func Build{{.TName}}SetFrom(source <-chan {{.PName}}) {{.TName}}Set {

@@ -12,9 +12,29 @@ const List = sequence.Collection + `
 type {{.TName}}List []{{.PName}}
 
 //-------------------------------------------------------------------------------------------------
-// Build{{.TName}}ListFrom constructs a new {{.TName}}List from a channel that supplies values
-// until it is closed.
-func Build{{.TName}}ListFrom(source <-chan {{.PName}}) {{.TName}}List {
+// New{{.TName}}List constructs a new list containing the supplied values, if any.
+func New{{.TName}}List(values ...{{.PName}}) {{.TName}}List {
+	list := make({{.TName}}List, len(values))
+	for i, v := range values {
+		list[i] = v
+	}
+	return list
+}
+
+{{if .Type.IsBasic}}
+// New{{.TName}}ListFrom{{.Type.Underlying.LongName}}s constructs a new {{.TName}}List from a []{{.Type.Underlying}}.
+func New{{.TName}}ListFrom{{.Type.Underlying.LongName}}s(values []{{.Type.Underlying}}) {{.TName}}List {
+	list := make({{.TName}}List, len(values))
+	for i, v := range values {
+		list[i] = {{.TName}}(v)
+	}
+	return list
+}
+
+{{end}}
+// Build{{.TName}}ListFromChan constructs a new {{.TName}}List from a channel that supplies a sequence
+// of values until it is closed. The function doesn't return until then.
+func Build{{.TName}}ListFromChan(source <-chan {{.PName}}) {{.TName}}List {
 	result := make({{.TName}}List, 0)
 	for v := range source {
 		result = append(result, v)
