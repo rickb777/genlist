@@ -383,4 +383,4 @@ func (o OptionalNum1) FlatMapToFoo(fn func(Num1) FooCollection) (result FooColle
 	return fn(*(o.x))
 }
 
-// Option flags: {Collection:false Sequence:false List:false Option:true Set:false Tag:map[MapTo:true]}
+// Option flags: {Collection:false List:false Option:true Set:false Tag:map[MapTo:true]}

@@ -7,7 +7,6 @@ import (
 
 type flags struct {
 	Collection bool
-	Sequence   bool
 	List       bool
 	Option     bool
 	Set        bool

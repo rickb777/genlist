@@ -47,6 +47,9 @@ type Num1Collection interface {
 	// ToList gets all the elements in a List.
 	ToList() Num1List
 
+	// ToSet gets all the elements in a Set.
+	ToSet() Num1Set
+
 	// Send sends all elements along a channel of type Num1.
 	// For sequences, the order is well defined.
 	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
@@ -217,6 +220,15 @@ func (list Num1List) ToInts() []int {
 // ToList simply returns the list in this case, but is part of the Collection interface.
 func (list Num1List) ToList() Num1List {
 	return list
+}
+
+// ToSet gets all the list's elements in a Num1Set.
+func (list Num1List) ToSet() Num1Set {
+	set := make(map[Num1]struct{})
+	for _, v := range list {
+		set[v] = struct{}{}
+	}
+	return Num1Set(set)
 }
 
 // Size returns the number of items in the list - an alias of Len().
@@ -698,6 +710,36 @@ func (list Num1List) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
+// First returns the first element that returns true for the passed func. Returns none if no elements return true.
+func (list Num1List) Find(fn func(Num1) bool) OptionalNum1 {
+	for _, v := range list {
+		if fn(v) {
+			//return SomeNum1(v)
+		}
+	}
+	return NoNum1()
+}
+
+// HeadOption gets the first item in the list, provided there is one.
+func (list Num1List) HeadOption() OptionalNum1 {
+	l := len(list)
+	if l > 0 {
+		return SomeNum1(list[0])
+	} else {
+		return NoNum1()
+	}
+}
+
+// TailOption gets the last item in the list, provided there is one.
+func (list Num1List) LastOption() OptionalNum1 {
+	l := len(list)
+	if l > 0 {
+		return SomeNum1(list[l-1])
+	} else {
+		return NoNum1()
+	}
+}
+
 // MapToFoo transforms Num1List to FooList.
 func (list Num1List) MapToFoo(fn func(Num1) Foo) FooCollection {
 	result := make(FooList, 0, len(list))
@@ -721,4 +763,683 @@ func (list Num1List) FlatMapToFoo(fn func(Num1) FooCollection) FooCollection {
 	return result
 }
 
-// List flags: {Collection:false List:true Option:false Set:false Tag:map[MapTo:true]}
+//-------------------------------------------------------------------------------------------------
+// OptionalNum1 is an optional of type Num1. Use it where you want to be explicit about
+// the presence or absence of data.
+//
+// Optional values follow a similar pattern to Scala Options.
+// See e.g. http://www.scala-lang.org/api/2.11.7/index.html#scala.Option
+
+type OptionalNum1 struct {
+	x *Num1
+}
+
+// shared none value
+var noneNum1 = OptionalNum1{nil}
+
+func NoNum1() OptionalNum1 {
+	return noneNum1
+}
+
+func SomeNum1(x Num1) OptionalNum1 {
+
+	return OptionalNum1{&x}
+
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// panics if option is empty
+func (o OptionalNum1) Head() Num1 {
+	return o.Get()
+}
+
+func (o OptionalNum1) Get() Num1 {
+	if o.IsEmpty() {
+		panic("Attempt to access non-existent value")
+	}
+	return *o.x
+}
+
+func (o OptionalNum1) GetOrElse(d func() Num1) Num1 {
+	if o.IsEmpty() {
+		return d()
+	}
+	return *o.x
+}
+
+func (o OptionalNum1) OrElse(alternative func() OptionalNum1) OptionalNum1 {
+	if o.IsEmpty() {
+		return alternative()
+	}
+	return o
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (o OptionalNum1) Size() int {
+	if o.IsEmpty() {
+		return 0
+	}
+	return 1
+}
+
+func (o OptionalNum1) Len() int {
+	return o.Size()
+}
+
+func (o OptionalNum1) IsEmpty() bool {
+	return o.x == nil
+}
+
+func (o OptionalNum1) NonEmpty() bool {
+	return o.x != nil
+}
+
+// IsSequence returns false for options.
+func (o OptionalNum1) IsSequence() bool {
+	return false
+}
+
+// IsSet returns false for options.
+func (o OptionalNum1) IsSet() bool {
+	return false
+}
+
+// IsDefined returns true if the option is defined, i.e. non-empty. This is an alias for NonEmpty().
+func (o OptionalNum1) IsDefined() bool {
+	return o.NonEmpty()
+}
+
+//-------------------------------------------------------------------------------------------------
+
+func (o OptionalNum1) Find(predicate func(Num1) bool) OptionalNum1 {
+	if o.IsEmpty() {
+		return o
+	}
+	if predicate(*o.x) {
+		return o
+	}
+	return noneNum1
+}
+
+func (o OptionalNum1) Exists(predicate func(Num1) bool) bool {
+	if o.IsEmpty() {
+		return false
+	}
+	return predicate(*o.x)
+}
+
+func (o OptionalNum1) Forall(predicate func(Num1) bool) bool {
+	if o.IsEmpty() {
+		return true
+	}
+	return predicate(*o.x)
+}
+
+func (o OptionalNum1) Foreach(fn func(Num1)) {
+	if o.NonEmpty() {
+		fn(*o.x)
+	}
+}
+
+// Send gets a channel that will send all the elements in order.
+func (o OptionalNum1) Send() <-chan Num1 {
+	ch := make(chan Num1)
+	go func() {
+		if o.NonEmpty() {
+			ch <- *o.x
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+func (o OptionalNum1) Filter(predicate func(Num1) bool) Num1Collection {
+	return o.Find(predicate)
+}
+
+func (o OptionalNum1) Partition(predicate func(Num1) bool) (Num1Collection, Num1Collection) {
+	if o.IsEmpty() {
+		return o, o
+	}
+	if predicate(*o.x) {
+		return o, noneNum1
+	}
+	return noneNum1, o
+}
+
+func (o OptionalNum1) ToSlice() []Num1 {
+	slice := make([]Num1, o.Size())
+	if o.NonEmpty() {
+		slice[0] = *o.x
+	}
+	return slice
+}
+
+// ToInts gets all the elements in a []int.
+func (o OptionalNum1) ToInts() []int {
+	slice := make([]int, o.Size())
+	if o.NonEmpty() {
+		slice[0] = int(*o.x)
+	}
+	return slice
+}
+
+// ToList gets the option's element in a Num1List.
+func (o OptionalNum1) ToList() Num1List {
+	return Num1List(o.ToSlice())
+}
+
+// ToSet gets the option's element in a Num1Set.
+func (o OptionalNum1) ToSet() Num1Set {
+	return NewNum1Set(o.ToSlice()...)
+}
+
+//-------------------------------------------------------------------------------------------------
+// These methods require Num1 be comparable.
+
+// Equals verifies that one or more elements of Num1List return true for the passed func.
+func (o OptionalNum1) Equals(other Num1Collection) bool {
+	if o.IsEmpty() {
+		return other.IsEmpty()
+	}
+	if other.IsEmpty() || other.Size() > 1 {
+		return false
+	}
+	a := o.x
+	s := other.ToSlice()
+	b := s[0]
+	return *a == b
+}
+
+func (o OptionalNum1) Contains(value Num1) bool {
+	if o.IsEmpty() {
+		return false
+	}
+	return *(o.x) == value
+}
+
+func (o OptionalNum1) Count(value Num1) int {
+	if o.Contains(value) {
+		return 1
+	}
+	return 0
+}
+
+// Distinct returns a new Num1Collection whose elements are all unique. For options, this simply returns the
+// receiver.
+// Omitted if Num1 is not comparable.
+func (o OptionalNum1) Distinct() Num1Collection {
+	return o
+}
+
+// Min returns the minimum value of Num1List. In the case of multiple items being equally minimal,
+// the first such element is returned. Panics if the collection is empty.
+func (o OptionalNum1) Min() Num1 {
+	return o.Get()
+}
+
+// Max returns the maximum value of Num1List. In the case of multiple items being equally maximal,
+// the first such element is returned. Panics if the collection is empty.
+func (o OptionalNum1) Max() Num1 {
+	return o.Get()
+}
+
+//-------------------------------------------------------------------------------------------------
+// Sum sums Num1 elements.
+// Omitted if Num1 is not numeric.
+func (o OptionalNum1) Sum() Num1 {
+
+	if o.IsEmpty() {
+		return 0
+	}
+	return *(o.x)
+
+}
+
+// Mean computes the arithmetic mean of all elements.
+// Panics if the list is empty.
+func (o OptionalNum1) Mean() float64 {
+	if o.IsEmpty() {
+		panic("Cannot compute the arithmetic mean of zero-length OptionalNum1")
+	}
+	return float64(*(o.x))
+}
+
+//-------------------------------------------------------------------------------------------------
+// String implements the Stringer interface to render the option as an array of one element.
+func (o OptionalNum1) String() string {
+	return o.MkString3("[", ",", "]")
+}
+
+// MkString concatenates the values as a string.
+func (o OptionalNum1) MkString(sep string) string {
+	return o.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the values as a string.
+func (o OptionalNum1) MkString3(pfx, mid, sfx string) string {
+	if o.IsEmpty() {
+		return fmt.Sprintf("%s%s", pfx, sfx)
+	}
+	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
+}
+
+//-------------------------------------------------------------------------------------------------
+// Num1Set is a typesafe set of Num1 items. Instances are essentially immutable.
+// The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
+// easily.
+//
+// The implementation is based on Go maps.
+
+type Num1Set map[Num1]struct{}
+
+//-------------------------------------------------------------------------------------------------
+// NewNum1Set constructs a new set containing the supplied values, if any.
+func NewNum1Set(values ...Num1) Num1Set {
+	set := make(map[Num1]struct{})
+	for _, v := range values {
+		set[v] = struct{}{}
+	}
+	return Num1Set(set)
+}
+
+// BuildNum1SetFrom constructs a new Num1Set from a channel that supplies values
+// until it is closed.
+func BuildNum1SetFrom(source <-chan Num1) Num1Set {
+	set := make(map[Num1]struct{})
+	for v := range source {
+		set[v] = struct{}{}
+	}
+	return Num1Set(set)
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// IsSequence returns false for sets.
+func (set Num1Set) IsSequence() bool {
+	return false
+}
+
+// IsSet returns true for sets.
+func (set Num1Set) IsSet() bool {
+	return true
+}
+
+func (set Num1Set) Size() int {
+	return len(set)
+}
+
+func (set Num1Set) IsEmpty() bool {
+	return len(set) == 0
+}
+
+func (set Num1Set) NonEmpty() bool {
+	return len(set) > 0
+}
+
+// Head gets an arbitrary element.
+func (set Num1Set) Head() Num1 {
+	for v := range set {
+		return v
+	}
+	panic("Set is empty")
+}
+
+// ToSlice gets all the set's elements in a plain slice.
+func (set Num1Set) ToSlice() []Num1 {
+	slice := make([]Num1, set.Size())
+	i := 0
+	for v := range set {
+		slice[i] = v
+		i++
+	}
+	return slice
+}
+
+// ToInts gets all the elements in a []int.
+func (set Num1Set) ToInts() []int {
+	slice := make([]int, len(set))
+	i := 0
+	for v := range set {
+		slice[i] = int(v)
+		i++
+	}
+	return slice
+}
+
+// ToList gets all the set's elements in a in SetList.
+func (set Num1Set) ToList() Num1List {
+	return Num1List(set.ToSlice())
+}
+
+// ToSet gets the current set, which requires no further conversion.
+func (set Num1Set) ToSet() Num1Set {
+	return set
+}
+
+// Contains tests whether an item is already in the Num1Set.
+func (set Num1Set) Contains(i Num1) bool {
+	_, found := set[i]
+	return found
+}
+
+// ContainsAll tests whether many items are all in the Num1Set.
+func (set Num1Set) ContainsAll(i ...Num1) bool {
+	for _, v := range i {
+		if !set.Contains(v) {
+			return false
+		}
+	}
+	return true
+}
+
+func (set Num1Set) actualSubset(other Num1Set) bool {
+	for item := range set {
+		if !other.Contains(item) {
+			return false
+		}
+	}
+	return true
+}
+
+// Equals determines if two sets are equal to each other.
+// They are considered equal if both are the same size and both have the same items.
+func (set Num1Set) Equals(other Num1Collection) bool {
+	otherSet, isSet := other.(Num1Set)
+	return isSet && set.Size() == other.Size() && set.actualSubset(otherSet)
+}
+
+// IsSubset determines if every item in the other set is in this set.
+func (set Num1Set) IsSubset(other Num1Set) bool {
+	return set.Size() <= other.Size() && set.actualSubset(other)
+}
+
+// IsProperSubset determines if every item in the other set is in this set and this set is
+// smaller than the other.
+func (set Num1Set) IsProperSubset(other Num1Set) bool {
+	return set.Size() < other.Size() && set.actualSubset(other)
+}
+
+// IsSuperset determines if every item of this set is in the other set.
+func (set Num1Set) IsSuperset(other Num1Set) bool {
+	return other.IsSubset(set)
+}
+
+// Union returns a new set with all items in both sets.
+func (set Num1Set) Union(other Num1Set) Num1Set {
+	union := NewNum1Set()
+	for item := range set {
+		union[item] = struct{}{}
+	}
+	for item := range other {
+		union[item] = struct{}{}
+	}
+	return union
+}
+
+// Intersection returns a new set with items that exist only in both sets.
+func (set Num1Set) Intersection(other Num1Set) Num1Set {
+	intersection := NewNum1Set()
+	// loop over the smaller set
+	if set.Size() < other.Size() {
+		for item := range set {
+			if other.Contains(item) {
+				intersection[item] = struct{}{}
+			}
+		}
+	} else {
+		for item := range other {
+			if set.Contains(item) {
+				intersection[item] = struct{}{}
+			}
+		}
+	}
+	return intersection
+}
+
+// Difference returns a new set with items in the current set but not in the other set
+func (set Num1Set) Difference(other Num1Set) Num1Set {
+	diffs := NewNum1Set()
+	for item := range set {
+		if !other.Contains(item) {
+			diffs[item] = struct{}{}
+		}
+	}
+	return diffs
+}
+
+// Add creates a new set with elements added. This is similar to Union, but takes a slice of extra values.
+// The receiver is not modified.
+func (set Num1Set) Add(others ...Num1) Num1Set {
+	added := NewNum1Set()
+	for item := range set {
+		added[item] = struct{}{}
+	}
+	for _, item := range others {
+		added[item] = struct{}{}
+	}
+	return added
+}
+
+// Remove creates a new set with elements removed. This is similar to Difference, but takes a slice of unwanted values.
+// The receiver is not modified.
+func (set Num1Set) Remove(unwanted ...Num1) Num1Set {
+	removed := NewNum1Set()
+	for item := range set {
+		removed[item] = struct{}{}
+	}
+	for _, item := range unwanted {
+		delete(removed, item)
+	}
+	return removed
+}
+
+// Exists verifies that one or more elements of Num1Set return true for the passed func.
+func (set Num1Set) Exists(fn func(Num1) bool) bool {
+	for v := range set {
+		if fn(v) {
+			return true
+		}
+	}
+	return false
+}
+
+// Forall verifies that all elements of Num1Set return true for the passed func.
+func (set Num1Set) Forall(fn func(Num1) bool) bool {
+	for v := range set {
+		if !fn(v) {
+			return false
+		}
+	}
+	return true
+}
+
+// Foreach iterates over Num1Set and executes the passed func against each element.
+// The order of the elements is not well defined but is probably repeatably stable until the set is changed.
+func (set Num1Set) Foreach(fn func(Num1)) {
+	for v := range set {
+		fn(v)
+	}
+}
+
+// Send sends all elements along a channel of type Num1.
+// The order of the elements is not well defined but is probably repeatably stable until the set is changed.
+func (set Num1Set) Send() <-chan Num1 {
+	ch := make(chan Num1)
+	go func() {
+		for v := range set {
+			ch <- v
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+// Filter returns a new Num1Set whose elements return true for func.
+func (set Num1Set) Filter(fn func(Num1) bool) Num1Collection {
+	result := make(map[Num1]struct{})
+	for v := range set {
+		if fn(v) {
+			result[v] = struct{}{}
+		}
+	}
+	return Num1Set(result)
+}
+
+// Partition returns two new Num1Lists whose elements return true or false for the predicate, p.
+// The first result consists of all elements that satisfy the predicate and the second result consists of
+// all elements that don't. The relative order of the elements in the results is the same as in the
+// original set.
+func (set Num1Set) Partition(p func(Num1) bool) (Num1Collection, Num1Collection) {
+	matching := make(map[Num1]struct{})
+	others := make(map[Num1]struct{})
+	for v := range set {
+		if p(v) {
+			matching[v] = struct{}{}
+		} else {
+			others[v] = struct{}{}
+		}
+	}
+	return Num1Set(matching), Num1Set(others)
+}
+
+// CountBy gives the number elements of Num1Set that return true for the passed predicate.
+func (set Num1Set) CountBy(predicate func(Num1) bool) (result int) {
+	for v := range set {
+		if predicate(v) {
+			result++
+		}
+	}
+	return
+}
+
+// MinBy returns an element of Num1Set containing the minimum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally minimal, the first such
+// element is returned. Panics if there are no elements.
+func (set Num1Set) MinBy(less func(Num1, Num1) bool) (result Num1) {
+	l := len(set)
+	if l == 0 {
+		panic("Cannot determine the minimum of an empty set.")
+	}
+	first := true
+	for v := range set {
+		if first {
+			first = false
+			result = v
+		} else if less(v, result) {
+			result = v
+		}
+	}
+	return
+}
+
+// MaxBy returns an element of Num1Set containing the maximum value, when compared to other elements
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// element is returned. Panics if there are no elements.
+func (set Num1Set) MaxBy(less func(Num1, Num1) bool) (result Num1) {
+	l := len(set)
+	if l == 0 {
+		panic("Cannot determine the maximum of an empty set.")
+	}
+	first := true
+	for v := range set {
+		if first {
+			first = false
+			result = v
+		} else if less(result, v) {
+			result = v
+		}
+	}
+	return
+}
+
+// These methods require Num1 be numeric.
+
+// Sum sums all elements in the set.
+func (set Num1Set) Sum() (result Num1) {
+	for v := range set {
+		result += v
+	}
+	return
+}
+
+// Mean computes the arithmetic mean of all elements.
+// Panics if the set is empty.
+func (set Num1Set) Mean() float64 {
+	l := len(set)
+	if l == 0 {
+		panic("Cannot compute the arithmetic mean of zero-length Num1Set")
+	}
+	sum := set.Sum()
+	return float64(sum) / float64(l)
+}
+
+//-------------------------------------------------------------------------------------------------
+// These methods require Num1 be ordered.
+
+// Min returns the element with the minimum value. In the case of multiple items being equally minimal,
+// any such element is returned. Panics if the collection is empty.
+func (set Num1Set) Min() (result Num1) {
+	if len(set) == 0 {
+		panic("Cannot determine the minimum of an empty set.")
+	}
+	first := true
+	for v := range set {
+		if first {
+			first = false
+			result = v
+		} else if v < result {
+			result = v
+		}
+	}
+	return
+}
+
+// Max returns the element with the maximum value. In the case of multiple items being equally maximal,
+// any such element is returned. Panics if the collection is empty.
+func (set Num1Set) Max() (result Num1) {
+	if len(set) == 0 {
+		panic("Cannot determine the maximum of an empty set.")
+	}
+	first := true
+	for v := range set {
+		if first {
+			first = false
+			result = v
+		} else if v > result {
+			result = v
+		}
+	}
+	return
+}
+
+// String implements the Stringer interface to render the set as a comma-separated array.
+func (set Num1Set) String() string {
+	return set.MkString3("[", ",", "]")
+}
+
+// MkString concatenates the values as a string.
+func (set Num1Set) MkString(sep string) string {
+	return set.MkString3("", sep, "")
+}
+
+// MkString3 concatenates the values as a string.
+func (set Num1Set) MkString3(pfx, mid, sfx string) string {
+	b := bytes.Buffer{}
+	b.WriteString(pfx)
+	l := len(set)
+	if l > 0 {
+		sep := ""
+		for v := range set {
+			b.WriteString(sep)
+			b.WriteString(fmt.Sprintf("%v", v))
+			sep = mid
+		}
+	}
+	b.WriteString(sfx)
+	return b.String()
+}
+
+// List flags: {Collection:false List:true Option:true Set:true Tag:map[MapTo:true]}

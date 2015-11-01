@@ -32,25 +32,24 @@ func init() {
 
 type xWriter struct {
 	name           string
-	sequence       bool
 	coreTemplate   *typewriter.Template
 	otherTemplates typewriter.TemplateSlice
 }
 
 func NewListWriter() *xWriter {
-	return &xWriter{listName, true, coreListTemplate, otherListTemplates}
+	return &xWriter{listName, coreListTemplate, otherListTemplates}
 }
 
 func NewOptionWriter() *xWriter {
-	return &xWriter{optionName, true, coreOptionTemplate, optionTemplates}
+	return &xWriter{optionName, coreOptionTemplate, optionTemplates}
 }
 
 func NewSetWriter() *xWriter {
-	return &xWriter{setName, false, coreSetTemplate, otherSetTemplates}
+	return &xWriter{setName, coreSetTemplate, otherSetTemplates}
 }
 
 func NewPlumbingWriter() *xWriter {
-	return &xWriter{plumbingName, false, corePlumbingTemplate, typewriter.TemplateSlice{}}
+	return &xWriter{plumbingName, corePlumbingTemplate, typewriter.TemplateSlice{}}
 }
 
 func (xw *xWriter) Name() string {
@@ -75,9 +74,8 @@ func (xw *xWriter) Write(w io.Writer, typ typewriter.Type) error {
 		flags = flags.setFlag(v.Name)
 	}
 
-	// enable collection and (possibly) sequence for the core template
+	// enable collection for the core template
 	flags.Collection = true
-	flags.Sequence = xw.sequence
 
 	// start with the core template
 	model := newModel(typ, flags)
@@ -86,9 +84,8 @@ func (xw *xWriter) Write(w io.Writer, typ typewriter.Type) error {
 		return err
 	}
 
-	// only want to include collection and sequence once, so turn them off before processing tags
+	// disable collection for the secondary templates
 	flags.Collection = false
-	flags.Sequence = false
 
 	for _, v := range tag.Values {
 		err := xw.writeForTag(w, typ, v, flags)

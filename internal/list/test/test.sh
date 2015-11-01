@@ -1,6 +1,6 @@
 #!/bin/bash -e
 cd $(dirname $0)
-rm -f *_list.go
+rm -f *_list.go coverage.out
 go get ||:
 go run setup.go
 touch coverage.out

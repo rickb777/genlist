@@ -705,4 +705,4 @@ func (set ThingSet) MaxByFoo(fn func(Thing) Foo) (result Thing) {
 	return
 }
 
-// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[MapTo:true With:true]}
+// Set flags: {Collection:false List:false Option:false Set:true Tag:map[MapTo:true With:true]}

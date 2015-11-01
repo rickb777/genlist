@@ -565,4 +565,4 @@ func (set Num1Set) GroupByFoo(fn func(Num1) Foo) map[Foo]Num1Set {
 	return result
 }
 
-// Set flags: {Collection:false Sequence:false List:false Option:false Set:true Tag:map[MapTo:true]}
+// Set flags: {Collection:false List:false Option:false Set:true Tag:map[MapTo:true]}
