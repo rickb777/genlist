@@ -1,8 +1,8 @@
 package list
 
-import "github.com/rickb777/golist/internal/sequence"
+import "github.com/rickb777/golist/internal/collection"
 
-const List = sequence.Collection + `
+const List = collection.Collection + `
 //-------------------------------------------------------------------------------------------------
 // {{.TName}}List is a slice of type {{.PName}}. Use it where you would use []{{.PName}}.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.

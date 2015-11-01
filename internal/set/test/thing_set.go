@@ -72,7 +72,6 @@ type ThingCollection interface {
 	Partition(p func(Thing) bool) (matching ThingCollection, others ThingCollection)
 
 	//-------------------------------------------------------------------------
-
 	// Equals verifies that another ThingCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Thing is not comparable.

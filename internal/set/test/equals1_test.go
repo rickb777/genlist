@@ -3,33 +3,38 @@ package main
 import "testing"
 
 func TestEqualsNum1(t *testing.T) {
-	listA := num1Collection(50, 100, 9, 7, 100, 99)
-	listB := num1Collection(50, 100, 9, 7, 42, 99)
-	listC := num1Collection()
+	a := num1Collection(50, 100, 9, 7, 100, 99)
+	b := num1Collection(50, 100, 9, 100, 7, 99)
+	c := num1Collection(50, 100, 9, 7, 42, 99)
+	d := num1Collection()
 
-	if !listA.Equals(listA) {
+	if !a.Equals(a) {
 		t.Errorf("Equals should be true")
 	}
 
-	if listA.Equals(listB) {
+	if !a.Equals(b) {
+		t.Errorf("Equals should be true")
+	}
+
+	if a.Equals(c) {
 		t.Errorf("Equals should be false")
 	}
 
-	if listA.Equals(listC) {
+	if a.Equals(d) {
 		t.Errorf("Equals should be false")
 	}
 
-	if listB.Equals(listA) {
+	if c.Equals(a) {
 		t.Errorf("Equals should be false")
 	}
 
-	if listC.Equals(listA) {
+	if d.Equals(a) {
 		t.Errorf("Equals should be false")
 	}
 }
 
 func TestEqualsThing(t *testing.T) {
-	listA := thingCollection(
+	a := thingCollection(
 		Thing{"Fee", 1},
 		Thing{"Fie", 2},
 		Thing{"Foe", 3},
@@ -38,7 +43,7 @@ func TestEqualsThing(t *testing.T) {
 		Thing{"Bam", 13},
 		Thing{"Bam", 21},
 	)
-	listB := thingCollection(
+	b := thingCollection(
 		Thing{"Fee", 1},
 		Thing{"Fie", 2},
 		Thing{"Foe", 3},
@@ -47,25 +52,25 @@ func TestEqualsThing(t *testing.T) {
 		Thing{"Zzz", 13},
 		Thing{"Zzz", 21},
 	)
-	listC := thingCollection()
+	c := thingCollection()
 
-	if !listA.Equals(listA) {
+	if !a.Equals(a) {
 		t.Errorf("Equals should be true")
 	}
 
-	if listA.Equals(listB) {
+	if a.Equals(b) {
 		t.Errorf("Equals should be false")
 	}
 
-	if listA.Equals(listC) {
+	if a.Equals(c) {
 		t.Errorf("Equals should be false")
 	}
 
-	if listB.Equals(listA) {
+	if b.Equals(a) {
 		t.Errorf("Equals should be false")
 	}
 
-	if listC.Equals(listA) {
+	if c.Equals(a) {
 		t.Errorf("Equals should be false")
 	}
 }

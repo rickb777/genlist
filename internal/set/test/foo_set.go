@@ -39,7 +39,7 @@ type FooCollection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Foo
 
-	// ToStrings gets all the elements in a []string.
+	// ToStrings gets all the elements in a slice of the underlying type, []string.
 	ToStrings() []string
 
 	// ToSet gets all the elements in a Set.
@@ -75,7 +75,6 @@ type FooCollection interface {
 	Partition(p func(Foo) bool) (matching FooCollection, others FooCollection)
 
 	//-------------------------------------------------------------------------
-
 	// Equals verifies that another FooCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Foo is not comparable.

@@ -73,7 +73,6 @@ type Num2Collection interface {
 	Partition(p func(*Num2) bool) (matching Num2Collection, others Num2Collection)
 
 	//-------------------------------------------------------------------------
-
 	// Equals verifies that another Num2Collection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Num2 is not comparable.
@@ -474,9 +473,9 @@ func (list Num2List) LastIndexWhere2(p func(*Num2) bool, before int) int {
 	return -1
 }
 
-// These methods require *Num2 be comparable.
-
-// Equals verifies that one or more elements of Num2List return true for the passed func.
+// Equals verifies that another Num2Collection has the same size and elements as this one. Also,
+// because this collection is a sequence, the order must be the same.
+// Omitted if Num2 is not comparable.
 func (list Num2List) Equals(other Num2Collection) bool {
 	if len(list) != other.Size() {
 		return false
@@ -489,7 +488,7 @@ func (list Num2List) Equals(other Num2Collection) bool {
 			if *v != *a {
 				eq = false
 			}
-			i += 1
+			i++
 		}
 	})
 	return eq

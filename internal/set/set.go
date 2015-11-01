@@ -1,8 +1,8 @@
 package set
 
-import "github.com/rickb777/golist/internal/sequence"
+import "github.com/rickb777/golist/internal/collection"
 
-const Set = sequence.Collection + `
+const Set = collection.Collection + `
 //-------------------------------------------------------------------------------------------------
 // {{.TName}}Set is a typesafe set of {{.TName}} items. Instances are essentially immutable.
 // The set-agebra functions Union, Intersection and Difference allow new variants to be constructed

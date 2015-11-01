@@ -73,7 +73,6 @@ type Foo3Collection interface {
 	Partition(p func(*Foo3) bool) (matching Foo3Collection, others Foo3Collection)
 
 	//-------------------------------------------------------------------------
-
 	// Equals verifies that another Foo3Collection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Foo3 is not comparable.
@@ -474,9 +473,9 @@ func (list Foo3List) LastIndexWhere2(p func(*Foo3) bool, before int) int {
 	return -1
 }
 
-// These methods require *Foo3 be comparable.
-
-// Equals verifies that one or more elements of Foo3List return true for the passed func.
+// Equals verifies that another Foo3Collection has the same size and elements as this one. Also,
+// because this collection is a sequence, the order must be the same.
+// Omitted if Foo3 is not comparable.
 func (list Foo3List) Equals(other Foo3Collection) bool {
 	if len(list) != other.Size() {
 		return false
@@ -489,7 +488,7 @@ func (list Foo3List) Equals(other Foo3Collection) bool {
 			if *v != *a {
 				eq = false
 			}
-			i += 1
+			i++
 		}
 	})
 	return eq

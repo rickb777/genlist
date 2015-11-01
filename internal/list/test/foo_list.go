@@ -41,7 +41,7 @@ type FooCollection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Foo
 
-	// ToStrings gets all the elements in a []string.
+	// ToStrings gets all the elements in a slice of the underlying type, []string.
 	ToStrings() []string
 
 	// ToList gets all the elements in a List.
@@ -77,7 +77,6 @@ type FooCollection interface {
 	Partition(p func(Foo) bool) (matching FooCollection, others FooCollection)
 
 	//-------------------------------------------------------------------------
-
 	// Equals verifies that another FooCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Foo is not comparable.
@@ -528,9 +527,9 @@ func (list FooList) LastIndexWhere2(p func(Foo) bool, before int) int {
 	return -1
 }
 
-// These methods require Foo be comparable.
-
-// Equals verifies that one or more elements of FooList return true for the passed func.
+// Equals verifies that another FooCollection has the same size and elements as this one. Also,
+// because this collection is a sequence, the order must be the same.
+// Omitted if Foo is not comparable.
 func (list FooList) Equals(other FooCollection) bool {
 	if len(list) != other.Size() {
 		return false
@@ -543,7 +542,7 @@ func (list FooList) Equals(other FooCollection) bool {
 			if v != a {
 				eq = false
 			}
-			i += 1
+			i++
 		}
 	})
 	return eq

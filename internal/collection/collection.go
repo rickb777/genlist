@@ -1,4 +1,4 @@
-package sequence
+package collection
 
 const Collection = `
 {{if .Has.Collection}}
@@ -78,7 +78,6 @@ type {{.TName}}Collection interface {
 
 {{if .Type.Comparable}}
 	//-------------------------------------------------------------------------
-
 	// Equals verifies that another {{.TName}}Collection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if {{.TName}} is not comparable.

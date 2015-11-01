@@ -66,7 +66,6 @@ type BarCollection interface {
 	Partition(p func(*Bar) bool) (matching BarCollection, others BarCollection)
 
 	//-------------------------------------------------------------------------
-
 	// Equals verifies that another BarCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Bar is not comparable.

@@ -1,8 +1,8 @@
 package option
 
-import "github.com/rickb777/golist/internal/sequence"
+import "github.com/rickb777/golist/internal/collection"
 
-const Optional = sequence.Collection + `
+const Optional = collection.Collection + `
 //-------------------------------------------------------------------------------------------------
 // Optional{{.TName}} is an optional of type {{.PName}}. Use it where you want to be explicit about
 // the presence or absence of data.

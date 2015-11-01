@@ -73,7 +73,6 @@ type ThingCollection interface {
 	Partition(p func(Thing) bool) (matching ThingCollection, others ThingCollection)
 
 	//-------------------------------------------------------------------------
-
 	// Equals verifies that another ThingCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Thing is not comparable.
@@ -474,9 +473,9 @@ func (list ThingList) LastIndexWhere2(p func(Thing) bool, before int) int {
 	return -1
 }
 
-// These methods require Thing be comparable.
-
-// Equals verifies that one or more elements of ThingList return true for the passed func.
+// Equals verifies that another ThingCollection has the same size and elements as this one. Also,
+// because this collection is a sequence, the order must be the same.
+// Omitted if Thing is not comparable.
 func (list ThingList) Equals(other ThingCollection) bool {
 	if len(list) != other.Size() {
 		return false
@@ -489,7 +488,7 @@ func (list ThingList) Equals(other ThingCollection) bool {
 			if v != a {
 				eq = false
 			}
-			i += 1
+			i++
 		}
 	})
 	return eq
@@ -1094,4 +1093,4 @@ func quickSortThingList(list ThingList, less func(Thing, Thing) bool, a, b, maxD
 	}
 }
 
-// List flags: {Collection:false Sequence:false List:true Option:false Set:false Tag:map[MapTo:true With:true SortWith:true]}
+// List flags: {Collection:false Sequence:false List:true Option:false Set:false Tag:map[With:true SortWith:true MapTo:true]}

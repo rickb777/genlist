@@ -39,7 +39,7 @@ type Num1Collection interface {
 	// the order is stable, which means it will give the same order each subsequent time it is used.
 	ToSlice() []Num1
 
-	// ToInts gets all the elements in a []int.
+	// ToInts gets all the elements in a slice of the underlying type, []int.
 	ToInts() []int
 
 	// ToSet gets all the elements in a Set.
@@ -75,7 +75,6 @@ type Num1Collection interface {
 	Partition(p func(Num1) bool) (matching Num1Collection, others Num1Collection)
 
 	//-------------------------------------------------------------------------
-
 	// Equals verifies that another Num1Collection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Num1 is not comparable.
