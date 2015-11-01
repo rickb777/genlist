@@ -193,9 +193,13 @@ func (list Foo1List) ToList() Foo1List {
 	return list
 }
 
-// ToSet converts the list to an equivalent set, i.e. without duplicates.
+// ToSet gets all the list's elements in a Foo1Set.
 func (list Foo1List) ToSet() Foo1Set {
-	return NewFoo1Set(list)
+	set := make(map[Foo1]struct{})
+	for _, v := range list {
+		set[v] = struct{}{}
+	}
+	return Foo1Set(set)
 }
 
 // Size returns the number of items in the list - an alias of Len().
@@ -707,15 +711,6 @@ func (list Foo1List) LastOption() OptionalFoo1 {
 	}
 }
 
-// ToSet gets all the list's elements in a Foo1Set.
-func (list Foo1List) ToSet() Foo1Set {
-	set := make(map[Foo1]struct{})
-	for _, v := range list {
-		set[v] = struct{}{}
-	}
-	return Foo1Set(set)
-}
-
 //-------------------------------------------------------------------------------------------------
 // OptionalFoo1 is an optional of type Foo1. Use it where you want to be explicit about
 // the presence or absence of data.
@@ -870,8 +865,14 @@ func (o OptionalFoo1) ToSlice() []Foo1 {
 	return slice
 }
 
+// ToList gets the option's element in a Foo1List.
 func (o OptionalFoo1) ToList() Foo1List {
 	return Foo1List(o.ToSlice())
+}
+
+// ToSet gets the option's element in a Foo1Set.
+func (o OptionalFoo1) ToSet() Foo1Set {
+	return NewFoo1Set(o.ToSlice()...)
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -948,12 +949,12 @@ func (o OptionalFoo1) Mean() float64 {
 //-------------------------------------------------------------------------------------------------
 // String implements the Stringer interface to render the option as an array of one element.
 func (o OptionalFoo1) String() string {
-	return o.MkString(",")
+	return o.MkString3("[", ",", "]")
 }
 
 // MkString concatenates the values as a string.
 func (o OptionalFoo1) MkString(sep string) string {
-	return o.MkString3("[", sep, "]")
+	return o.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string.

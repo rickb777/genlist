@@ -5,120 +5,153 @@ import (
 	"fmt"
 )
 
-func TestLen(t *testing.T) {
-	someThing := SomeOther(60)
-	if someThing.Size() != 1 {
+func TestSomeNum1SimpleCases(t *testing.T) {
+	someNum1 := SomeNum1(60)
+	if someNum1.Size() != 1 {
 		t.Errorf("Size should be 1")
 	}
-
-	noThing := NoOther()
-	if noThing.Size() != 0 {
-		t.Errorf("Size should be 0")
-	}
-}
-
-func TestIsEmpty(t *testing.T) {
-	someThing := SomeOther(60)
-	if someThing.IsEmpty() {
+	if someNum1.IsEmpty() {
 		t.Errorf("IsEmpty should be false")
 	}
-
-	noThing := NoOther()
-	if !noThing.IsEmpty() {
-		t.Errorf("IsEmpty should be true")
-	}
-}
-
-func TestNonEmpty(t *testing.T) {
-	someThing := SomeOther(60)
-	if !someThing.NonEmpty() {
+	if !someNum1.NonEmpty() {
 		t.Errorf("NonEmpty should be true")
 	}
-
-	noThing := NoOther()
-	if noThing.NonEmpty() {
-		t.Errorf("NonEmpty should be false")
-	}
-}
-
-func TestGet(t *testing.T) {
-	someThing := SomeOther(60)
-	if someThing.Get() != 60 {
+	if someNum1.Get() != 60 {
 		t.Errorf("Get should be 60")
 	}
-}
-
-func TestGetOrElse(t *testing.T) {
-	someThing := SomeOther(60)
-	if someThing.GetOrElse(func() Other { return 50 }) != 60 {
+	if someNum1.GetOrElse(func() Num1 { return 50 }) != 60 {
 		t.Errorf("GetOrElse should be 60")
 	}
-
-	noThing := NoOther()
-	if noThing.GetOrElse(func() Other { return 50 }) != 50 {
-		t.Errorf("GetOrElse should be 50")
-	}
-}
-
-func TestOrElse(t *testing.T) {
-	someThing := SomeOther(60)
-	if someThing.OrElse(func() OptionalOther { return NoOther() }).Get() != 60 {
+	if someNum1.OrElse(func() OptionalNum1 { return NoNum1() }).Get() != 60 {
 		t.Errorf("OrElse should be 60")
 	}
-
-	noThing := NoOther()
-	if noThing.OrElse(func() OptionalOther { return SomeOther(60) }).Get() != 60 {
-		t.Errorf("OrElse should be 60")
-	}
-}
-
-func TestExists(t *testing.T) {
-	someThing := SomeOther(60)
-	if !someThing.Exists(func(Other) bool { return true }) {
+	if !someNum1.Exists(func(Num1) bool { return true }) {
 		t.Errorf("Exists should be true")
 	}
-
-	noThing := NoOther()
-	if noThing.Exists(func(Other) bool { return true }) {
-		t.Errorf("Exists should be false")
+	if !someNum1.Forall(func(Num1) bool { return true }) {
+		t.Errorf("Forall should be true")
+	}
+	if someNum1.Find(func(Num1) bool { return true }).Get() != 60 {
+		t.Errorf("Find should be 60")
+	}
+	if someNum1.Sum() != 60 {
+		t.Errorf("Sum should be 60")
 	}
 }
 
-func TestForall(t *testing.T) {
-	someThing := SomeOther(60)
-	if !someThing.Forall(func(Other) bool { return true }) {
+func TestNoNum1SimpleCases(t *testing.T) {
+	noNum1 := NoNum1()
+	if noNum1.Size() != 0 {
+		t.Errorf("Size should be 0")
+	}
+	if !noNum1.IsEmpty() {
+		t.Errorf("IsEmpty should be true")
+	}
+	if noNum1.NonEmpty() {
+		t.Errorf("NonEmpty should be false")
+	}
+	if noNum1.GetOrElse(func() Num1 { return 50 }) != 50 {
+		t.Errorf("GetOrElse should be 50")
+	}
+	if noNum1.OrElse(func() OptionalNum1 { return SomeNum1(60) }).Get() != 60 {
+		t.Errorf("OrElse should be 60")
+	}
+	if noNum1.Exists(func(Num1) bool { return true }) {
+		t.Errorf("Exists should be false")
+	}
+	if !noNum1.Forall(func(Num1) bool { return true }) {
 		t.Errorf("Forall should be true")
 	}
+	if noNum1.Find(func(Num1) bool { return true }).NonEmpty() {
+		t.Errorf("Find should be empty")
+	}
+	if noNum1.Sum() != 0 {
+		t.Errorf("Sum should be 0")
+	}
+}
 
-	noThing := NoOther()
-	if !noThing.Forall(func(Other) bool { return true }) {
+func TestSomeFooSimpleCases(t *testing.T) {
+	someFoo := SomeFoo("foo")
+	if someFoo.Size() != 1 {
+		t.Errorf("Size should be 1")
+	}
+	if someFoo.IsEmpty() {
+		t.Errorf("IsEmpty should be false")
+	}
+	if !someFoo.NonEmpty() {
+		t.Errorf("NonEmpty should be true")
+	}
+	if someFoo.Get() != "foo" {
+		t.Errorf("Get should be foo")
+	}
+	if someFoo.GetOrElse(func() Foo { return "bar" }) != "foo" {
+		t.Errorf("GetOrElse should be foo")
+	}
+	if someFoo.OrElse(func() OptionalFoo { return NoFoo() }).Get() != "foo" {
+		t.Errorf("OrElse should be foo")
+	}
+	if !someFoo.Exists(func(Foo) bool { return true }) {
+		t.Errorf("Exists should be true")
+	}
+	if !someFoo.Forall(func(Foo) bool { return true }) {
 		t.Errorf("Forall should be true")
+	}
+	if someFoo.Find(func(Foo) bool { return true }).Get() != "foo" {
+		t.Errorf("Find should be foo")
+	}
+}
+
+func TestNoFooSimpleCases(t *testing.T) {
+	noFoo := NoFoo()
+	if noFoo.Size() != 0 {
+		t.Errorf("Size should be 0")
+	}
+	if !noFoo.IsEmpty() {
+		t.Errorf("IsEmpty should be true")
+	}
+	if noFoo.NonEmpty() {
+		t.Errorf("NonEmpty should be false")
+	}
+	if noFoo.GetOrElse(func() Foo { return "bar" }) != "bar" {
+		t.Errorf("GetOrElse should be bar")
+	}
+	if noFoo.OrElse(func() OptionalFoo { return SomeFoo("bar") }).Get() != "bar" {
+		t.Errorf("OrElse should be bar")
+	}
+	if noFoo.Exists(func(Foo) bool { return true }) {
+		t.Errorf("Exists should be false")
+	}
+	if !noFoo.Forall(func(Foo) bool { return true }) {
+		t.Errorf("Forall should be true")
+	}
+	if noFoo.Find(func(Foo) bool { return true }).NonEmpty() {
+		t.Errorf("Find should be empty")
 	}
 }
 
 func TestFilter(t *testing.T) {
-	someThing := SomeOther(60)
-	v1 := someThing.Filter(func(Other) bool { return true })
-	if v1.(OptionalOther).Get() != 60 {
+	someNum1 := SomeNum1(60)
+	v1 := someNum1.Filter(func(Num1) bool { return true })
+	if v1.(OptionalNum1).Get() != 60 {
 		t.Errorf("Filter should be 60")
 	}
 
-	v2 := someThing.Filter(func(Other) bool { return false })
+	v2 := someNum1.Filter(func(Num1) bool { return false })
 	if v2.NonEmpty() {
 		t.Errorf("Filter should be empty")
 	}
 
-	noThing := NoOther()
-	v3 := noThing.Filter(func(Other) bool { return true })
+	noNum1 := NoNum1()
+	v3 := noNum1.Filter(func(Num1) bool { return true })
 	if v3.NonEmpty() {
 		t.Errorf("Filter should be empty")
 	}
 }
 
 func TestPartition(t *testing.T) {
-	someThing := SomeOther(60)
-	m1, o1 := someThing.Partition(func(Other) bool { return true })
-	if m1.(OptionalOther).Get() != 60 {
+	someNum1 := SomeNum1(60)
+	m1, o1 := someNum1.Partition(func(Num1) bool { return true })
+	if m1.(OptionalNum1).Get() != 60 {
 		t.Errorf("Partition match should be 60")
 	}
 
@@ -126,17 +159,17 @@ func TestPartition(t *testing.T) {
 		t.Errorf("Partition other should be empty")
 	}
 
-	m2, o2 := someThing.Partition(func(Other) bool { return false })
+	m2, o2 := someNum1.Partition(func(Num1) bool { return false })
 	if m2.NonEmpty() {
 		t.Errorf("Partition match should be empty")
 	}
 
-	if o2.(OptionalOther).Get() != 60 {
+	if o2.(OptionalNum1).Get() != 60 {
 		t.Errorf("Partition other should be 60")
 	}
 
-	noThing := NoOther()
-	m3, o3 := noThing.Partition(func(Other) bool { return true })
+	noNum1 := NoNum1()
+	m3, o3 := noNum1.Partition(func(Num1) bool { return true })
 	if m3.NonEmpty() {
 		t.Errorf("Partition match should be empty")
 	}
@@ -145,54 +178,42 @@ func TestPartition(t *testing.T) {
 	}
 }
 
-func TestFind(t *testing.T) {
-	someThing := SomeOther(60)
-	if someThing.Find(func(Other) bool { return true }).Get() != 60 {
-		t.Errorf("Find should be 60")
-	}
-
-	noThing := NoOther()
-	if noThing.Find(func(Other) bool { return true }).NonEmpty() {
-		t.Errorf("Find should be empty")
-	}
-}
-
 func TestForeach(t *testing.T) {
-	someThing := SomeOther(60)
-	x := Other(0)
-	someThing.Foreach(func(Other) { x = Other(1) })
+	someNum1 := SomeNum1(60)
+	x := Num1(0)
+	someNum1.Foreach(func(Num1) { x = Num1(1) })
 	if x != 1 {
 		t.Errorf("Foreach should set x")
 	}
 
-	noThing := NoOther()
-	y := Other(0)
-	noThing.Foreach(func(Other) { y = Other(1) })
+	noNum1 := NoNum1()
+	y := Num1(0)
+	noNum1.Foreach(func(Num1) { y = Num1(1) })
 	if y != 0 {
 		t.Errorf("Foreach should not set x")
 	}
 }
 
 func TestContains(t *testing.T) {
-	someThing := SomeOther(60)
-	if someThing.Contains(50) {
+	someNum1 := SomeNum1(60)
+	if someNum1.Contains(50) {
 		t.Errorf("Should not contain 50")
 	}
 
-	if !someThing.Contains(60) {
+	if !someNum1.Contains(60) {
 		t.Errorf("Should contain 60")
 	}
 
-	noThing := NoOther()
-	if noThing.Contains(50) {
+	noNum1 := NoNum1()
+	if noNum1.Contains(50) {
 		t.Errorf("Should not contain 50")
 	}
 }
 
 func TestEquals(t *testing.T) {
-	someThing1 := SomeOther(10)
-	someThing2 := SomeOther(20)
-	noThing := NoOther()
+	someThing1 := SomeNum1(10)
+	someThing2 := SomeNum1(20)
+	noNum1 := NoNum1()
 
 	if someThing1.Equals(someThing2) {
 		t.Errorf("Should not be equal")
@@ -202,111 +223,159 @@ func TestEquals(t *testing.T) {
 		t.Errorf("Should be equal")
 	}
 
-	if someThing1.Equals(noThing) {
+	if someThing1.Equals(noNum1) {
 		t.Errorf("Should not be equal")
 	}
 
-	if !noThing.Equals(noThing) {
+	if !noNum1.Equals(noNum1) {
 		t.Errorf("Should not be equal")
 	}
 
-	if noThing.Equals(someThing1) {
+	if noNum1.Equals(someThing1) {
 		t.Errorf("Should not be equal")
 	}
 }
 
 func TestCount(t *testing.T) {
-	someThing := SomeOther(60)
-	if someThing.Count(50) != 0 {
+	someNum1 := SomeNum1(60)
+	if someNum1.Count(50) != 0 {
 		t.Errorf("Should contain zero 50s")
 	}
 
-	if someThing.Count(60) != 1 {
+	if someNum1.Count(60) != 1 {
 		t.Errorf("Should contain one 60")
 	}
 
-	noThing := NoOther()
-	if noThing.Count(50) != 0 {
+	noNum1 := NoNum1()
+	if noNum1.Count(50) != 0 {
 		t.Errorf("Should not contain 50")
 	}
 }
 
 func TestDistinct(t *testing.T) {
-	someThing := SomeOther(60)
-	if someThing.Distinct().Size() != 1 {
+	someNum1 := SomeNum1(60)
+	if someNum1.Distinct().Size() != 1 {
 		t.Errorf("Should be length 1")
 	}
+	if someNum1.Distinct().Head() != 60 {
+		t.Errorf("Should be length 60")
+	}
 
-	noThing := NoOther()
-	if noThing.Distinct().NonEmpty() {
+	noNum1 := NoNum1()
+	if noNum1.Distinct().NonEmpty() {
 		t.Errorf("Should be empty")
 	}
 }
 
-func TestSum(t *testing.T) {
-	someThing := SomeOther(60)
-	if someThing.Sum() != 60 {
-		t.Errorf("Sum should be 60")
-	}
-
-	noThing := NoOther()
-	if noThing.Sum() != 0 {
-		t.Errorf("Sum should be 0")
-	}
-}
-
-func TestMapTo(t *testing.T) {
-	someThing := SomeOther(60)
-	fn1 := func(o Other) Foo { return Foo(fmt.Sprintf("%d", o)) }
-	m1 := someThing.MapToFoo(fn1)
+func TestMapToNum1(t *testing.T) {
+	someNum1 := SomeNum1(60)
+	fn1 := func(o Num1) Foo { return Foo(fmt.Sprintf("%d", o)) }
+	m1 := someNum1.MapToFoo(fn1)
 	if m1.Head() != "60" {
 		t.Errorf("MapToFoo should be '60' but got %q", m1)
 	}
 
-	noThing := NoOther()
-	m2 := noThing.MapToFoo(fn1)
+	noNum1 := NoNum1()
+	m2 := noNum1.MapToFoo(fn1)
 	if m2.NonEmpty() {
 		t.Errorf("MapToFoo should be absent but got %+v", m2)
 	}
 }
 
 func TestFlatMapTo(t *testing.T) {
-	someThing := SomeOther(60)
-	fn0 := func(o Other) FooCollection { return NoFoo() }
-	fn1 := func(o Other) FooCollection { return SomeFoo(Foo(fmt.Sprintf("%d", o))) }
+	someNum1 := SomeNum1(60)
+	fn0 := func(o Num1) FooCollection { return NoFoo() }
+	fn1 := func(o Num1) FooCollection { return SomeFoo(Foo(fmt.Sprintf("%d", o))) }
 
-	m0 := someThing.FlatMapToFoo(fn0)
+	m0 := someNum1.FlatMapToFoo(fn0)
 	if m0.NonEmpty() {
 		t.Errorf("MapToFoo should be absent but got %q", m0)
 	}
 
-	m1 := someThing.FlatMapToFoo(fn1)
+	m1 := someNum1.FlatMapToFoo(fn1)
 	if m1.Head() != "60" {
 		t.Errorf("MapToFoo should be '60' but got %q", m1)
 	}
 
-	noThing := NoOther()
-	m2 := noThing.FlatMapToFoo(fn1)
+	noNum1 := NoNum1()
+	m2 := noNum1.FlatMapToFoo(fn1)
 	if m2.NonEmpty() {
 		t.Errorf("MapToFoo should be absent but got %+v", m2)
 	}
 }
 
-func TestMkString1(t *testing.T) {
-	someThing := SomeOther(123)
+func TestNum1MkString1(t *testing.T) {
+	someNum1 := SomeNum1(123)
 
-	s1 := someThing.MkString3("[", ", ", "]")
-	if s1 != "[123]" {
+	s1 := someNum1.MkString3("<", ", ", ">")
+	if s1 != "<123>" {
 		t.Errorf("MkString got %q", s1)
 	}
 
-	s2 := someThing.MkString(", ")
-	if s2 != "[123]" {
+	s2 := someNum1.MkString(", ")
+	if s2 != "123" {
 		t.Errorf("MkString got %q", s2)
 	}
 
-	s3 := someThing.String()
+	s3 := someNum1.String()
 	if s3 != "[123]" {
+		t.Errorf("MkString got %q", s3)
+	}
+}
+
+func TestNum1MkString1Empty(t *testing.T) {
+	noNum1 := NoNum1()
+
+	s1 := noNum1.MkString3("<", ", ", ">")
+	if s1 != "<>" {
+		t.Errorf("MkString got %q", s1)
+	}
+
+	s2 := noNum1.MkString(", ")
+	if s2 != "" {
+		t.Errorf("MkString got %q", s2)
+	}
+
+	s3 := noNum1.String()
+	if s3 != "[]" {
+		t.Errorf("MkString got %q", s3)
+	}
+}
+
+func TestFooMkString1(t *testing.T) {
+	someFoo := SomeFoo("foo")
+
+	s1 := someFoo.MkString3("<", ", ", ">")
+	if s1 != "<foo>" {
+		t.Errorf("MkString got %q", s1)
+	}
+
+	s2 := someFoo.MkString(", ")
+	if s2 != "foo" {
+		t.Errorf("MkString got %q", s2)
+	}
+
+	s3 := someFoo.String()
+	if s3 != "[foo]" {
+		t.Errorf("MkString got %q", s3)
+	}
+}
+
+func TestFooMkString1Empty(t *testing.T) {
+	noFoo := NoFoo()
+
+	s1 := noFoo.MkString3("<", ", ", ">")
+	if s1 != "<>" {
+		t.Errorf("MkString got %q", s1)
+	}
+
+	s2 := noFoo.MkString(", ")
+	if s2 != "" {
+		t.Errorf("MkString got %q", s2)
+	}
+
+	s3 := noFoo.String()
+	if s3 != "[]" {
 		t.Errorf("MkString got %q", s3)
 	}
 }

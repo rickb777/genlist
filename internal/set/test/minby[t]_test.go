@@ -34,9 +34,7 @@ func TestMinByFoo(t *testing.T) {
 		Thing{"Fie", 2},
 		Thing{"Foe", 3},
 		Thing{"Boo", 5},
-		Thing{"Boo", 8},
 		Thing{"Bam", 13},
-		Thing{"Bam", 21},
 	)
 
 	number := func(x Thing) Foo {

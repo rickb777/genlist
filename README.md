@@ -170,6 +170,7 @@ There are slight variants in the generated code. This is dependent on the elemen
 
  * **Intro**
  * [Lists](List.md)
+ * [Sets](Set.md)
  * [Options](Option.md)
  * [Joint Lists with Options and/or Sets](Unified.md)
  * [Plumbing functions](Plumbing.md)

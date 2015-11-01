@@ -56,7 +56,7 @@ The set has the following extra methods:
 
  * [Intro](README.md)
  * [Lists](List.md)
- * [Options](Option.md)
  * [Sets](Set.md)
+ * [Options](Option.md)
  * **Joint Lists with Options and/or Sets**
  * [Plumbing functions](Plumbing.md)

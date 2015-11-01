@@ -163,8 +163,16 @@ func (o Optional{{.TName}}) ToSlice() []{{.PName}} {
 }
 
 {{if .Has.List}}
+// ToList gets the option's element in a {{.TName}}List.
 func (o Optional{{.TName}}) ToList() {{.TName}}List {
 	return {{.TName}}List(o.ToSlice())
+}
+
+{{end}}
+{{if .Has.Set}}
+// ToSet gets the option's element in a {{.TName}}Set.
+func (o Optional{{.TName}}) ToSet() {{.TName}}Set {
+	return New{{.TName}}Set(o.ToSlice()...)
 }
 
 {{end}}

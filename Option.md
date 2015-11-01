@@ -87,12 +87,12 @@ sequence of its `T` equivalent. This sequence is added to the result set.
 Normally the result is a `TCollection`. 
 But if the target type is a basic type, such as `string` or `int`, the result is a slice of the basic type instead.
 
-### Next: [Sets](Set.md)
+### Next: [Joint Lists with Options and/or Sets](Unified.md)
 #### Contents:
 
  * [Intro](README.md)
  * [Lists](List.md)
- * **Options**
  * [Sets](Set.md)
+ * **Options**
  * [Joint Lists with Options  and/or Sets](Unified.md)
  * [Plumbing functions](Plumbing.md)

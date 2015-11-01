@@ -305,12 +305,12 @@ func (o OptionalFoo) Max() Foo {
 //-------------------------------------------------------------------------------------------------
 // String implements the Stringer interface to render the option as an array of one element.
 func (o OptionalFoo) String() string {
-	return o.MkString(",")
+	return o.MkString3("[", ",", "]")
 }
 
 // MkString concatenates the values as a string.
 func (o OptionalFoo) MkString(sep string) string {
-	return o.MkString3("[", sep, "]")
+	return o.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string.

@@ -312,12 +312,12 @@ func (o OptionalBar) Max(less func(*Bar, *Bar) bool) *Bar {
 //-------------------------------------------------------------------------------------------------
 // String implements the Stringer interface to render the option as an array of one element.
 func (o OptionalBar) String() string {
-	return o.MkString(",")
+	return o.MkString3("[", ",", "]")
 }
 
 // MkString concatenates the values as a string.
 func (o OptionalBar) MkString(sep string) string {
-	return o.MkString3("[", sep, "]")
+	return o.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string.

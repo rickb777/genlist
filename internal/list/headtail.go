@@ -57,9 +57,13 @@ func (list {{.TName}}List) ToList() {{.TName}}List {
 }
 
 {{if .Has.Set}}
-// ToSet converts the list to an equivalent set, i.e. without duplicates.
+// ToSet gets all the list's elements in a {{.TName}}Set.
 func (list {{.TName}}List) ToSet() {{.TName}}Set {
-	return New{{.TName}}Set(list)
+	set := make(map[{{.TName}}]struct{})
+	for _, v := range list {
+		set[v] = struct{}{}
+	}
+	return {{.TName}}Set(set)
 }
 
 {{end}}

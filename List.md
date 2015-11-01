@@ -25,31 +25,35 @@ type Example struct { ... }
 
 The generated code is a list to hold `Example` values. It provides methods including:
 
- * **Head**, **Tail** - get the first element and the rest
- * **Init**, **Last** - get the last element and the rest
  * **IsEmpty**, **NonEmpty** - get simple properties
  * **Size**, **Len** - get simple properties (these are aliases)
  * **Exists**, **Forall** - test whether any or all elements match some specified condition
  * **Foreach** - apply a function to every element in turn, typically causing side-effects
+ * **Filter**, **Partition** - get a subset, or two disjoint subsets, of the collection
+ * **CountBy**, **MaxBy**, **MinBy**, **DistinctBy** - statistics based on supplied operator functions
+ * **MkString**, **MkString3**, **String** - constructs a string representation of the collection
+ * **Send** - get a channel that supplies values in sequence
+
+#### List Methods
+
+ * **Head**, **Tail** - get the first element and the rest
+ * **Init**, **Last** - get the last element and the rest
  * **Reverse**, **Shuffle** - get a new list that is reversed or shuffled
  * **Take**, **TakeWhile**, **DropLast** - get a new list without some trailing elements
  * **Drop**, **DropWhile**, **TakeLast** - get a new list without some leading elements
- * **Filter**, **Partition** - get a subset, or two disjoint subsets, of the list
- * **Send** - get a channel that supplies values in sequence
- * **CountBy**, **MaxBy**, **MinBy**, **DistinctBy** - statistics based on supplied operator functions
  * **IndexWhere**, **IndexWhere2** - find the index of the first match using a predicate function
  * **LastIndexWhere**, **LastIndexWhere2** - find the index of the last match using a predicate function
- * **MkString**, **MkString3**, **String** - constructs a string representation of the list
 
 #### Comparable Methods
 
 If the element type is *comparable*, it adds:
 
- * **Equals** - compare with another list
+ * **Equals** - compare with another collection
+ * **Contains** - compare with a specified value
+ * **Count** - enumerates a specified value
+ * **Distinct** - remove duplicates
  * **IndexOf**, **IndexOf2** - find the index of the first match
  * **LastIndexOf**, **LastIndexOf2** - find the index of the last match
- * **Contains**, **Count** - compare with a specified value
- * **Distinct** - remove duplicates
 
 #### Numeric Methods
 
@@ -158,13 +162,13 @@ type Example struct { ... }
  * **SortWith**, **IsSortedWith**
  * **SortWithDesc**, **IsSortedWithDesc**
 
-### Next: [Options](Option.md)
+### Next: [Sets](Set.md)
 #### Contents:
 
  * [Intro](README.md)
  * **Lists**
- * [Options](Option.md)
  * [Sets](Set.md)
+ * [Options](Option.md)
  * [Joint Lists with Options and/or Sets](Unified.md)
  * [Plumbing functions](Plumbing.md)
 

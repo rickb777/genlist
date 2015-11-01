@@ -34,15 +34,4 @@ func (list {{.TName}}List) LastOption() Optional{{.TName}} {
 }
 
 {{end}}
-{{if .Has.Set}}
-// ToSet gets all the list's elements in a {{.TName}}Set.
-func (list {{.TName}}List) ToSet() {{.TName}}Set {
-	set := make(map[{{.TName}}]struct{})
-	for _, v := range list {
-		set[v] = struct{}{}
-	}
-	return {{.TName}}Set(set)
-}
-
-{{end}}
 `

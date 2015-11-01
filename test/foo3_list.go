@@ -798,6 +798,7 @@ func (o OptionalFoo3) ToSlice() []*Foo3 {
 	return slice
 }
 
+// ToList gets the option's element in a Foo3List.
 func (o OptionalFoo3) ToList() Foo3List {
 	return Foo3List(o.ToSlice())
 }
@@ -857,12 +858,12 @@ func (o OptionalFoo3) Max(less func(*Foo3, *Foo3) bool) *Foo3 {
 //-------------------------------------------------------------------------------------------------
 // String implements the Stringer interface to render the option as an array of one element.
 func (o OptionalFoo3) String() string {
-	return o.MkString(",")
+	return o.MkString3("[", ",", "]")
 }
 
 // MkString concatenates the values as a string.
 func (o OptionalFoo3) MkString(sep string) string {
-	return o.MkString3("[", sep, "]")
+	return o.MkString3("", sep, "")
 }
 
 // MkString3 concatenates the values as a string.

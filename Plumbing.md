@@ -46,7 +46,7 @@ A mapping function transforms an individual `Example` item to zero or more `Fred
 
  * [Intro](README.md)
  * [Lists](List.md)
- * [Options](Option.md)
  * [Sets](Set.md)
+ * [Options](Option.md)
  * [Joint Lists With Options and/or Sets](Unified.md)
  * **Plumbing functions**
