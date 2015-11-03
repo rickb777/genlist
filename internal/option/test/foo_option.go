@@ -101,12 +101,13 @@ type FooCollection interface {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // OptionalFoo is an optional of type Foo. Use it where you want to be explicit about
 // the presence or absence of data.
 //
-// Optional values follow a similar pattern to Scala Options.
+// Optional values follow a similar pattern to Scala Options. In particular, an option is a collection
+// with a maximum cardinality of one. As such, options can be converted to/from lists and sets.
 // See e.g. http://www.scala-lang.org/api/2.11.7/index.html#scala.Option
-
 type OptionalFoo struct {
 	x *Foo
 }
@@ -314,6 +315,7 @@ func (o OptionalFoo) Max() Foo {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // String implements the Stringer interface to render the option as an array of one element.
 func (o OptionalFoo) String() string {
 	return o.MkString3("[", ",", "]")

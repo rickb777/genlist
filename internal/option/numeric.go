@@ -3,6 +3,7 @@ package option
 const numeric = `
 {{if .Type.Numeric}}
 //-------------------------------------------------------------------------------------------------
+
 // Sum sums {{.PName}} elements.
 // Omitted if {{.TName}} is not numeric.
 func (o Optional{{.TName}}) Sum() {{.PName}} {

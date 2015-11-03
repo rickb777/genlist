@@ -107,6 +107,7 @@ type ThingCollection interface {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // ThingList is a slice of type Thing. Use it where you would use []Thing.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
@@ -115,6 +116,7 @@ type ThingCollection interface {
 type ThingList []Thing
 
 //-------------------------------------------------------------------------------------------------
+
 // NewThingList constructs a new list containing the supplied values, if any.
 func NewThingList(values ...Thing) ThingList {
 	list := make(ThingList, len(values))

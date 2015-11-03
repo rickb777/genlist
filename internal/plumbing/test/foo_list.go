@@ -112,6 +112,7 @@ type FooCollection interface {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // FooList is a slice of type Foo. Use it where you would use []Foo.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
@@ -120,6 +121,7 @@ type FooCollection interface {
 type FooList []Foo
 
 //-------------------------------------------------------------------------------------------------
+
 // NewFooList constructs a new list containing the supplied values, if any.
 func NewFooList(values ...Foo) FooList {
 	list := make(FooList, len(values))
@@ -733,12 +735,13 @@ func (list FooList) FlatMapToFoo(fn func(Foo) FooCollection) FooCollection {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // OptionalFoo is an optional of type Foo. Use it where you want to be explicit about
 // the presence or absence of data.
 //
-// Optional values follow a similar pattern to Scala Options.
+// Optional values follow a similar pattern to Scala Options. In particular, an option is a collection
+// with a maximum cardinality of one. As such, options can be converted to/from lists and sets.
 // See e.g. http://www.scala-lang.org/api/2.11.7/index.html#scala.Option
-
 type OptionalFoo struct {
 	x *Foo
 }
@@ -956,6 +959,7 @@ func (o OptionalFoo) Max() Foo {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // String implements the Stringer interface to render the option as an array of one element.
 func (o OptionalFoo) String() string {
 	return o.MkString3("[", ",", "]")
@@ -975,6 +979,7 @@ func (o OptionalFoo) MkString3(pfx, mid, sfx string) string {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // FooSet is a typesafe set of Foo items. Instances are essentially immutable.
 // The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
 // easily.
@@ -984,6 +989,7 @@ func (o OptionalFoo) MkString3(pfx, mid, sfx string) string {
 type FooSet map[Foo]struct{}
 
 //-------------------------------------------------------------------------------------------------
+
 // NewFooSet constructs a new set containing the supplied values, if any.
 func NewFooSet(values ...Foo) FooSet {
 	set := make(map[Foo]struct{})

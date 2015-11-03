@@ -109,6 +109,7 @@ type FooCollection interface {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // FooList is a slice of type Foo. Use it where you would use []Foo.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
@@ -117,6 +118,7 @@ type FooCollection interface {
 type FooList []Foo
 
 //-------------------------------------------------------------------------------------------------
+
 // NewFooList constructs a new list containing the supplied values, if any.
 func NewFooList(values ...Foo) FooList {
 	list := make(FooList, len(values))

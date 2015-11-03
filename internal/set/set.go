@@ -4,6 +4,7 @@ import "github.com/rickb777/golist/internal/collection"
 
 const Set = collection.Collection + `
 //-------------------------------------------------------------------------------------------------
+
 // {{.TName}}Set is a typesafe set of {{.TName}} items. Instances are essentially immutable.
 // The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
 // easily.
@@ -13,6 +14,7 @@ const Set = collection.Collection + `
 type {{.TName}}Set map[{{.TName}}]struct{}
 
 //-------------------------------------------------------------------------------------------------
+
 // New{{.TName}}Set constructs a new set containing the supplied values, if any.
 func New{{.TName}}Set(values ...{{.PName}}) {{.TName}}Set {
 	set := make(map[{{.TName}}]struct{})

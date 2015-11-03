@@ -118,6 +118,7 @@ type Num1Collection interface {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // Num1List is a slice of type Num1. Use it where you would use []Num1.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
@@ -126,6 +127,7 @@ type Num1Collection interface {
 type Num1List []Num1
 
 //-------------------------------------------------------------------------------------------------
+
 // NewNum1List constructs a new list containing the supplied values, if any.
 func NewNum1List(values ...Num1) Num1List {
 	list := make(Num1List, len(values))

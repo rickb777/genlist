@@ -3,9 +3,9 @@ package main
 import "testing"
 
 func TestCombination(t *testing.T) {
-	list1 := Foo1List{50, 100, 9, 7, 100, 99}
+	list1 := NumList{50, 100, 9, 7, 100, 99}
 
-	var seq1 Foo1Collection
+	var seq1 NumCollection
 	seq1 = list1
 
 	if seq1.IsEmpty() {

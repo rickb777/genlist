@@ -6,7 +6,7 @@ import (
 )
 
 var coreListTemplate = &typewriter.Template{
-	Name: "List",
+	Name: listName,
 	Text: list.List,
 }
 
@@ -14,9 +14,9 @@ var otherListTemplates = typewriter.TemplateSlice{
 	listSortWith,
 	listMapToT,
 	listWithT,
-//	list.OptionForList,
 	coreOptionTemplate,
 	coreSetTemplate,
+	corePlumbingTemplate,
 }
 
 var listSortWith = &typewriter.Template{

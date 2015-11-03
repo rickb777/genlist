@@ -116,6 +116,7 @@ type Num1Collection interface {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // Num1Set is a typesafe set of Num1 items. Instances are essentially immutable.
 // The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
 // easily.
@@ -125,6 +126,7 @@ type Num1Collection interface {
 type Num1Set map[Num1]struct{}
 
 //-------------------------------------------------------------------------------------------------
+
 // NewNum1Set constructs a new set containing the supplied values, if any.
 func NewNum1Set(values ...Num1) Num1Set {
 	set := make(map[Num1]struct{})

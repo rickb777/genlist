@@ -6,7 +6,7 @@ import (
 )
 
 var coreOptionTemplate = &typewriter.Template{
-	Name: "Option",
+	Name: optionName,
 	Text: option.Optional,
 }
 
@@ -14,6 +14,7 @@ var optionTemplates = typewriter.TemplateSlice{
 	optionMapToT,
 	coreListTemplate,
 	coreSetTemplate,
+	corePlumbingTemplate,
 }
 
 var optionMapToT = &typewriter.Template{

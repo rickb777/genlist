@@ -107,6 +107,7 @@ type FooCollection interface {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // FooSet is a typesafe set of Foo items. Instances are essentially immutable.
 // The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
 // easily.
@@ -116,6 +117,7 @@ type FooCollection interface {
 type FooSet map[Foo]struct{}
 
 //-------------------------------------------------------------------------------------------------
+
 // NewFooSet constructs a new set containing the supplied values, if any.
 func NewFooSet(values ...Foo) FooSet {
 	set := make(map[Foo]struct{})

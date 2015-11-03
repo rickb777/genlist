@@ -7,7 +7,7 @@ package main
 //}
 
 // methods where underlying type is ordered or numeric
-// +test List:"MapTo[Foo] Option Set"
+// +test List:"MapTo[Foo] Option Set Plumbing"
 type Num1 Underlying
 
 // +test * Set

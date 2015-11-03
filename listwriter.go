@@ -49,7 +49,7 @@ func NewSetWriter() *xWriter {
 }
 
 func NewPlumbingWriter() *xWriter {
-	return &xWriter{plumbingName, corePlumbingTemplate, typewriter.TemplateSlice{}}
+	return &xWriter{plumbingName, corePlumbingTemplate, plumbingTemplates}
 }
 
 func (xw *xWriter) Name() string {

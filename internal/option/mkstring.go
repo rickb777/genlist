@@ -2,6 +2,7 @@ package option
 
 const mkstring = `
 //-------------------------------------------------------------------------------------------------
+
 // String implements the Stringer interface to render the option as an array of one element.
 func (o Optional{{.TName}}) String() string {
 	return o.MkString3("[", ",", "]")

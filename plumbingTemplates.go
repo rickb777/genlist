@@ -6,12 +6,16 @@ import (
 )
 
 var corePlumbingTemplate = &typewriter.Template{
-	Name: "Plumbing",
+	Name: plumbingName,
 	Text: plumbing.Plumbing,
 }
 
 var plumbingTemplates = typewriter.TemplateSlice{
 	plumbingMapToT,
+	coreListTemplate,
+	coreOptionTemplate,
+	coreSetTemplate,
+	corePlumbingTemplate,
 }
 
 var plumbingMapToT = &typewriter.Template{

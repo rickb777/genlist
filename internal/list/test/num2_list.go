@@ -107,6 +107,7 @@ type Num2Collection interface {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // Num2List is a slice of type *Num2. Use it where you would use []*Num2.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
@@ -115,6 +116,7 @@ type Num2Collection interface {
 type Num2List []*Num2
 
 //-------------------------------------------------------------------------------------------------
+
 // NewNum2List constructs a new list containing the supplied values, if any.
 func NewNum2List(values ...*Num2) Num2List {
 	list := make(Num2List, len(values))

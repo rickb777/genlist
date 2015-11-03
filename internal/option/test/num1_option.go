@@ -110,12 +110,13 @@ type Num1Collection interface {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // OptionalNum1 is an optional of type Num1. Use it where you want to be explicit about
 // the presence or absence of data.
 //
-// Optional values follow a similar pattern to Scala Options.
+// Optional values follow a similar pattern to Scala Options. In particular, an option is a collection
+// with a maximum cardinality of one. As such, options can be converted to/from lists and sets.
 // See e.g. http://www.scala-lang.org/api/2.11.7/index.html#scala.Option
-
 type OptionalNum1 struct {
 	x *Num1
 }
@@ -323,6 +324,7 @@ func (o OptionalNum1) Max() Num1 {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // Sum sums Num1 elements.
 // Omitted if Num1 is not numeric.
 func (o OptionalNum1) Sum() Num1 {
@@ -344,6 +346,7 @@ func (o OptionalNum1) Mean() float64 {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // String implements the Stringer interface to render the option as an array of one element.
 func (o OptionalNum1) String() string {
 	return o.MkString3("[", ",", "]")

@@ -6,7 +6,7 @@ import (
 )
 
 var coreSetTemplate = &typewriter.Template{
-	Name: "Set",
+	Name: setName,
 	Text: set.Set,
 }
 
@@ -14,6 +14,8 @@ var otherSetTemplates = typewriter.TemplateSlice{
 	setMapToT,
 	setWithT,
 	coreListTemplate,
+	coreOptionTemplate,
+	corePlumbingTemplate,
 }
 
 var setMapToT = &typewriter.Template{

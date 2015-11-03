@@ -4,6 +4,7 @@ import "github.com/rickb777/golist/internal/collection"
 
 const List = collection.Collection + `
 //-------------------------------------------------------------------------------------------------
+
 // {{.TName}}List is a slice of type {{.PName}}. Use it where you would use []{{.PName}}.
 // List values follow a similar pattern to Scala Lists and LinearSeqs in particular.
 // Importantly, *none of its methods ever mutate a list*; they merely return new lists where required.
@@ -12,6 +13,7 @@ const List = collection.Collection + `
 type {{.TName}}List []{{.PName}}
 
 //-------------------------------------------------------------------------------------------------
+
 // New{{.TName}}List constructs a new list containing the supplied values, if any.
 func New{{.TName}}List(values ...{{.PName}}) {{.TName}}List {
 	list := make({{.TName}}List, len(values))

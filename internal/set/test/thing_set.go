@@ -106,6 +106,7 @@ type ThingCollection interface {
 }
 
 //-------------------------------------------------------------------------------------------------
+
 // ThingSet is a typesafe set of Thing items. Instances are essentially immutable.
 // The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
 // easily.
@@ -115,6 +116,7 @@ type ThingCollection interface {
 type ThingSet map[Thing]struct{}
 
 //-------------------------------------------------------------------------------------------------
+
 // NewThingSet constructs a new set containing the supplied values, if any.
 func NewThingSet(values ...Thing) ThingSet {
 	set := make(map[Thing]struct{})
@@ -705,4 +707,4 @@ func (set ThingSet) MaxByFoo(fn func(Thing) Foo) (result Thing) {
 	return
 }
 
-// Set flags: {Collection:false List:false Option:false Set:true Tag:map[MapTo:true With:true]}
+// Set flags: {Collection:false List:false Option:false Set:true Tag:map[With:true MapTo:true]}
