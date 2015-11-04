@@ -1376,20 +1376,22 @@ func (set FooSet) MkString3(pfx, mid, sfx string) string {
 //-------------------------------------------------------------------------------------------------
 
 // FooGenerator produces a stream of Foo based on a supplied generator function.
-// It is part of the Plumbing function suite for Foo.
 // The function fn is invoked N times with the integers from 0 to N-1. Each result is sent out.
 // Finally, the output channel is closed and the generator terminates.
+//
+// It is part of the Plumbing function suite for Foo.
 func FooGenerator(out chan<- Foo, iterations int, fn func(int) Foo) {
 	FooGenerator3(out, 0, iterations-1, 1, fn)
 }
 
 // FooGenerator produces a stream of Foo based on a supplied generator function.
-// It is part of the Plumbing function suite for Foo.
 // The function fn is invoked *(|to - from|) / |stride|* times with the integers in the range specified by
 // from, to and stride. If stride is negative, from should be greater than to.
 // For each iteration, the computed function result is sent out.
 // If stride is zero, the loop never terminates. Otherwise, after the generator has reached the
 // loop end, the output channel is closed and the generator terminates.
+//
+// It is part of the Plumbing function suite for Foo.
 func FooGenerator3(out chan<- Foo, from, to, stride int, fn func(int) Foo) {
 	if (from > to && stride > 0) || (from < to && stride < 0) {
 		panic("Loop conditions are divergent.")
@@ -1407,8 +1409,9 @@ func FooGenerator3(out chan<- Foo, from, to, stride int, fn func(int) Foo) {
 }
 
 // FooDelta duplicates a stream of Foo to two output channels.
-// It is part of the Plumbing function suite for Foo.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Foo.
 func FooDelta(in <-chan Foo, out1, out2 chan<- Foo) {
 	for v := range in {
 		select {
@@ -1423,10 +1426,11 @@ func FooDelta(in <-chan Foo, out1, out2 chan<- Foo) {
 }
 
 // FooZip2 interleaves two streams of Foo.
-// It is part of the Plumbing function suite for Foo.
 // Each input channel is used in turn, alternating between them.
 // The function terminates when *both* input channels have been closed by their senders.
 // The output channel is then closed also.
+//
+// It is part of the Plumbing function suite for Foo.
 func FooZip2(in1, in2 <-chan Foo, out chan<- Foo) {
 	closed2 := false
 	for v := range in1 {
@@ -1446,28 +1450,34 @@ func FooZip2(in1, in2 <-chan Foo, out chan<- Foo) {
 	close(out)
 }
 
-// FooMux2 multiplexes two streams of Foo.
-// It is part of the Plumbing function suite for Foo.
+// FooMux2 multiplexes two streams of Foo into a single output channel.
 // Each input channel is used as soon as it is ready.
-// The function terminates when *both* input channels have been closed by their senders.
-// The output channel is then closed also.
-//func FooMux2(in1, in2 <-chan Foo, out chan<- Foo) {
-//	open1 := true -- TODO detect closed channels
-//	open2 := true
-//	for open1 || open2 {
-//		select {
-//		case v := <- in1
-//			out <- v
-//		case v := <- in2
-//			out <- v
-//		}
-//	}
-//	close(out)
-//}
+// When a signal is received from the closer channel, the output channel is then closed.
+// Concurrently, both input channels are then passed into blackholes that comsume them until they too are closed,
+// and the function terminates.
+//
+// It is part of the Plumbing function suite for Foo.
+func FooMux2(in1, in2 <-chan Foo, closer <-chan bool, out chan<- Foo) {
+	running := true
+	for running {
+		select {
+		case v := <-in1:
+			out <- v
+		case v := <-in2:
+			out <- v
+		case _ = <-closer:
+			running = false
+		}
+	}
+	go FooBlackHole(in1)
+	go FooBlackHole(in2)
+	close(out)
+}
 
 // FooBlackHole silently consumes a stream of Foo.
-// It is part of the Plumbing function suite for Foo.
 // It terminates when the sender closes the channel.
+//
+// It is part of the Plumbing function suite for Foo.
 func FooBlackHole(in <-chan Foo) {
 	for _ = range in {
 		// om nom nom
@@ -1475,8 +1485,9 @@ func FooBlackHole(in <-chan Foo) {
 }
 
 // FooFilter filters a stream of Foo, silently dropping elements that do not match the predicate p.
-// It is part of the Plumbing function suite for Foo.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Foo.
 func FooFilter(in <-chan Foo, out chan<- Foo, p func(Foo) bool) {
 	for v := range in {
 		if p(v) {
@@ -1486,9 +1497,11 @@ func FooFilter(in <-chan Foo, out chan<- Foo, p func(Foo) bool) {
 	close(out)
 }
 
-// FooPartition filters a stream of Foo into two output streams using a predicate p.
-// It is part of the Plumbing function suite for Foo.
+// FooPartition filters a stream of Foo into two output streams using a predicate p, those that
+// match and all others.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Foo.
 func FooPartition(in <-chan Foo, matching, others chan<- Foo, p func(Foo) bool) {
 	for v := range in {
 		if p(v) {
@@ -1502,8 +1515,9 @@ func FooPartition(in <-chan Foo, matching, others chan<- Foo, p func(Foo) bool) 
 }
 
 // FooMap transforms a stream of Foo by applying a function fn to each item in the stream.
-// It is part of the Plumbing function suite for Foo.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Foo.
 func FooMap(in <-chan Foo, out chan<- Foo, fn func(Foo) Foo) {
 	for v := range in {
 		out <- fn(v)
@@ -1513,8 +1527,9 @@ func FooMap(in <-chan Foo, out chan<- Foo, fn func(Foo) Foo) {
 
 // FooFlatMap transforms a stream of Foo by applying a function fn to each item in the stream that
 // gives zero or more results, all of which are sent out.
-// It is part of the Plumbing function suite for Foo.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Foo.
 func FooFlatMap(in <-chan Foo, out chan<- Foo, fn func(Foo) FooCollection) {
 	for vi := range in {
 		c := fn(vi)

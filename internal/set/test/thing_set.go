@@ -10,6 +10,7 @@ import (
 )
 
 //-------------------------------------------------------------------------------------------------
+
 // ThingCollection is an interface for collections of type Thing, including sets, lists and options (where present).
 type ThingCollection interface {
 	// Size gets the size/length of the collection.
@@ -31,24 +32,21 @@ type ThingCollection interface {
 	// Panics if the collection is empty.
 	Head() Thing
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []Thing
 
 	// ToSet gets all the elements in a Set.
 	ToSet() ThingSet
 
 	// Send sends all elements along a channel of type Thing.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan Thing
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Thing) bool) bool
@@ -59,7 +57,6 @@ type ThingCollection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Thing))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new ThingCollection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -71,7 +68,6 @@ type ThingCollection interface {
 	// original collection.
 	Partition(p func(Thing) bool) (matching ThingCollection, others ThingCollection)
 
-	//-------------------------------------------------------------------------
 	// Equals verifies that another ThingCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Thing is not comparable.
@@ -91,7 +87,6 @@ type ThingCollection interface {
 	// Panics if the collection is empty.
 	Max(less func(Thing, Thing) bool) Thing
 
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string

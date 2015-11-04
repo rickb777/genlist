@@ -10,6 +10,7 @@ import (
 )
 
 //-------------------------------------------------------------------------------------------------
+
 // Num1Collection is an interface for collections of type Num1, including sets, lists and options (where present).
 type Num1Collection interface {
 	// Size gets the size/length of the collection.
@@ -31,12 +32,10 @@ type Num1Collection interface {
 	// Panics if the collection is empty.
 	Head() Num1
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []Num1
 
 	// ToInts gets all the elements in a slice of the underlying type, []int.
@@ -46,12 +45,11 @@ type Num1Collection interface {
 	ToSet() Num1Set
 
 	// Send sends all elements along a channel of type Num1.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan Num1
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Num1) bool) bool
@@ -62,7 +60,6 @@ type Num1Collection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Num1))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new Num1Collection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -74,7 +71,6 @@ type Num1Collection interface {
 	// original collection.
 	Partition(p func(Num1) bool) (matching Num1Collection, others Num1Collection)
 
-	//-------------------------------------------------------------------------
 	// Equals verifies that another Num1Collection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Num1 is not comparable.
@@ -84,7 +80,6 @@ type Num1Collection interface {
 	// Omitted if Num1 is not comparable.
 	Contains(value Num1) bool
 
-	//-------------------------------------------------------------------------
 	// Sum sums Num1 elements.
 	// Omitted if Num1 is not numeric.
 	Sum() Num1
@@ -101,7 +96,6 @@ type Num1Collection interface {
 	// the first such element is returned. Panics if the collection is empty.
 	Max() Num1
 
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string

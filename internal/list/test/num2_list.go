@@ -11,6 +11,7 @@ import (
 )
 
 //-------------------------------------------------------------------------------------------------
+
 // Num2Collection is an interface for collections of type Num2, including sets, lists and options (where present).
 type Num2Collection interface {
 	// Size gets the size/length of the collection.
@@ -32,24 +33,21 @@ type Num2Collection interface {
 	// Panics if the collection is empty.
 	Head() *Num2
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []*Num2
 
 	// ToList gets all the elements in a List.
 	ToList() Num2List
 
 	// Send sends all elements along a channel of type Num2.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan *Num2
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(*Num2) bool) bool
@@ -60,7 +58,6 @@ type Num2Collection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(*Num2))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new Num2Collection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -72,7 +69,6 @@ type Num2Collection interface {
 	// original collection.
 	Partition(p func(*Num2) bool) (matching Num2Collection, others Num2Collection)
 
-	//-------------------------------------------------------------------------
 	// Equals verifies that another Num2Collection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Num2 is not comparable.
@@ -92,7 +88,6 @@ type Num2Collection interface {
 	// Panics if the collection is empty.
 	Max(less func(*Num2, *Num2) bool) *Num2
 
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string
@@ -138,26 +133,28 @@ func BuildNum2ListFromChan(source <-chan *Num2) Num2List {
 
 //-------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// panics if list is empty
+// Panics if list is empty
 func (list Num2List) Head() *Num2 {
 	return list[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// panics if list is empty
+// Panics if list is empty
 func (list Num2List) Last() *Num2 {
 	return list[len(list)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// panics if list is empty
+// Panics if list is empty
 func (list Num2List) Tail() Num2Collection {
 	return Num2List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// panics if list is empty
+// Panics if list is empty
 func (list Num2List) Init() Num2Collection {
 	return Num2List(list[:len(list)-1])
 }
@@ -182,7 +179,11 @@ func (list Num2List) IsSet() bool {
 	return false
 }
 
-// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+//-------------------------------------------------------------------------------------------------
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion and is hardly needed
+// for lists, because the underlying type can be used directly also.
+// It is part of the Num2Collection interface.
 func (list Num2List) ToSlice() []*Num2 {
 	return []*Num2(list)
 }
@@ -191,6 +192,8 @@ func (list Num2List) ToSlice() []*Num2 {
 func (list Num2List) ToList() Num2List {
 	return list
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
 func (list Num2List) Size() int {
@@ -208,6 +211,8 @@ func (list Num2List) Len() int {
 func (list Num2List) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of Num2List return true for the passed func.
 func (list Num2List) Exists(fn func(*Num2) bool) bool {
@@ -270,6 +275,8 @@ func (list Num2List) Shuffle() Num2List {
 	}
 	return result
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Take returns a new Num2List containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
@@ -341,6 +348,8 @@ func (list Num2List) DropWhile(p func(*Num2) bool) (result Num2List) {
 	}
 	return
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Filter returns a new Num2List whose elements return true for func.
 func (list Num2List) Filter(fn func(*Num2) bool) Num2Collection {
@@ -496,7 +505,8 @@ func (list Num2List) Equals(other Num2Collection) bool {
 	return eq
 }
 
-// These methods require *Num2 be comparable.
+//-------------------------------------------------------------------------------------------------
+// These methods are provided because *Num2 is comparable.
 
 // IndexOf finds the index of the first element specified. If none exists, -1 is returned.
 func (list Num2List) IndexOf(value *Num2) int {
@@ -591,17 +601,19 @@ func (list Num2List) Max(less func(*Num2, *Num2) bool) (result *Num2) {
 	return
 }
 
-// String implements the Stringer interface to render the list as a comma-separated array.
+//-------------------------------------------------------------------------------------------------
+
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list Num2List) String() string {
 	return list.MkString3("[", ",", "]")
 }
 
-// MkString concatenates the values as a string.
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list Num2List) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
-// MkString3 concatenates the values as a string.
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list Num2List) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
@@ -618,7 +630,5 @@ func (list Num2List) MkString3(pfx, mid, sfx string) string {
 	b.WriteString(sfx)
 	return b.String()
 }
-
-// optionForList
 
 // List flags: {Collection:false List:true Option:false Set:false Plumbing:false Tag:map[]}

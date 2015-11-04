@@ -85,20 +85,20 @@ func {{.TName}}Zip2(in1, in2 <-chan {{.PName}}, out chan<- {{.PName}}) {
 
 // {{.TName}}Mux2 multiplexes two streams of {{.PName}} into a single output channel.
 // Each input channel is used as soon as it is ready.
-// When a signal is received from the close channel, the output channel is then closed.
+// When a signal is received from the closer channel, the output channel is then closed.
 // Concurrently, both input channels are then passed into blackholes that comsume them until they too are closed,
 // and the function terminates.
 //
 // It is part of the Plumbing function suite for {{.TName}}.
-func {{.TName}}Mux2(in1, in2 <-chan {{.PName}}, close <-chan bool, out chan<- {{.PName}}) {
+func {{.TName}}Mux2(in1, in2 <-chan {{.PName}}, closer <-chan bool, out chan<- {{.PName}}) {
 	running := true
 	for running {
 		select {
-		case v := <- in1
+		case v := <- in1:
 			out <- v
-		case v := <- in2
+		case v := <- in2:
 			out <- v
-		case <- close
+		case _ = <- closer:
 			running = false
 		}
 	}

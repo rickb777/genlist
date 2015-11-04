@@ -1449,20 +1449,22 @@ func (set NumSet) MkString3(pfx, mid, sfx string) string {
 //-------------------------------------------------------------------------------------------------
 
 // NumGenerator produces a stream of Num based on a supplied generator function.
-// It is part of the Plumbing function suite for Num.
 // The function fn is invoked N times with the integers from 0 to N-1. Each result is sent out.
 // Finally, the output channel is closed and the generator terminates.
+//
+// It is part of the Plumbing function suite for Num.
 func NumGenerator(out chan<- Num, iterations int, fn func(int) Num) {
 	NumGenerator3(out, 0, iterations-1, 1, fn)
 }
 
 // NumGenerator produces a stream of Num based on a supplied generator function.
-// It is part of the Plumbing function suite for Num.
 // The function fn is invoked *(|to - from|) / |stride|* times with the integers in the range specified by
 // from, to and stride. If stride is negative, from should be greater than to.
 // For each iteration, the computed function result is sent out.
 // If stride is zero, the loop never terminates. Otherwise, after the generator has reached the
 // loop end, the output channel is closed and the generator terminates.
+//
+// It is part of the Plumbing function suite for Num.
 func NumGenerator3(out chan<- Num, from, to, stride int, fn func(int) Num) {
 	if (from > to && stride > 0) || (from < to && stride < 0) {
 		panic("Loop conditions are divergent.")
@@ -1480,8 +1482,9 @@ func NumGenerator3(out chan<- Num, from, to, stride int, fn func(int) Num) {
 }
 
 // NumDelta duplicates a stream of Num to two output channels.
-// It is part of the Plumbing function suite for Num.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Num.
 func NumDelta(in <-chan Num, out1, out2 chan<- Num) {
 	for v := range in {
 		select {
@@ -1496,10 +1499,11 @@ func NumDelta(in <-chan Num, out1, out2 chan<- Num) {
 }
 
 // NumZip2 interleaves two streams of Num.
-// It is part of the Plumbing function suite for Num.
 // Each input channel is used in turn, alternating between them.
 // The function terminates when *both* input channels have been closed by their senders.
 // The output channel is then closed also.
+//
+// It is part of the Plumbing function suite for Num.
 func NumZip2(in1, in2 <-chan Num, out chan<- Num) {
 	closed2 := false
 	for v := range in1 {
@@ -1519,28 +1523,34 @@ func NumZip2(in1, in2 <-chan Num, out chan<- Num) {
 	close(out)
 }
 
-// NumMux2 multiplexes two streams of Num.
-// It is part of the Plumbing function suite for Num.
+// NumMux2 multiplexes two streams of Num into a single output channel.
 // Each input channel is used as soon as it is ready.
-// The function terminates when *both* input channels have been closed by their senders.
-// The output channel is then closed also.
-//func NumMux2(in1, in2 <-chan Num, out chan<- Num) {
-//	open1 := true -- TODO detect closed channels
-//	open2 := true
-//	for open1 || open2 {
-//		select {
-//		case v := <- in1
-//			out <- v
-//		case v := <- in2
-//			out <- v
-//		}
-//	}
-//	close(out)
-//}
+// When a signal is received from the closer channel, the output channel is then closed.
+// Concurrently, both input channels are then passed into blackholes that comsume them until they too are closed,
+// and the function terminates.
+//
+// It is part of the Plumbing function suite for Num.
+func NumMux2(in1, in2 <-chan Num, closer <-chan bool, out chan<- Num) {
+	running := true
+	for running {
+		select {
+		case v := <-in1:
+			out <- v
+		case v := <-in2:
+			out <- v
+		case _ = <-closer:
+			running = false
+		}
+	}
+	go NumBlackHole(in1)
+	go NumBlackHole(in2)
+	close(out)
+}
 
 // NumBlackHole silently consumes a stream of Num.
-// It is part of the Plumbing function suite for Num.
 // It terminates when the sender closes the channel.
+//
+// It is part of the Plumbing function suite for Num.
 func NumBlackHole(in <-chan Num) {
 	for _ = range in {
 		// om nom nom
@@ -1548,8 +1558,9 @@ func NumBlackHole(in <-chan Num) {
 }
 
 // NumFilter filters a stream of Num, silently dropping elements that do not match the predicate p.
-// It is part of the Plumbing function suite for Num.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Num.
 func NumFilter(in <-chan Num, out chan<- Num, p func(Num) bool) {
 	for v := range in {
 		if p(v) {
@@ -1559,9 +1570,11 @@ func NumFilter(in <-chan Num, out chan<- Num, p func(Num) bool) {
 	close(out)
 }
 
-// NumPartition filters a stream of Num into two output streams using a predicate p.
-// It is part of the Plumbing function suite for Num.
+// NumPartition filters a stream of Num into two output streams using a predicate p, those that
+// match and all others.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Num.
 func NumPartition(in <-chan Num, matching, others chan<- Num, p func(Num) bool) {
 	for v := range in {
 		if p(v) {
@@ -1575,8 +1588,9 @@ func NumPartition(in <-chan Num, matching, others chan<- Num, p func(Num) bool) 
 }
 
 // NumMap transforms a stream of Num by applying a function fn to each item in the stream.
-// It is part of the Plumbing function suite for Num.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Num.
 func NumMap(in <-chan Num, out chan<- Num, fn func(Num) Num) {
 	for v := range in {
 		out <- fn(v)
@@ -1586,8 +1600,9 @@ func NumMap(in <-chan Num, out chan<- Num, fn func(Num) Num) {
 
 // NumFlatMap transforms a stream of Num by applying a function fn to each item in the stream that
 // gives zero or more results, all of which are sent out.
-// It is part of the Plumbing function suite for Num.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Num.
 func NumFlatMap(in <-chan Num, out chan<- Num, fn func(Num) NumCollection) {
 	for vi := range in {
 		c := fn(vi)

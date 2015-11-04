@@ -11,6 +11,7 @@ import (
 )
 
 //-------------------------------------------------------------------------------------------------
+
 // ThingCollection is an interface for collections of type Thing, including sets, lists and options (where present).
 type ThingCollection interface {
 	// Size gets the size/length of the collection.
@@ -32,24 +33,21 @@ type ThingCollection interface {
 	// Panics if the collection is empty.
 	Head() Thing
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []Thing
 
 	// ToList gets all the elements in a List.
 	ToList() ThingList
 
 	// Send sends all elements along a channel of type Thing.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan Thing
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Thing) bool) bool
@@ -60,7 +58,6 @@ type ThingCollection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Thing))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new ThingCollection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -72,7 +69,6 @@ type ThingCollection interface {
 	// original collection.
 	Partition(p func(Thing) bool) (matching ThingCollection, others ThingCollection)
 
-	//-------------------------------------------------------------------------
 	// Equals verifies that another ThingCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Thing is not comparable.
@@ -92,7 +88,6 @@ type ThingCollection interface {
 	// Panics if the collection is empty.
 	Max(less func(Thing, Thing) bool) Thing
 
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string
@@ -138,26 +133,28 @@ func BuildThingListFromChan(source <-chan Thing) ThingList {
 
 //-------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// panics if list is empty
+// Panics if list is empty
 func (list ThingList) Head() Thing {
 	return list[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// panics if list is empty
+// Panics if list is empty
 func (list ThingList) Last() Thing {
 	return list[len(list)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// panics if list is empty
+// Panics if list is empty
 func (list ThingList) Tail() ThingCollection {
 	return ThingList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// panics if list is empty
+// Panics if list is empty
 func (list ThingList) Init() ThingCollection {
 	return ThingList(list[:len(list)-1])
 }
@@ -182,7 +179,11 @@ func (list ThingList) IsSet() bool {
 	return false
 }
 
-// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+//-------------------------------------------------------------------------------------------------
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion and is hardly needed
+// for lists, because the underlying type can be used directly also.
+// It is part of the ThingCollection interface.
 func (list ThingList) ToSlice() []Thing {
 	return []Thing(list)
 }
@@ -191,6 +192,8 @@ func (list ThingList) ToSlice() []Thing {
 func (list ThingList) ToList() ThingList {
 	return list
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
 func (list ThingList) Size() int {
@@ -208,6 +211,8 @@ func (list ThingList) Len() int {
 func (list ThingList) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of ThingList return true for the passed func.
 func (list ThingList) Exists(fn func(Thing) bool) bool {
@@ -270,6 +275,8 @@ func (list ThingList) Shuffle() ThingList {
 	}
 	return result
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Take returns a new ThingList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
@@ -341,6 +348,8 @@ func (list ThingList) DropWhile(p func(Thing) bool) (result ThingList) {
 	}
 	return
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Filter returns a new ThingList whose elements return true for func.
 func (list ThingList) Filter(fn func(Thing) bool) ThingCollection {
@@ -496,7 +505,8 @@ func (list ThingList) Equals(other ThingCollection) bool {
 	return eq
 }
 
-// These methods require Thing be comparable.
+//-------------------------------------------------------------------------------------------------
+// These methods are provided because Thing is comparable.
 
 // IndexOf finds the index of the first element specified. If none exists, -1 is returned.
 func (list ThingList) IndexOf(value Thing) int {
@@ -591,17 +601,19 @@ func (list ThingList) Max(less func(Thing, Thing) bool) (result Thing) {
 	return
 }
 
-// String implements the Stringer interface to render the list as a comma-separated array.
+//-------------------------------------------------------------------------------------------------
+
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list ThingList) String() string {
 	return list.MkString3("[", ",", "]")
 }
 
-// MkString concatenates the values as a string.
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list ThingList) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
-// MkString3 concatenates the values as a string.
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list ThingList) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
@@ -619,8 +631,7 @@ func (list ThingList) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// optionForList
-
+//-------------------------------------------------------------------------------------------------
 // List:MapTo[Num1]
 
 // MapToNum1 transforms ThingList to Num1List.
@@ -646,6 +657,7 @@ func (list ThingList) FlatMapToNum1(fn func(Thing) Num1Collection) Num1Collectio
 	return result
 }
 
+//-------------------------------------------------------------------------------------------------
 // List:MapTo[*Num2]
 
 // MapToNum2 transforms ThingList to Num2List.
@@ -671,6 +683,7 @@ func (list ThingList) FlatMapToNum2(fn func(Thing) Num2Collection) Num2Collectio
 	return result
 }
 
+//-------------------------------------------------------------------------------------------------
 // List:MapTo[string]
 
 // MapToString transforms ThingList to []string.
@@ -696,6 +709,7 @@ func (list ThingList) FlatMapToString(fn func(Thing) []string) []string {
 	return result
 }
 
+//-------------------------------------------------------------------------------------------------
 // List:With[Num1]
 
 // FoldLeftNum1 applies a binary operator to a start value and all elements of this list, going left to right.
@@ -801,6 +815,7 @@ func (list ThingList) MaxByNum1(fn func(Thing) Num1) (result Thing) {
 	return
 }
 
+//-------------------------------------------------------------------------------------------------
 // List:With[Foo]
 
 // FoldLeftFoo applies a binary operator to a start value and all elements of this list, going left to right.
@@ -882,6 +897,7 @@ func (list ThingList) MaxByFoo(fn func(Thing) Foo) (result Thing) {
 	return
 }
 
+//-------------------------------------------------------------------------------------------------
 // List:SortWith
 
 //-----------------------------------------------------------------------------
@@ -1107,4 +1123,4 @@ func quickSortThingList(list ThingList, less func(Thing, Thing) bool, a, b, maxD
 	}
 }
 
-// List flags: {Collection:false List:true Option:false Set:false Plumbing:false Tag:map[SortWith:true MapTo:true With:true]}
+// List flags: {Collection:false List:true Option:false Set:false Plumbing:false Tag:map[MapTo:true With:true SortWith:true]}

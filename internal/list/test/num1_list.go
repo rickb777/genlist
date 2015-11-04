@@ -12,6 +12,7 @@ import (
 )
 
 //-------------------------------------------------------------------------------------------------
+
 // Num1Collection is an interface for collections of type Num1, including sets, lists and options (where present).
 type Num1Collection interface {
 	// Size gets the size/length of the collection.
@@ -33,12 +34,10 @@ type Num1Collection interface {
 	// Panics if the collection is empty.
 	Head() Num1
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []Num1
 
 	// ToInts gets all the elements in a slice of the underlying type, []int.
@@ -48,12 +47,11 @@ type Num1Collection interface {
 	ToList() Num1List
 
 	// Send sends all elements along a channel of type Num1.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan Num1
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Num1) bool) bool
@@ -64,7 +62,6 @@ type Num1Collection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Num1))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new Num1Collection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -76,7 +73,6 @@ type Num1Collection interface {
 	// original collection.
 	Partition(p func(Num1) bool) (matching Num1Collection, others Num1Collection)
 
-	//-------------------------------------------------------------------------
 	// Equals verifies that another Num1Collection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Num1 is not comparable.
@@ -86,7 +82,6 @@ type Num1Collection interface {
 	// Omitted if Num1 is not comparable.
 	Contains(value Num1) bool
 
-	//-------------------------------------------------------------------------
 	// Sum sums Num1 elements.
 	// Omitted if Num1 is not numeric.
 	Sum() Num1
@@ -103,7 +98,6 @@ type Num1Collection interface {
 	// the first such element is returned. Panics if the collection is empty.
 	Max() Num1
 
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string
@@ -158,26 +152,28 @@ func BuildNum1ListFromChan(source <-chan Num1) Num1List {
 
 //-------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// panics if list is empty
+// Panics if list is empty
 func (list Num1List) Head() Num1 {
 	return list[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// panics if list is empty
+// Panics if list is empty
 func (list Num1List) Last() Num1 {
 	return list[len(list)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// panics if list is empty
+// Panics if list is empty
 func (list Num1List) Tail() Num1Collection {
 	return Num1List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// panics if list is empty
+// Panics if list is empty
 func (list Num1List) Init() Num1Collection {
 	return Num1List(list[:len(list)-1])
 }
@@ -202,7 +198,11 @@ func (list Num1List) IsSet() bool {
 	return false
 }
 
-// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+//-------------------------------------------------------------------------------------------------
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion and is hardly needed
+// for lists, because the underlying type can be used directly also.
+// It is part of the Num1Collection interface.
 func (list Num1List) ToSlice() []Num1 {
 	return []Num1(list)
 }
@@ -220,6 +220,8 @@ func (list Num1List) ToInts() []int {
 func (list Num1List) ToList() Num1List {
 	return list
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
 func (list Num1List) Size() int {
@@ -271,6 +273,8 @@ func (list Num1List) SortDesc() Num1List {
 func (list Num1List) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of Num1List return true for the passed func.
 func (list Num1List) Exists(fn func(Num1) bool) bool {
@@ -333,6 +337,8 @@ func (list Num1List) Shuffle() Num1List {
 	}
 	return result
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Take returns a new Num1List containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
@@ -404,6 +410,8 @@ func (list Num1List) DropWhile(p func(Num1) bool) (result Num1List) {
 	}
 	return
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Filter returns a new Num1List whose elements return true for func.
 func (list Num1List) Filter(fn func(Num1) bool) Num1Collection {
@@ -559,7 +567,8 @@ func (list Num1List) Equals(other Num1Collection) bool {
 	return eq
 }
 
-// These methods require Num1 be comparable.
+//-------------------------------------------------------------------------------------------------
+// These methods are provided because Num1 is comparable.
 
 // IndexOf finds the index of the first element specified. If none exists, -1 is returned.
 func (list Num1List) IndexOf(value Num1) int {
@@ -616,7 +625,7 @@ func (list Num1List) Distinct() Num1Collection {
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods require Num1 be numeric.
+// These methods are provided because Num1 is numeric.
 
 // Sum sums all elements in the list.
 func (list Num1List) Sum() (result Num1) {
@@ -638,7 +647,7 @@ func (list Num1List) Mean() float64 {
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods require Num1 be ordered.
+// These methods are provided because Num1 is ordered.
 
 // Min returns the element with the minimum value. In the case of multiple items being equally minimal,
 // the first such element is returned. Panics if the collection is empty.
@@ -670,17 +679,19 @@ func (list Num1List) Max() (result Num1) {
 	return
 }
 
-// String implements the Stringer interface to render the list as a comma-separated array.
+//-------------------------------------------------------------------------------------------------
+
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list Num1List) String() string {
 	return list.MkString3("[", ",", "]")
 }
 
-// MkString concatenates the values as a string.
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list Num1List) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
-// MkString3 concatenates the values as a string.
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list Num1List) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
@@ -698,8 +709,7 @@ func (list Num1List) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// optionForList
-
+//-------------------------------------------------------------------------------------------------
 // List:MapTo[Foo]
 
 // MapToFoo transforms Num1List to FooList.

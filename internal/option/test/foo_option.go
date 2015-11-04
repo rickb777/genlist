@@ -7,6 +7,7 @@ package main
 import "fmt"
 
 //-------------------------------------------------------------------------------------------------
+
 // FooCollection is an interface for collections of type Foo, including sets, lists and options (where present).
 type FooCollection interface {
 	// Size gets the size/length of the collection.
@@ -28,24 +29,21 @@ type FooCollection interface {
 	// Panics if the collection is empty.
 	Head() Foo
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []Foo
 
 	// ToStrings gets all the elements in a slice of the underlying type, []string.
 	ToStrings() []string
 
 	// Send sends all elements along a channel of type Foo.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan Foo
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Foo) bool) bool
@@ -56,7 +54,6 @@ type FooCollection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new FooCollection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -68,7 +65,6 @@ type FooCollection interface {
 	// original collection.
 	Partition(p func(Foo) bool) (matching FooCollection, others FooCollection)
 
-	//-------------------------------------------------------------------------
 	// Equals verifies that another FooCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Foo is not comparable.
@@ -86,7 +82,6 @@ type FooCollection interface {
 	// the first such element is returned. Panics if the collection is empty.
 	Max() Foo
 
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string

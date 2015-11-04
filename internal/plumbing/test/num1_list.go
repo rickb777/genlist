@@ -12,6 +12,7 @@ import (
 )
 
 //-------------------------------------------------------------------------------------------------
+
 // Num1Collection is an interface for collections of type Num1, including sets, lists and options (where present).
 type Num1Collection interface {
 	// Size gets the size/length of the collection.
@@ -33,12 +34,10 @@ type Num1Collection interface {
 	// Panics if the collection is empty.
 	Head() Num1
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []Num1
 
 	// ToInts gets all the elements in a slice of the underlying type, []int.
@@ -51,12 +50,11 @@ type Num1Collection interface {
 	ToSet() Num1Set
 
 	// Send sends all elements along a channel of type Num1.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan Num1
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Num1) bool) bool
@@ -67,7 +65,6 @@ type Num1Collection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Num1))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new Num1Collection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -79,7 +76,6 @@ type Num1Collection interface {
 	// original collection.
 	Partition(p func(Num1) bool) (matching Num1Collection, others Num1Collection)
 
-	//-------------------------------------------------------------------------
 	// Equals verifies that another Num1Collection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Num1 is not comparable.
@@ -89,7 +85,6 @@ type Num1Collection interface {
 	// Omitted if Num1 is not comparable.
 	Contains(value Num1) bool
 
-	//-------------------------------------------------------------------------
 	// Sum sums Num1 elements.
 	// Omitted if Num1 is not numeric.
 	Sum() Num1
@@ -106,7 +101,6 @@ type Num1Collection interface {
 	// the first such element is returned. Panics if the collection is empty.
 	Max() Num1
 
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string
@@ -161,26 +155,28 @@ func BuildNum1ListFromChan(source <-chan Num1) Num1List {
 
 //-------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// panics if list is empty
+// Panics if list is empty
 func (list Num1List) Head() Num1 {
 	return list[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// panics if list is empty
+// Panics if list is empty
 func (list Num1List) Last() Num1 {
 	return list[len(list)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// panics if list is empty
+// Panics if list is empty
 func (list Num1List) Tail() Num1Collection {
 	return Num1List(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// panics if list is empty
+// Panics if list is empty
 func (list Num1List) Init() Num1Collection {
 	return Num1List(list[:len(list)-1])
 }
@@ -205,7 +201,11 @@ func (list Num1List) IsSet() bool {
 	return false
 }
 
-// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+//-------------------------------------------------------------------------------------------------
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion and is hardly needed
+// for lists, because the underlying type can be used directly also.
+// It is part of the Num1Collection interface.
 func (list Num1List) ToSlice() []Num1 {
 	return []Num1(list)
 }
@@ -232,6 +232,8 @@ func (list Num1List) ToSet() Num1Set {
 	}
 	return Num1Set(set)
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
 func (list Num1List) Size() int {
@@ -283,6 +285,8 @@ func (list Num1List) SortDesc() Num1List {
 func (list Num1List) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of Num1List return true for the passed func.
 func (list Num1List) Exists(fn func(Num1) bool) bool {
@@ -345,6 +349,8 @@ func (list Num1List) Shuffle() Num1List {
 	}
 	return result
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Take returns a new Num1List containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
@@ -416,6 +422,8 @@ func (list Num1List) DropWhile(p func(Num1) bool) (result Num1List) {
 	}
 	return
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Filter returns a new Num1List whose elements return true for func.
 func (list Num1List) Filter(fn func(Num1) bool) Num1Collection {
@@ -571,7 +579,8 @@ func (list Num1List) Equals(other Num1Collection) bool {
 	return eq
 }
 
-// These methods require Num1 be comparable.
+//-------------------------------------------------------------------------------------------------
+// These methods are provided because Num1 is comparable.
 
 // IndexOf finds the index of the first element specified. If none exists, -1 is returned.
 func (list Num1List) IndexOf(value Num1) int {
@@ -628,7 +637,7 @@ func (list Num1List) Distinct() Num1Collection {
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods require Num1 be numeric.
+// These methods are provided because Num1 is numeric.
 
 // Sum sums all elements in the list.
 func (list Num1List) Sum() (result Num1) {
@@ -650,7 +659,7 @@ func (list Num1List) Mean() float64 {
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods require Num1 be ordered.
+// These methods are provided because Num1 is ordered.
 
 // Min returns the element with the minimum value. In the case of multiple items being equally minimal,
 // the first such element is returned. Panics if the collection is empty.
@@ -682,17 +691,19 @@ func (list Num1List) Max() (result Num1) {
 	return
 }
 
-// String implements the Stringer interface to render the list as a comma-separated array.
+//-------------------------------------------------------------------------------------------------
+
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list Num1List) String() string {
 	return list.MkString3("[", ",", "]")
 }
 
-// MkString concatenates the values as a string.
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list Num1List) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
-// MkString3 concatenates the values as a string.
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list Num1List) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
@@ -710,7 +721,8 @@ func (list Num1List) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// optionForList
+//-------------------------------------------------------------------------------------------------
+// Methods to interface lists with options.
 
 // First returns the first element that returns true for the passed func. Returns none if no elements return true.
 func (list Num1List) Find(fn func(Num1) bool) OptionalNum1 {
@@ -742,6 +754,7 @@ func (list Num1List) LastOption() OptionalNum1 {
 	}
 }
 
+//-------------------------------------------------------------------------------------------------
 // List:MapTo[Foo]
 
 // MapToFoo transforms Num1List to FooList.
@@ -1462,18 +1475,22 @@ func (set Num1Set) MkString3(pfx, mid, sfx string) string {
 //-------------------------------------------------------------------------------------------------
 
 // Num1Generator produces a stream of Num1 based on a supplied generator function.
-// The function is invoked N times with the integers from 0 to N-1. Each result is sent out.
+// The function fn is invoked N times with the integers from 0 to N-1. Each result is sent out.
 // Finally, the output channel is closed and the generator terminates.
+//
+// It is part of the Plumbing function suite for Num1.
 func Num1Generator(out chan<- Num1, iterations int, fn func(int) Num1) {
 	Num1Generator3(out, 0, iterations-1, 1, fn)
 }
 
 // Num1Generator produces a stream of Num1 based on a supplied generator function.
-// The function is invoked *(|to - from|) / |stride|* times with the integers in the range specified by
-// *from*, *to* and *stride*. If *stride* is negative, *from* should be greater than *to*.
+// The function fn is invoked *(|to - from|) / |stride|* times with the integers in the range specified by
+// from, to and stride. If stride is negative, from should be greater than to.
 // For each iteration, the computed function result is sent out.
-// If *stride* is zero, the loop never terminates. Otherwise, after the generator has reached the
+// If stride is zero, the loop never terminates. Otherwise, after the generator has reached the
 // loop end, the output channel is closed and the generator terminates.
+//
+// It is part of the Plumbing function suite for Num1.
 func Num1Generator3(out chan<- Num1, from, to, stride int, fn func(int) Num1) {
 	if (from > to && stride > 0) || (from < to && stride < 0) {
 		panic("Loop conditions are divergent.")
@@ -1492,6 +1509,8 @@ func Num1Generator3(out chan<- Num1, from, to, stride int, fn func(int) Num1) {
 
 // Num1Delta duplicates a stream of Num1 to two output channels.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Num1.
 func Num1Delta(in <-chan Num1, out1, out2 chan<- Num1) {
 	for v := range in {
 		select {
@@ -1505,9 +1524,12 @@ func Num1Delta(in <-chan Num1, out1, out2 chan<- Num1) {
 	close(out2)
 }
 
-// Num1Zip2 interleaves two streams of Num1. Each input channel is used in turn, alternating between them.
-// The function terminates when *both* input channels have been closed by their senders. The output channel is
-// then closed also.
+// Num1Zip2 interleaves two streams of Num1.
+// Each input channel is used in turn, alternating between them.
+// The function terminates when *both* input channels have been closed by their senders.
+// The output channel is then closed also.
+//
+// It is part of the Plumbing function suite for Num1.
 func Num1Zip2(in1, in2 <-chan Num1, out chan<- Num1) {
 	closed2 := false
 	for v := range in1 {
@@ -1527,24 +1549,34 @@ func Num1Zip2(in1, in2 <-chan Num1, out chan<- Num1) {
 	close(out)
 }
 
-// Num1Mux2 multiplexes two streams of Num1. Each input channel is used as soon as it is ready.
-// The function terminates when *both* input channels have been closed by their senders. The output channel is
-// then closed also.
-//func Num1Mux2(in1, in2 <-chan Num1, out chan<- Num1) {
-//	open1 := true -- TODO detect closed channels
-//	open2 := true
-//	for open1 || open2 {
-//		select {
-//		case v := <- in1
-//			out <- v
-//		case v := <- in2
-//			out <- v
-//		}
-//	}
-//	close(out)
-//}
+// Num1Mux2 multiplexes two streams of Num1 into a single output channel.
+// Each input channel is used as soon as it is ready.
+// When a signal is received from the closer channel, the output channel is then closed.
+// Concurrently, both input channels are then passed into blackholes that comsume them until they too are closed,
+// and the function terminates.
+//
+// It is part of the Plumbing function suite for Num1.
+func Num1Mux2(in1, in2 <-chan Num1, closer <-chan bool, out chan<- Num1) {
+	running := true
+	for running {
+		select {
+		case v := <-in1:
+			out <- v
+		case v := <-in2:
+			out <- v
+		case _ = <-closer:
+			running = false
+		}
+	}
+	go Num1BlackHole(in1)
+	go Num1BlackHole(in2)
+	close(out)
+}
 
-// Num1BlackHole silently consumes a stream of Num1. It terminates when the sender closes the channel.
+// Num1BlackHole silently consumes a stream of Num1.
+// It terminates when the sender closes the channel.
+//
+// It is part of the Plumbing function suite for Num1.
 func Num1BlackHole(in <-chan Num1) {
 	for _ = range in {
 		// om nom nom
@@ -1553,6 +1585,8 @@ func Num1BlackHole(in <-chan Num1) {
 
 // Num1Filter filters a stream of Num1, silently dropping elements that do not match the predicate p.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Num1.
 func Num1Filter(in <-chan Num1, out chan<- Num1, p func(Num1) bool) {
 	for v := range in {
 		if p(v) {
@@ -1562,8 +1596,11 @@ func Num1Filter(in <-chan Num1, out chan<- Num1, p func(Num1) bool) {
 	close(out)
 }
 
-// Num1Partition filters a stream of Num1 into two output streams using a predicate p.
+// Num1Partition filters a stream of Num1 into two output streams using a predicate p, those that
+// match and all others.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Num1.
 func Num1Partition(in <-chan Num1, matching, others chan<- Num1, p func(Num1) bool) {
 	for v := range in {
 		if p(v) {
@@ -1576,8 +1613,10 @@ func Num1Partition(in <-chan Num1, matching, others chan<- Num1, p func(Num1) bo
 	close(others)
 }
 
-// Num1Map transforms a stream of Num1 by applying a function to each item in the stream.
+// Num1Map transforms a stream of Num1 by applying a function fn to each item in the stream.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Num1.
 func Num1Map(in <-chan Num1, out chan<- Num1, fn func(Num1) Num1) {
 	for v := range in {
 		out <- fn(v)
@@ -1585,9 +1624,11 @@ func Num1Map(in <-chan Num1, out chan<- Num1, fn func(Num1) Num1) {
 	close(out)
 }
 
-// Num1FlatMap transforms a stream of Num1 by applying a function to each item in the stream that
+// Num1FlatMap transforms a stream of Num1 by applying a function fn to each item in the stream that
 // gives zero or more results, all of which are sent out.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
+//
+// It is part of the Plumbing function suite for Num1.
 func Num1FlatMap(in <-chan Num1, out chan<- Num1, fn func(Num1) Num1Collection) {
 	for vi := range in {
 		c := fn(vi)

@@ -12,6 +12,7 @@ import (
 )
 
 //-------------------------------------------------------------------------------------------------
+
 // FooCollection is an interface for collections of type Foo, including sets, lists and options (where present).
 type FooCollection interface {
 	// Size gets the size/length of the collection.
@@ -33,12 +34,10 @@ type FooCollection interface {
 	// Panics if the collection is empty.
 	Head() Foo
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []Foo
 
 	// ToStrings gets all the elements in a slice of the underlying type, []string.
@@ -48,12 +47,11 @@ type FooCollection interface {
 	ToList() FooList
 
 	// Send sends all elements along a channel of type Foo.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan Foo
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Foo) bool) bool
@@ -64,7 +62,6 @@ type FooCollection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new FooCollection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -76,7 +73,6 @@ type FooCollection interface {
 	// original collection.
 	Partition(p func(Foo) bool) (matching FooCollection, others FooCollection)
 
-	//-------------------------------------------------------------------------
 	// Equals verifies that another FooCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Foo is not comparable.
@@ -94,7 +90,6 @@ type FooCollection interface {
 	// the first such element is returned. Panics if the collection is empty.
 	Max() Foo
 
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string
@@ -149,26 +144,28 @@ func BuildFooListFromChan(source <-chan Foo) FooList {
 
 //-------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// panics if list is empty
+// Panics if list is empty
 func (list FooList) Head() Foo {
 	return list[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// panics if list is empty
+// Panics if list is empty
 func (list FooList) Last() Foo {
 	return list[len(list)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// panics if list is empty
+// Panics if list is empty
 func (list FooList) Tail() FooCollection {
 	return FooList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// panics if list is empty
+// Panics if list is empty
 func (list FooList) Init() FooCollection {
 	return FooList(list[:len(list)-1])
 }
@@ -193,7 +190,11 @@ func (list FooList) IsSet() bool {
 	return false
 }
 
-// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+//-------------------------------------------------------------------------------------------------
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion and is hardly needed
+// for lists, because the underlying type can be used directly also.
+// It is part of the FooCollection interface.
 func (list FooList) ToSlice() []Foo {
 	return []Foo(list)
 }
@@ -211,6 +212,8 @@ func (list FooList) ToStrings() []string {
 func (list FooList) ToList() FooList {
 	return list
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
 func (list FooList) Size() int {
@@ -262,6 +265,8 @@ func (list FooList) SortDesc() FooList {
 func (list FooList) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of FooList return true for the passed func.
 func (list FooList) Exists(fn func(Foo) bool) bool {
@@ -324,6 +329,8 @@ func (list FooList) Shuffle() FooList {
 	}
 	return result
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Take returns a new FooList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
@@ -395,6 +402,8 @@ func (list FooList) DropWhile(p func(Foo) bool) (result FooList) {
 	}
 	return
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Filter returns a new FooList whose elements return true for func.
 func (list FooList) Filter(fn func(Foo) bool) FooCollection {
@@ -550,7 +559,8 @@ func (list FooList) Equals(other FooCollection) bool {
 	return eq
 }
 
-// These methods require Foo be comparable.
+//-------------------------------------------------------------------------------------------------
+// These methods are provided because Foo is comparable.
 
 // IndexOf finds the index of the first element specified. If none exists, -1 is returned.
 func (list FooList) IndexOf(value Foo) int {
@@ -607,7 +617,7 @@ func (list FooList) Distinct() FooCollection {
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods require Foo be ordered.
+// These methods are provided because Foo is ordered.
 
 // Min returns the element with the minimum value. In the case of multiple items being equally minimal,
 // the first such element is returned. Panics if the collection is empty.
@@ -639,17 +649,19 @@ func (list FooList) Max() (result Foo) {
 	return
 }
 
-// String implements the Stringer interface to render the list as a comma-separated array.
+//-------------------------------------------------------------------------------------------------
+
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list FooList) String() string {
 	return list.MkString3("[", ",", "]")
 }
 
-// MkString concatenates the values as a string.
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list FooList) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
-// MkString3 concatenates the values as a string.
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list FooList) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
@@ -667,8 +679,7 @@ func (list FooList) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// optionForList
-
+//-------------------------------------------------------------------------------------------------
 // List:MapTo[Num1]
 
 // MapToNum1 transforms FooList to Num1List.
