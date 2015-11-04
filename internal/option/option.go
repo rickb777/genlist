@@ -18,10 +18,12 @@ type Optional{{.TName}} struct {
 // shared none value
 var none{{.TName}} = Optional{{.TName}}{ nil }
 
+// No{{.TName}} gets an empty instance.
 func No{{.TName}}() Optional{{.TName}} {
 	return none{{.TName}}
 }
 
+// Some{{.TName}} gets a non-empty instance wrapping some value *x*.
 func Some{{.TName}}(x {{.PName}}) Optional{{.TName}} {
 	{{if .Type.Pointer}}
 	if x == nil {

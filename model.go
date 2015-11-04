@@ -10,6 +10,7 @@ type flags struct {
 	List       bool
 	Option     bool
 	Set        bool
+	Plumbing   bool
 	Tag        map[string]bool
 }
 

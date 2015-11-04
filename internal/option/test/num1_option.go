@@ -124,10 +124,12 @@ type OptionalNum1 struct {
 // shared none value
 var noneNum1 = OptionalNum1{nil}
 
+// NoNum1 gets an empty instance.
 func NoNum1() OptionalNum1 {
 	return noneNum1
 }
 
+// SomeNum1 gets a non-empty instance wrapping some value *x*.
 func SomeNum1(x Num1) OptionalNum1 {
 
 	return OptionalNum1{&x}
@@ -386,4 +388,4 @@ func (o OptionalNum1) FlatMapToFoo(fn func(Num1) FooCollection) (result FooColle
 	return fn(*(o.x))
 }
 
-// Option flags: {Collection:false List:false Option:true Set:false Tag:map[MapTo:true]}
+// Option flags: {Collection:false List:false Option:true Set:false Plumbing:false Tag:map[MapTo:true]}

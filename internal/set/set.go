@@ -5,12 +5,13 @@ import "github.com/rickb777/golist/internal/collection"
 const Set = collection.Collection + `
 //-------------------------------------------------------------------------------------------------
 
-// {{.TName}}Set is a typesafe set of {{.TName}} items. Instances are essentially immutable.
-// The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
-// easily.
-//
-// The implementation is based on Go maps.
-
+// {{.TName}}Set is a typesafe set of {{.TName}} items. {{if .Has.Tag.Mutate}}
+// The implementation is based on an underlying Go map, which can be manipulated directly.
+// Also methods *Add* and *Remove* mutate the current set. {{else}}
+// The implementation is based on an underyling Go map, which can be manipulated directly,
+// but otherwise instances are essentially immutable. {{end}}
+// The set-agebra functions *Union*, *Intersection* and *Difference* allow new variants to be constructed
+// easily; these methods do not modify the input sets.
 type {{.TName}}Set map[{{.TName}}]struct{}
 
 //-------------------------------------------------------------------------------------------------
@@ -35,8 +36,8 @@ func New{{.TName}}SetFrom{{.Type.Underlying.LongName}}s(values []{{.Type.Underly
 }
 
 {{end}}
-// Build{{.TName}}SetFrom constructs a new {{.TName}}Set from a channel that supplies values
-// until it is closed.
+// Build{{.TName}}SetFrom constructs a new {{.TName}}Set from a channel that supplies a stream of values
+// until it is closed. The function returns all these values in a set (i.e. without any duplicates).
 func Build{{.TName}}SetFrom(source <-chan {{.PName}}) {{.TName}}Set {
 	set := make(map[{{.TName}}]struct{})
 	for v := range source {

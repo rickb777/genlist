@@ -1095,4 +1095,4 @@ func quickSortThingList(list ThingList, less func(Thing, Thing) bool, a, b, maxD
 	}
 }
 
-// List flags: {Collection:false List:true Option:false Set:false Tag:map[MapTo:true With:true SortWith:true]}
+// List flags: {Collection:false List:true Option:false Set:false Plumbing:false Tag:map[MapTo:true With:true SortWith:true]}

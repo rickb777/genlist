@@ -115,10 +115,12 @@ type OptionalFoo struct {
 // shared none value
 var noneFoo = OptionalFoo{nil}
 
+// NoFoo gets an empty instance.
 func NoFoo() OptionalFoo {
 	return noneFoo
 }
 
+// SomeFoo gets a non-empty instance wrapping some value *x*.
 func SomeFoo(x Foo) OptionalFoo {
 
 	return OptionalFoo{&x}
@@ -334,4 +336,4 @@ func (o OptionalFoo) MkString3(pfx, mid, sfx string) string {
 	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
 
-// Option flags: {Collection:false List:false Option:true Set:false Tag:map[]}
+// Option flags: {Collection:false List:false Option:true Set:false Plumbing:false Tag:map[]}

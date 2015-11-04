@@ -757,10 +757,12 @@ type OptionalNum struct {
 // shared none value
 var noneNum = OptionalNum{nil}
 
+// NoNum gets an empty instance.
 func NoNum() OptionalNum {
 	return noneNum
 }
 
+// SomeNum gets a non-empty instance wrapping some value *x*.
 func SomeNum(x Num) OptionalNum {
 
 	return OptionalNum{&x}
@@ -1010,12 +1012,11 @@ func (o OptionalNum) MkString3(pfx, mid, sfx string) string {
 
 //-------------------------------------------------------------------------------------------------
 
-// NumSet is a typesafe set of Num items. Instances are essentially immutable.
-// The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
-// easily.
-//
-// The implementation is based on Go maps.
-
+// NumSet is a typesafe set of Num items.
+// The implementation is based on an underyling Go map, which can be manipulated directly,
+// but otherwise instances are essentially immutable.
+// The set-agebra functions *Union*, *Intersection* and *Difference* allow new variants to be constructed
+// easily; these methods do not modify the input sets.
 type NumSet map[Num]struct{}
 
 //-------------------------------------------------------------------------------------------------
@@ -1029,8 +1030,8 @@ func NewNumSet(values ...Num) NumSet {
 	return NumSet(set)
 }
 
-// BuildNumSetFrom constructs a new NumSet from a channel that supplies values
-// until it is closed.
+// BuildNumSetFrom constructs a new NumSet from a channel that supplies a stream of values
+// until it is closed. The function returns all these values in a set (i.e. without any duplicates).
 func BuildNumSetFrom(source <-chan Num) NumSet {
 	set := make(map[Num]struct{})
 	for v := range source {
@@ -1676,4 +1677,4 @@ func (list NumList) MaxByFoo(fn func(Num) Foo) (result Num) {
 	return
 }
 
-// List flags: {Collection:false List:true Option:true Set:true Tag:map[Plumbing:true MapTo:true With:true]}
+// List flags: {Collection:false List:true Option:true Set:true Plumbing:false Tag:map[Plumbing:true MapTo:true With:true]}

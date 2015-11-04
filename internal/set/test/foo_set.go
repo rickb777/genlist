@@ -108,12 +108,11 @@ type FooCollection interface {
 
 //-------------------------------------------------------------------------------------------------
 
-// FooSet is a typesafe set of Foo items. Instances are essentially immutable.
-// The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
-// easily.
-//
-// The implementation is based on Go maps.
-
+// FooSet is a typesafe set of Foo items.
+// The implementation is based on an underyling Go map, which can be manipulated directly,
+// but otherwise instances are essentially immutable.
+// The set-agebra functions *Union*, *Intersection* and *Difference* allow new variants to be constructed
+// easily; these methods do not modify the input sets.
 type FooSet map[Foo]struct{}
 
 //-------------------------------------------------------------------------------------------------
@@ -127,8 +126,8 @@ func NewFooSet(values ...Foo) FooSet {
 	return FooSet(set)
 }
 
-// BuildFooSetFrom constructs a new FooSet from a channel that supplies values
-// until it is closed.
+// BuildFooSetFrom constructs a new FooSet from a channel that supplies a stream of values
+// until it is closed. The function returns all these values in a set (i.e. without any duplicates).
 func BuildFooSetFrom(source <-chan Foo) FooSet {
 	set := make(map[Foo]struct{})
 	for v := range source {
@@ -537,4 +536,4 @@ func (set FooSet) GroupByNum1(fn func(Foo) Num1) map[Num1]FooSet {
 	return result
 }
 
-// Set flags: {Collection:false List:false Option:false Set:true Tag:map[MapTo:true]}
+// Set flags: {Collection:false List:false Option:false Set:true Plumbing:false Tag:map[MapTo:true]}

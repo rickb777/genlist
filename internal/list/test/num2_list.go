@@ -621,4 +621,4 @@ func (list Num2List) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
-// List flags: {Collection:false List:true Option:false Set:false Tag:map[]}
+// List flags: {Collection:false List:true Option:false Set:false Plumbing:false Tag:map[]}

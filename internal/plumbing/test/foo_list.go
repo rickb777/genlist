@@ -749,10 +749,12 @@ type OptionalFoo struct {
 // shared none value
 var noneFoo = OptionalFoo{nil}
 
+// NoFoo gets an empty instance.
 func NoFoo() OptionalFoo {
 	return noneFoo
 }
 
+// SomeFoo gets a non-empty instance wrapping some value *x*.
 func SomeFoo(x Foo) OptionalFoo {
 
 	return OptionalFoo{&x}
@@ -980,12 +982,11 @@ func (o OptionalFoo) MkString3(pfx, mid, sfx string) string {
 
 //-------------------------------------------------------------------------------------------------
 
-// FooSet is a typesafe set of Foo items. Instances are essentially immutable.
-// The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
-// easily.
-//
-// The implementation is based on Go maps.
-
+// FooSet is a typesafe set of Foo items.
+// The implementation is based on an underyling Go map, which can be manipulated directly,
+// but otherwise instances are essentially immutable.
+// The set-agebra functions *Union*, *Intersection* and *Difference* allow new variants to be constructed
+// easily; these methods do not modify the input sets.
 type FooSet map[Foo]struct{}
 
 //-------------------------------------------------------------------------------------------------
@@ -999,8 +1000,8 @@ func NewFooSet(values ...Foo) FooSet {
 	return FooSet(set)
 }
 
-// BuildFooSetFrom constructs a new FooSet from a channel that supplies values
-// until it is closed.
+// BuildFooSetFrom constructs a new FooSet from a channel that supplies a stream of values
+// until it is closed. The function returns all these values in a set (i.e. without any duplicates).
 func BuildFooSetFrom(source <-chan Foo) FooSet {
 	set := make(map[Foo]struct{})
 	for v := range source {
@@ -1375,4 +1376,4 @@ func (set FooSet) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// List flags: {Collection:false List:true Option:true Set:true Tag:map[MapTo:true]}
+// List flags: {Collection:false List:true Option:true Set:true Plumbing:false Tag:map[MapTo:true]}

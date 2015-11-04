@@ -117,12 +117,11 @@ type Num1Collection interface {
 
 //-------------------------------------------------------------------------------------------------
 
-// Num1Set is a typesafe set of Num1 items. Instances are essentially immutable.
-// The set-agebra functions Union, Intersection and Difference allow new variants to be constructed
-// easily.
-//
-// The implementation is based on Go maps.
-
+// Num1Set is a typesafe set of Num1 items.
+// The implementation is based on an underyling Go map, which can be manipulated directly,
+// but otherwise instances are essentially immutable.
+// The set-agebra functions *Union*, *Intersection* and *Difference* allow new variants to be constructed
+// easily; these methods do not modify the input sets.
 type Num1Set map[Num1]struct{}
 
 //-------------------------------------------------------------------------------------------------
@@ -136,8 +135,8 @@ func NewNum1Set(values ...Num1) Num1Set {
 	return Num1Set(set)
 }
 
-// BuildNum1SetFrom constructs a new Num1Set from a channel that supplies values
-// until it is closed.
+// BuildNum1SetFrom constructs a new Num1Set from a channel that supplies a stream of values
+// until it is closed. The function returns all these values in a set (i.e. without any duplicates).
 func BuildNum1SetFrom(source <-chan Num1) Num1Set {
 	set := make(map[Num1]struct{})
 	for v := range source {
@@ -567,4 +566,4 @@ func (set Num1Set) GroupByFoo(fn func(Num1) Foo) map[Foo]Num1Set {
 	return result
 }
 
-// Set flags: {Collection:false List:false Option:false Set:true Tag:map[MapTo:true]}
+// Set flags: {Collection:false List:false Option:false Set:true Plumbing:false Tag:map[MapTo:true]}

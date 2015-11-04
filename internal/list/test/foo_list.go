@@ -692,4 +692,4 @@ func (list FooList) FlatMapToNum1(fn func(Foo) Num1Collection) Num1Collection {
 	return result
 }
 
-// List flags: {Collection:false List:true Option:false Set:false Tag:map[MapTo:true]}
+// List flags: {Collection:false List:true Option:false Set:false Plumbing:false Tag:map[MapTo:true]}
