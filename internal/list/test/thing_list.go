@@ -621,6 +621,8 @@ func (list ThingList) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
+// List:MapTo[Num1]
+
 // MapToNum1 transforms ThingList to Num1List.
 func (list ThingList) MapToNum1(fn func(Thing) Num1) Num1Collection {
 	result := make(Num1List, 0, len(list))
@@ -643,6 +645,8 @@ func (list ThingList) FlatMapToNum1(fn func(Thing) Num1Collection) Num1Collectio
 	}
 	return result
 }
+
+// List:MapTo[*Num2]
 
 // MapToNum2 transforms ThingList to Num2List.
 func (list ThingList) MapToNum2(fn func(Thing) *Num2) Num2Collection {
@@ -667,6 +671,8 @@ func (list ThingList) FlatMapToNum2(fn func(Thing) Num2Collection) Num2Collectio
 	return result
 }
 
+// List:MapTo[string]
+
 // MapToString transforms ThingList to []string.
 func (list ThingList) MapToString(fn func(Thing) string) []string {
 	result := make([]string, 0, len(list))
@@ -689,6 +695,8 @@ func (list ThingList) FlatMapToString(fn func(Thing) []string) []string {
 	}
 	return result
 }
+
+// List:With[Num1]
 
 // FoldLeftNum1 applies a binary operator to a start value and all elements of this list, going left to right.
 func (list ThingList) FoldLeftNum1(zero Num1, fn func(Num1, Thing) Num1) Num1 {
@@ -793,6 +801,8 @@ func (list ThingList) MaxByNum1(fn func(Thing) Num1) (result Thing) {
 	return
 }
 
+// List:With[Foo]
+
 // FoldLeftFoo applies a binary operator to a start value and all elements of this list, going left to right.
 func (list ThingList) FoldLeftFoo(zero Foo, fn func(Foo, Thing) Foo) Foo {
 	sum := zero
@@ -871,6 +881,8 @@ func (list ThingList) MaxByFoo(fn func(Thing) Foo) (result Thing) {
 	}
 	return
 }
+
+// List:SortWith
 
 //-----------------------------------------------------------------------------
 // Sort implementation is a modification of http://golang.org/pkg/sort/#Sort
@@ -1095,4 +1107,4 @@ func quickSortThingList(list ThingList, less func(Thing, Thing) bool, a, b, maxD
 	}
 }
 
-// List flags: {Collection:false List:true Option:false Set:false Plumbing:false Tag:map[MapTo:true With:true SortWith:true]}
+// List flags: {Collection:false List:true Option:false Set:false Plumbing:false Tag:map[SortWith:true MapTo:true With:true]}

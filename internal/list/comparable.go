@@ -2,7 +2,8 @@ package list
 
 const comparableFunctions = `
 {{if .Type.Comparable}}
-// These methods require {{.PName}} be comparable.
+//-------------------------------------------------------------------------------------------------
+// These methods are provided because {{.PName}} is comparable.
 
 // IndexOf finds the index of the first element specified. If none exists, -1 is returned.
 func (list {{.TName}}List) IndexOf(value {{.PName}}) int {

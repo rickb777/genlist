@@ -3,7 +3,7 @@ package list
 const orderedFunctions = `
 {{if .Type.Ordered}}
 //-------------------------------------------------------------------------------------------------
-// These methods require {{.TName}} be ordered.
+// These methods are provided because {{.TName}} is ordered.
 
 // Min returns the element with the minimum value. In the case of multiple items being equally minimal,
 // the first such element is returned. Panics if the collection is empty.

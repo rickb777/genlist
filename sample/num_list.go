@@ -12,6 +12,7 @@ import (
 )
 
 //-------------------------------------------------------------------------------------------------
+
 // NumCollection is an interface for collections of type Num, including sets, lists and options (where present).
 type NumCollection interface {
 	// Size gets the size/length of the collection.
@@ -33,12 +34,10 @@ type NumCollection interface {
 	// Panics if the collection is empty.
 	Head() Num
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []Num
 
 	// ToInts gets all the elements in a slice of the underlying type, []int.
@@ -51,12 +50,11 @@ type NumCollection interface {
 	ToSet() NumSet
 
 	// Send sends all elements along a channel of type Num.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan Num
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Num) bool) bool
@@ -67,7 +65,6 @@ type NumCollection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Num))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new NumCollection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -79,7 +76,6 @@ type NumCollection interface {
 	// original collection.
 	Partition(p func(Num) bool) (matching NumCollection, others NumCollection)
 
-	//-------------------------------------------------------------------------
 	// Equals verifies that another NumCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Num is not comparable.
@@ -89,7 +85,6 @@ type NumCollection interface {
 	// Omitted if Num is not comparable.
 	Contains(value Num) bool
 
-	//-------------------------------------------------------------------------
 	// Sum sums Num elements.
 	// Omitted if Num is not numeric.
 	Sum() Num
@@ -106,7 +101,6 @@ type NumCollection interface {
 	// the first such element is returned. Panics if the collection is empty.
 	Max() Num
 
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string
@@ -161,26 +155,28 @@ func BuildNumListFromChan(source <-chan Num) NumList {
 
 //-------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// panics if list is empty
+// Panics if list is empty
 func (list NumList) Head() Num {
 	return list[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// panics if list is empty
+// Panics if list is empty
 func (list NumList) Last() Num {
 	return list[len(list)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// panics if list is empty
+// Panics if list is empty
 func (list NumList) Tail() NumCollection {
 	return NumList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// panics if list is empty
+// Panics if list is empty
 func (list NumList) Init() NumCollection {
 	return NumList(list[:len(list)-1])
 }
@@ -205,7 +201,11 @@ func (list NumList) IsSet() bool {
 	return false
 }
 
-// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+//-------------------------------------------------------------------------------------------------
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion and is hardly needed
+// for lists, because the underlying type can be used directly also.
+// It is part of the NumCollection interface.
 func (list NumList) ToSlice() []Num {
 	return []Num(list)
 }
@@ -232,6 +232,8 @@ func (list NumList) ToSet() NumSet {
 	}
 	return NumSet(set)
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
 func (list NumList) Size() int {
@@ -283,6 +285,8 @@ func (list NumList) SortDesc() NumList {
 func (list NumList) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of NumList return true for the passed func.
 func (list NumList) Exists(fn func(Num) bool) bool {
@@ -345,6 +349,8 @@ func (list NumList) Shuffle() NumList {
 	}
 	return result
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Take returns a new NumList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
@@ -416,6 +422,8 @@ func (list NumList) DropWhile(p func(Num) bool) (result NumList) {
 	}
 	return
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Filter returns a new NumList whose elements return true for func.
 func (list NumList) Filter(fn func(Num) bool) NumCollection {
@@ -571,7 +579,8 @@ func (list NumList) Equals(other NumCollection) bool {
 	return eq
 }
 
-// These methods require Num be comparable.
+//-------------------------------------------------------------------------------------------------
+// These methods are provided because Num is comparable.
 
 // IndexOf finds the index of the first element specified. If none exists, -1 is returned.
 func (list NumList) IndexOf(value Num) int {
@@ -628,7 +637,7 @@ func (list NumList) Distinct() NumCollection {
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods require Num be numeric.
+// These methods are provided because Num is numeric.
 
 // Sum sums all elements in the list.
 func (list NumList) Sum() (result Num) {
@@ -650,7 +659,7 @@ func (list NumList) Mean() float64 {
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods require Num be ordered.
+// These methods are provided because Num is ordered.
 
 // Min returns the element with the minimum value. In the case of multiple items being equally minimal,
 // the first such element is returned. Panics if the collection is empty.
@@ -682,17 +691,19 @@ func (list NumList) Max() (result Num) {
 	return
 }
 
-// String implements the Stringer interface to render the list as a comma-separated array.
+//-------------------------------------------------------------------------------------------------
+
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list NumList) String() string {
 	return list.MkString3("[", ",", "]")
 }
 
-// MkString concatenates the values as a string.
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list NumList) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
-// MkString3 concatenates the values as a string.
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list NumList) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
@@ -710,7 +721,8 @@ func (list NumList) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// optionForList
+//-------------------------------------------------------------------------------------------------
+// Methods to interface lists with options.
 
 // First returns the first element that returns true for the passed func. Returns none if no elements return true.
 func (list NumList) Find(fn func(Num) bool) OptionalNum {
@@ -1437,17 +1449,19 @@ func (set NumSet) MkString3(pfx, mid, sfx string) string {
 //-------------------------------------------------------------------------------------------------
 
 // NumGenerator produces a stream of Num based on a supplied generator function.
-// The function is invoked N times with the integers from 0 to N-1. Each result is sent out.
+// It is part of the Plumbing function suite for Num.
+// The function fn is invoked N times with the integers from 0 to N-1. Each result is sent out.
 // Finally, the output channel is closed and the generator terminates.
 func NumGenerator(out chan<- Num, iterations int, fn func(int) Num) {
 	NumGenerator3(out, 0, iterations-1, 1, fn)
 }
 
 // NumGenerator produces a stream of Num based on a supplied generator function.
-// The function is invoked *(|to - from|) / |stride|* times with the integers in the range specified by
-// *from*, *to* and *stride*. If *stride* is negative, *from* should be greater than *to*.
+// It is part of the Plumbing function suite for Num.
+// The function fn is invoked *(|to - from|) / |stride|* times with the integers in the range specified by
+// from, to and stride. If stride is negative, from should be greater than to.
 // For each iteration, the computed function result is sent out.
-// If *stride* is zero, the loop never terminates. Otherwise, after the generator has reached the
+// If stride is zero, the loop never terminates. Otherwise, after the generator has reached the
 // loop end, the output channel is closed and the generator terminates.
 func NumGenerator3(out chan<- Num, from, to, stride int, fn func(int) Num) {
 	if (from > to && stride > 0) || (from < to && stride < 0) {
@@ -1466,6 +1480,7 @@ func NumGenerator3(out chan<- Num, from, to, stride int, fn func(int) Num) {
 }
 
 // NumDelta duplicates a stream of Num to two output channels.
+// It is part of the Plumbing function suite for Num.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
 func NumDelta(in <-chan Num, out1, out2 chan<- Num) {
 	for v := range in {
@@ -1480,9 +1495,11 @@ func NumDelta(in <-chan Num, out1, out2 chan<- Num) {
 	close(out2)
 }
 
-// NumZip2 interleaves two streams of Num. Each input channel is used in turn, alternating between them.
-// The function terminates when *both* input channels have been closed by their senders. The output channel is
-// then closed also.
+// NumZip2 interleaves two streams of Num.
+// It is part of the Plumbing function suite for Num.
+// Each input channel is used in turn, alternating between them.
+// The function terminates when *both* input channels have been closed by their senders.
+// The output channel is then closed also.
 func NumZip2(in1, in2 <-chan Num, out chan<- Num) {
 	closed2 := false
 	for v := range in1 {
@@ -1502,9 +1519,11 @@ func NumZip2(in1, in2 <-chan Num, out chan<- Num) {
 	close(out)
 }
 
-// NumMux2 multiplexes two streams of Num. Each input channel is used as soon as it is ready.
-// The function terminates when *both* input channels have been closed by their senders. The output channel is
-// then closed also.
+// NumMux2 multiplexes two streams of Num.
+// It is part of the Plumbing function suite for Num.
+// Each input channel is used as soon as it is ready.
+// The function terminates when *both* input channels have been closed by their senders.
+// The output channel is then closed also.
 //func NumMux2(in1, in2 <-chan Num, out chan<- Num) {
 //	open1 := true -- TODO detect closed channels
 //	open2 := true
@@ -1519,7 +1538,9 @@ func NumZip2(in1, in2 <-chan Num, out chan<- Num) {
 //	close(out)
 //}
 
-// NumBlackHole silently consumes a stream of Num. It terminates when the sender closes the channel.
+// NumBlackHole silently consumes a stream of Num.
+// It is part of the Plumbing function suite for Num.
+// It terminates when the sender closes the channel.
 func NumBlackHole(in <-chan Num) {
 	for _ = range in {
 		// om nom nom
@@ -1527,6 +1548,7 @@ func NumBlackHole(in <-chan Num) {
 }
 
 // NumFilter filters a stream of Num, silently dropping elements that do not match the predicate p.
+// It is part of the Plumbing function suite for Num.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 func NumFilter(in <-chan Num, out chan<- Num, p func(Num) bool) {
 	for v := range in {
@@ -1538,6 +1560,7 @@ func NumFilter(in <-chan Num, out chan<- Num, p func(Num) bool) {
 }
 
 // NumPartition filters a stream of Num into two output streams using a predicate p.
+// It is part of the Plumbing function suite for Num.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
 func NumPartition(in <-chan Num, matching, others chan<- Num, p func(Num) bool) {
 	for v := range in {
@@ -1551,7 +1574,8 @@ func NumPartition(in <-chan Num, matching, others chan<- Num, p func(Num) bool) 
 	close(others)
 }
 
-// NumMap transforms a stream of Num by applying a function to each item in the stream.
+// NumMap transforms a stream of Num by applying a function fn to each item in the stream.
+// It is part of the Plumbing function suite for Num.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 func NumMap(in <-chan Num, out chan<- Num, fn func(Num) Num) {
 	for v := range in {
@@ -1560,8 +1584,9 @@ func NumMap(in <-chan Num, out chan<- Num, fn func(Num) Num) {
 	close(out)
 }
 
-// NumFlatMap transforms a stream of Num by applying a function to each item in the stream that
+// NumFlatMap transforms a stream of Num by applying a function fn to each item in the stream that
 // gives zero or more results, all of which are sent out.
+// It is part of the Plumbing function suite for Num.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 func NumFlatMap(in <-chan Num, out chan<- Num, fn func(Num) NumCollection) {
 	for vi := range in {
@@ -1574,6 +1599,9 @@ func NumFlatMap(in <-chan Num, out chan<- Num, fn func(Num) NumCollection) {
 	}
 	close(out)
 }
+
+//-------------------------------------------------------------------------------------------------
+// List:MapTo[Foo]
 
 // MapToFoo transforms NumList to FooList.
 func (list NumList) MapToFoo(fn func(Num) Foo) FooCollection {
@@ -1597,6 +1625,9 @@ func (list NumList) FlatMapToFoo(fn func(Num) FooCollection) FooCollection {
 	}
 	return result
 }
+
+//-------------------------------------------------------------------------------------------------
+// List:With[Foo]
 
 // FoldLeftFoo applies a binary operator to a start value and all elements of this list, going left to right.
 func (list NumList) FoldLeftFoo(zero Foo, fn func(Foo, Num) Foo) Foo {

@@ -1,8 +1,10 @@
 package list
 
 const optionForList = `
-// optionForList
 {{if .Has.Option}}
+//-------------------------------------------------------------------------------------------------
+// Methods to interface lists with options.
+
 // First returns the first element that returns true for the passed func. Returns none if no elements return true.
 func (list {{.TName}}List) Find(fn func({{.PName}}) bool) Optional{{.TName}} {
 	for _, v := range list {

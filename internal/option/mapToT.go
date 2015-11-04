@@ -1,6 +1,7 @@
 package option
 
 const OptionMapToParamFunctions = `
+// Option:MapTo[{{.TypeParameter}}]
 
 // MapTo{{.TypeParameter.LongName}} transforms Optional{{.TName}} to Optional{{.TypeParameter}}.
 func (o Optional{{.TName}}) MapTo{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) {{.TypeParameter}}Collection {

@@ -367,6 +367,8 @@ func (o OptionalNum1) MkString3(pfx, mid, sfx string) string {
 	return fmt.Sprintf("%s%v%s", pfx, *(o.x), sfx)
 }
 
+// Option:MapTo[Foo]
+
 // MapToFoo transforms OptionalNum1 to OptionalFoo.
 func (o OptionalNum1) MapToFoo(fn func(Num1) Foo) FooCollection {
 	if o.IsEmpty() {

@@ -12,6 +12,7 @@ import (
 )
 
 //-------------------------------------------------------------------------------------------------
+
 // FooCollection is an interface for collections of type Foo, including sets, lists and options (where present).
 type FooCollection interface {
 	// Size gets the size/length of the collection.
@@ -33,12 +34,10 @@ type FooCollection interface {
 	// Panics if the collection is empty.
 	Head() Foo
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []Foo
 
 	// ToStrings gets all the elements in a slice of the underlying type, []string.
@@ -51,12 +50,11 @@ type FooCollection interface {
 	ToSet() FooSet
 
 	// Send sends all elements along a channel of type Foo.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan Foo
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func(Foo) bool) bool
@@ -67,7 +65,6 @@ type FooCollection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func(Foo))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new FooCollection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -79,7 +76,6 @@ type FooCollection interface {
 	// original collection.
 	Partition(p func(Foo) bool) (matching FooCollection, others FooCollection)
 
-	//-------------------------------------------------------------------------
 	// Equals verifies that another FooCollection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if Foo is not comparable.
@@ -97,7 +93,6 @@ type FooCollection interface {
 	// the first such element is returned. Panics if the collection is empty.
 	Max() Foo
 
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string
@@ -152,26 +147,28 @@ func BuildFooListFromChan(source <-chan Foo) FooList {
 
 //-------------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------------
+
 // Head gets the first element in the list. Head plus Tail include the whole list. Head is the opposite of Last.
-// panics if list is empty
+// Panics if list is empty
 func (list FooList) Head() Foo {
 	return list[0]
 }
 
 // Last gets the last element in the list. Init plus Last include the whole list. Last is the opposite of Head.
-// panics if list is empty
+// Panics if list is empty
 func (list FooList) Last() Foo {
 	return list[len(list)-1]
 }
 
 // Tail gets everything except the head. Head plus Tail include the whole list. Tail is the opposite of Init.
-// panics if list is empty
+// Panics if list is empty
 func (list FooList) Tail() FooCollection {
 	return FooList(list[1:])
 }
 
 // Init gets everything except the last. Init plus Last include the whole list. Init is the opposite of Tail.
-// panics if list is empty
+// Panics if list is empty
 func (list FooList) Init() FooCollection {
 	return FooList(list[:len(list)-1])
 }
@@ -196,7 +193,11 @@ func (list FooList) IsSet() bool {
 	return false
 }
 
-// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion.
+//-------------------------------------------------------------------------------------------------
+
+// ToSlice gets all the list's elements in a plain slice. This is simply a type conversion and is hardly needed
+// for lists, because the underlying type can be used directly also.
+// It is part of the FooCollection interface.
 func (list FooList) ToSlice() []Foo {
 	return []Foo(list)
 }
@@ -223,6 +224,8 @@ func (list FooList) ToSet() FooSet {
 	}
 	return FooSet(set)
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
 func (list FooList) Size() int {
@@ -274,6 +277,8 @@ func (list FooList) SortDesc() FooList {
 func (list FooList) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Exists verifies that one or more elements of FooList return true for the passed func.
 func (list FooList) Exists(fn func(Foo) bool) bool {
@@ -336,6 +341,8 @@ func (list FooList) Shuffle() FooList {
 	}
 	return result
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Take returns a new FooList containing the leading n elements of the source list.
 // If n is greater than the size of the list, the whole list is returned.
@@ -407,6 +414,8 @@ func (list FooList) DropWhile(p func(Foo) bool) (result FooList) {
 	}
 	return
 }
+
+//-------------------------------------------------------------------------------------------------
 
 // Filter returns a new FooList whose elements return true for func.
 func (list FooList) Filter(fn func(Foo) bool) FooCollection {
@@ -562,7 +571,8 @@ func (list FooList) Equals(other FooCollection) bool {
 	return eq
 }
 
-// These methods require Foo be comparable.
+//-------------------------------------------------------------------------------------------------
+// These methods are provided because Foo is comparable.
 
 // IndexOf finds the index of the first element specified. If none exists, -1 is returned.
 func (list FooList) IndexOf(value Foo) int {
@@ -619,7 +629,7 @@ func (list FooList) Distinct() FooCollection {
 }
 
 //-------------------------------------------------------------------------------------------------
-// These methods require Foo be ordered.
+// These methods are provided because Foo is ordered.
 
 // Min returns the element with the minimum value. In the case of multiple items being equally minimal,
 // the first such element is returned. Panics if the collection is empty.
@@ -651,17 +661,19 @@ func (list FooList) Max() (result Foo) {
 	return
 }
 
-// String implements the Stringer interface to render the list as a comma-separated array.
+//-------------------------------------------------------------------------------------------------
+
+// String implements the Stringer interface to render the list as a comma-separated string enclosed in square brackets.
 func (list FooList) String() string {
 	return list.MkString3("[", ",", "]")
 }
 
-// MkString concatenates the values as a string.
+// MkString concatenates the values as a string using a supplied separator. No enclosing marks are added.
 func (list FooList) MkString(sep string) string {
 	return list.MkString3("", sep, "")
 }
 
-// MkString3 concatenates the values as a string.
+// MkString3 concatenates the values as a string, using the prefix, separator and suffix supplied.
 func (list FooList) MkString3(pfx, mid, sfx string) string {
 	b := bytes.Buffer{}
 	b.WriteString(pfx)
@@ -679,7 +691,8 @@ func (list FooList) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
-// optionForList
+//-------------------------------------------------------------------------------------------------
+// Methods to interface lists with options.
 
 // First returns the first element that returns true for the passed func. Returns none if no elements return true.
 func (list FooList) Find(fn func(Foo) bool) OptionalFoo {
@@ -1363,17 +1376,19 @@ func (set FooSet) MkString3(pfx, mid, sfx string) string {
 //-------------------------------------------------------------------------------------------------
 
 // FooGenerator produces a stream of Foo based on a supplied generator function.
-// The function is invoked N times with the integers from 0 to N-1. Each result is sent out.
+// It is part of the Plumbing function suite for Foo.
+// The function fn is invoked N times with the integers from 0 to N-1. Each result is sent out.
 // Finally, the output channel is closed and the generator terminates.
 func FooGenerator(out chan<- Foo, iterations int, fn func(int) Foo) {
 	FooGenerator3(out, 0, iterations-1, 1, fn)
 }
 
 // FooGenerator produces a stream of Foo based on a supplied generator function.
-// The function is invoked *(|to - from|) / |stride|* times with the integers in the range specified by
-// *from*, *to* and *stride*. If *stride* is negative, *from* should be greater than *to*.
+// It is part of the Plumbing function suite for Foo.
+// The function fn is invoked *(|to - from|) / |stride|* times with the integers in the range specified by
+// from, to and stride. If stride is negative, from should be greater than to.
 // For each iteration, the computed function result is sent out.
-// If *stride* is zero, the loop never terminates. Otherwise, after the generator has reached the
+// If stride is zero, the loop never terminates. Otherwise, after the generator has reached the
 // loop end, the output channel is closed and the generator terminates.
 func FooGenerator3(out chan<- Foo, from, to, stride int, fn func(int) Foo) {
 	if (from > to && stride > 0) || (from < to && stride < 0) {
@@ -1392,6 +1407,7 @@ func FooGenerator3(out chan<- Foo, from, to, stride int, fn func(int) Foo) {
 }
 
 // FooDelta duplicates a stream of Foo to two output channels.
+// It is part of the Plumbing function suite for Foo.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
 func FooDelta(in <-chan Foo, out1, out2 chan<- Foo) {
 	for v := range in {
@@ -1406,9 +1422,11 @@ func FooDelta(in <-chan Foo, out1, out2 chan<- Foo) {
 	close(out2)
 }
 
-// FooZip2 interleaves two streams of Foo. Each input channel is used in turn, alternating between them.
-// The function terminates when *both* input channels have been closed by their senders. The output channel is
-// then closed also.
+// FooZip2 interleaves two streams of Foo.
+// It is part of the Plumbing function suite for Foo.
+// Each input channel is used in turn, alternating between them.
+// The function terminates when *both* input channels have been closed by their senders.
+// The output channel is then closed also.
 func FooZip2(in1, in2 <-chan Foo, out chan<- Foo) {
 	closed2 := false
 	for v := range in1 {
@@ -1428,9 +1446,11 @@ func FooZip2(in1, in2 <-chan Foo, out chan<- Foo) {
 	close(out)
 }
 
-// FooMux2 multiplexes two streams of Foo. Each input channel is used as soon as it is ready.
-// The function terminates when *both* input channels have been closed by their senders. The output channel is
-// then closed also.
+// FooMux2 multiplexes two streams of Foo.
+// It is part of the Plumbing function suite for Foo.
+// Each input channel is used as soon as it is ready.
+// The function terminates when *both* input channels have been closed by their senders.
+// The output channel is then closed also.
 //func FooMux2(in1, in2 <-chan Foo, out chan<- Foo) {
 //	open1 := true -- TODO detect closed channels
 //	open2 := true
@@ -1445,7 +1465,9 @@ func FooZip2(in1, in2 <-chan Foo, out chan<- Foo) {
 //	close(out)
 //}
 
-// FooBlackHole silently consumes a stream of Foo. It terminates when the sender closes the channel.
+// FooBlackHole silently consumes a stream of Foo.
+// It is part of the Plumbing function suite for Foo.
+// It terminates when the sender closes the channel.
 func FooBlackHole(in <-chan Foo) {
 	for _ = range in {
 		// om nom nom
@@ -1453,6 +1475,7 @@ func FooBlackHole(in <-chan Foo) {
 }
 
 // FooFilter filters a stream of Foo, silently dropping elements that do not match the predicate p.
+// It is part of the Plumbing function suite for Foo.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 func FooFilter(in <-chan Foo, out chan<- Foo, p func(Foo) bool) {
 	for v := range in {
@@ -1464,6 +1487,7 @@ func FooFilter(in <-chan Foo, out chan<- Foo, p func(Foo) bool) {
 }
 
 // FooPartition filters a stream of Foo into two output streams using a predicate p.
+// It is part of the Plumbing function suite for Foo.
 // When the sender closes the input channel, both output channels are closed then the function terminates.
 func FooPartition(in <-chan Foo, matching, others chan<- Foo, p func(Foo) bool) {
 	for v := range in {
@@ -1477,7 +1501,8 @@ func FooPartition(in <-chan Foo, matching, others chan<- Foo, p func(Foo) bool) 
 	close(others)
 }
 
-// FooMap transforms a stream of Foo by applying a function to each item in the stream.
+// FooMap transforms a stream of Foo by applying a function fn to each item in the stream.
+// It is part of the Plumbing function suite for Foo.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 func FooMap(in <-chan Foo, out chan<- Foo, fn func(Foo) Foo) {
 	for v := range in {
@@ -1486,8 +1511,9 @@ func FooMap(in <-chan Foo, out chan<- Foo, fn func(Foo) Foo) {
 	close(out)
 }
 
-// FooFlatMap transforms a stream of Foo by applying a function to each item in the stream that
+// FooFlatMap transforms a stream of Foo by applying a function fn to each item in the stream that
 // gives zero or more results, all of which are sent out.
+// It is part of the Plumbing function suite for Foo.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 func FooFlatMap(in <-chan Foo, out chan<- Foo, fn func(Foo) FooCollection) {
 	for vi := range in {
@@ -1500,6 +1526,9 @@ func FooFlatMap(in <-chan Foo, out chan<- Foo, fn func(Foo) FooCollection) {
 	}
 	close(out)
 }
+
+//-------------------------------------------------------------------------------------------------
+// List:MapTo[Num]
 
 // MapToNum transforms FooList to NumList.
 func (list FooList) MapToNum(fn func(Foo) Num) NumCollection {
@@ -1523,6 +1552,9 @@ func (list FooList) FlatMapToNum(fn func(Foo) NumCollection) NumCollection {
 	}
 	return result
 }
+
+//-------------------------------------------------------------------------------------------------
+// List:With[Num]
 
 // FoldLeftNum applies a binary operator to a start value and all elements of this list, going left to right.
 func (list FooList) FoldLeftNum(zero Num, fn func(Num, Foo) Num) Num {

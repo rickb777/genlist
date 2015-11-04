@@ -669,6 +669,8 @@ func (list FooList) MkString3(pfx, mid, sfx string) string {
 
 // optionForList
 
+// List:MapTo[Num1]
+
 // MapToNum1 transforms FooList to Num1List.
 func (list FooList) MapToNum1(fn func(Foo) Num1) Num1Collection {
 	result := make(Num1List, 0, len(list))

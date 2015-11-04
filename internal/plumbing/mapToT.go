@@ -1,6 +1,8 @@
 package plumbing
 
 const PlumbingMapToParamFunctions = `
+// Plumbing:MapTo[{{.TypeParameter}}]
+
 // {{.TName}}MapTo{{.TypeParameter.Name}} transforms a stream of {{.PName}} to a stream of {{.TypeParameter}}.
 // When the sender closes the input channel, the output channel is closed then the function terminates.
 func {{.TName}}MapTo{{.TypeParameter.Name}}(in <-chan {{.PName}}, out chan<- {{.TypeParameter}},

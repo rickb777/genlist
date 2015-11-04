@@ -1,6 +1,8 @@
 package set
 
 const WithParamFunctions = `
+// Set:With[{{.TypeParameter}}]
+
 // FoldLeft{{.TypeParameter.LongName}} applies a binary operator to a start value and all elements of this set, going left to right.
 // Note: the result is well-defined only if the operator function is associative and commutative.
 func (set {{.TName}}Set) FoldLeft{{.TypeParameter.LongName}}(zero {{.TypeParameter}}, fn func({{.TypeParameter}}, {{.PName}}) {{.TypeParameter}}) {{.TypeParameter}} {

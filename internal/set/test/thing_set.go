@@ -489,6 +489,8 @@ func (set ThingSet) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
+// Set:MapTo[Num1]
+
 // MapToNum1 transforms ThingSet to Num1Set.
 func (set ThingSet) MapToNum1(fn func(Thing) Num1) Num1Collection {
 	result := make(map[Num1]struct{})
@@ -528,6 +530,8 @@ func (set ThingSet) GroupByNum1(fn func(Thing) Num1) map[Num1]ThingSet {
 	return result
 }
 
+// Set:MapTo[string]
+
 // MapToString transforms ThingSet to []string.
 func (set ThingSet) MapToString(fn func(Thing) string) []string {
 	result := make([]string, 0, len(set))
@@ -550,6 +554,8 @@ func (set ThingSet) FlatMapToString(fn func(Thing) []string) []string {
 	}
 	return result
 }
+
+// Set:With[Num1]
 
 // FoldLeftNum1 applies a binary operator to a start value and all elements of this set, going left to right.
 // Note: the result is well-defined only if the operator function is associative and commutative.
@@ -640,6 +646,8 @@ func (set ThingSet) MaxByNum1(fn func(Thing) Num1) (result Thing) {
 	}
 	return
 }
+
+// Set:With[Foo]
 
 // FoldLeftFoo applies a binary operator to a start value and all elements of this set, going left to right.
 // Note: the result is well-defined only if the operator function is associative and commutative.

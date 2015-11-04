@@ -3,7 +3,7 @@ package list
 const numericFunctions = `
 {{if .Type.Numeric}}
 //-------------------------------------------------------------------------------------------------
-// These methods require {{.TName}} be numeric.
+// These methods are provided because {{.TName}} is numeric.
 
 // Sum sums all elements in the list.
 func (list {{.TName}}List) Sum() (result {{.PName}}) {
@@ -23,5 +23,6 @@ func (list {{.TName}}List) Mean() float64 {
 	sum := {{if .Type.Ptr}}*(list.Sum()){{else}}list.Sum(){{end}}
 	return float64(sum) / float64(l)
 }
+
 {{end}}
 `

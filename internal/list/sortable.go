@@ -1,6 +1,7 @@
 package list
 
 const sortable = `
+//-------------------------------------------------------------------------------------------------
 
 // Size returns the number of items in the list - an alias of Len().
 func (list {{.TName}}List) Size() int {

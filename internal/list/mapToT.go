@@ -1,6 +1,9 @@
 package list
 
 const ListMapToParamFunctions = `
+//-------------------------------------------------------------------------------------------------
+// List:MapTo[{{.TypeParameter}}]
+
 {{if .TypeParameter.IsBasic}}
 // MapTo{{.TypeParameter.LongName}} transforms {{.TName}}List to []{{.TypeParameter.Name}}.
 func (list {{.TName}}List) MapTo{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) []{{.TypeParameter}} {

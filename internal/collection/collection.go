@@ -3,6 +3,7 @@ package collection
 const Collection = `
 {{if .Has.Collection}}
 //-------------------------------------------------------------------------------------------------
+
 // {{.TName}}Collection is an interface for collections of type {{.TName}}, including sets, lists and options (where present).
 type {{.TName}}Collection interface {
 	// Size gets the size/length of the collection.
@@ -24,12 +25,10 @@ type {{.TName}}Collection interface {
 	// Panics if the collection is empty.
 	Head() {{.PName}}
 
-	//-------------------------------------------------------------------------
-	// ToSlice returns a plain slice containing all the elements in the collection.
-	// This is useful for bespoke iteration etc.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// ToSlice returns a plain slice containing all the elements in the collection. This is useful for bespoke iteration etc.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	ToSlice() []{{.PName}}
 
 {{if .Type.Underlying.IsBasic}}
@@ -48,12 +47,11 @@ type {{.TName}}Collection interface {
 
 {{end}}
 	// Send sends all elements along a channel of type {{.TName}}.
-	// For sequences, the order is well defined.
-	// For non-sequences (i.e. sets) the first time it is used, order of the elements is not well defined. But
-	// the order is stable, which means it will give the same order each subsequent time it is used.
+	// For sequences, the order of the elements is simple and well defined.
+	// For non-sequences (i.e. sets) the order of the elements is stable but not well defined. This means it will give
+	// the same order each subsequent time it is used as it did the first time.
 	Send() <-chan {{.PName}}
 
-	//-------------------------------------------------------------------------
 	// Exists returns true if there exists at least one element in the collection that matches
 	// the predicate supplied.
 	Exists(predicate func({{.PName}}) bool) bool
@@ -64,7 +62,6 @@ type {{.TName}}Collection interface {
 	// Foreach iterates over every element, executing a supplied function against each.
 	Foreach(fn func({{.PName}}))
 
-	//-------------------------------------------------------------------------
 	// Filter returns a new {{.TName}}Collection whose elements return true for a predicate function.
 	// The relative order of the elements in the result is the same as in the
 	// original collection.
@@ -77,7 +74,6 @@ type {{.TName}}Collection interface {
 	Partition(p func({{.PName}}) bool) (matching {{.TName}}Collection, others {{.TName}}Collection)
 
 {{if .Type.Comparable}}
-	//-------------------------------------------------------------------------
 	// Equals verifies that another {{.TName}}Collection has the same size and elements as this one. Also,
 	// if the collection is a sequence, the order must be the same.
 	// Omitted if {{.TName}} is not comparable.
@@ -89,7 +85,6 @@ type {{.TName}}Collection interface {
 
 {{end}}
 {{if .Type.Numeric}}
-	//-------------------------------------------------------------------------
 	// Sum sums {{.PName}} elements.
 	// Omitted if {{.TName}} is not numeric.
 	Sum() {{.PName}}
@@ -120,7 +115,6 @@ type {{.TName}}Collection interface {
 	Max(less func({{.PName}}, {{.PName}}) bool) {{.PName}}
 
 {{end}}
-	//-------------------------------------------------------------------------
 	// String gets a string representation of the collection. "[" and "]" surround
 	// a comma-separated list of the elements.
 	String() string

@@ -742,6 +742,8 @@ func (list Num1List) LastOption() OptionalNum1 {
 	}
 }
 
+// List:MapTo[Foo]
+
 // MapToFoo transforms Num1List to FooList.
 func (list Num1List) MapToFoo(fn func(Num1) Foo) FooCollection {
 	result := make(FooList, 0, len(list))

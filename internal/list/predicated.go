@@ -1,6 +1,8 @@
 package list
 
 const predicatedFunctions = `
+//-------------------------------------------------------------------------------------------------
+
 // Filter returns a new {{.TName}}List whose elements return true for func.
 func (list {{.TName}}List) Filter(fn func({{.PName}}) bool) {{.TName}}Collection {
 	result := make({{.TName}}List, 0, len(list)/2)

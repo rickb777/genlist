@@ -1,6 +1,9 @@
 package list
 
 const WithParamFunctions = `
+//-------------------------------------------------------------------------------------------------
+// List:With[{{.TypeParameter}}]
+
 // FoldLeft{{.TypeParameter.LongName}} applies a binary operator to a start value and all elements of this list, going left to right.
 func (list {{.TName}}List) FoldLeft{{.TypeParameter.LongName}}(zero {{.TypeParameter}}, fn func({{.TypeParameter}}, {{.PName}}) {{.TypeParameter}}) {{.TypeParameter}} {
 	sum := zero

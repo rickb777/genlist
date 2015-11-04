@@ -1,6 +1,8 @@
 package set
 
 const SetMapToParamFunctions = `
+// Set:MapTo[{{.TypeParameter}}]
+
 {{if .TypeParameter.IsBasic}}
 // MapTo{{.TypeParameter.LongName}} transforms {{.TName}}Set to []{{.TypeParameter.Name}}.
 func (set {{.TName}}Set) MapTo{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) []{{.TypeParameter.Name}} {

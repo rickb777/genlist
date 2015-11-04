@@ -1,6 +1,8 @@
 package list
 
 const iterationFunctions = `
+//-------------------------------------------------------------------------------------------------
+
 // Exists verifies that one or more elements of {{.TName}}List return true for the passed func.
 func (list {{.TName}}List) Exists(fn func({{.PName}}) bool) bool {
 	for _, v := range list {

@@ -45,7 +45,7 @@ func Build{{.TName}}ListFromChan(source <-chan {{.PName}}) {{.TName}}List {
 }
 
 //-------------------------------------------------------------------------------------------------
-` + headTail + sortable +
+` + headTail + conversions + sortable +
 iterationFunctions + takeDropFunctions + predicatedFunctions +
 equalsFunctions + comparableFunctions + numericFunctions + orderedFunctions +
 mkstring + optionForList

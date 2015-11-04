@@ -1,6 +1,8 @@
 package list
 
 var SortWith = `
+//-------------------------------------------------------------------------------------------------
+// List:SortWith
 
 //-----------------------------------------------------------------------------
 // Sort implementation is a modification of http://golang.org/pkg/sort/#Sort

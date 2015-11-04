@@ -497,6 +497,8 @@ func (set FooSet) MkString3(pfx, mid, sfx string) string {
 	return b.String()
 }
 
+// Set:MapTo[Num1]
+
 // MapToNum1 transforms FooSet to Num1Set.
 func (set FooSet) MapToNum1(fn func(Foo) Num1) Num1Collection {
 	result := make(map[Num1]struct{})
