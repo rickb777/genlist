@@ -30,7 +30,7 @@ func (list {{.TName}}List) Foreach(fn func({{.PName}})) {
 	}
 }
 
-// Send gets a channel that will send all the elements in order.
+// Send returns a channel that will send all the elements in order.
 func (list {{.TName}}List) Send() <-chan {{.PName}} {
 	ch := make(chan {{.PName}})
 	go func() {

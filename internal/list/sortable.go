@@ -14,7 +14,7 @@ func (list {{.TName}}List) Len() int {
 	return len(list)
 }
 
-// Swap exchanges two elements, which is neceessary during sorting etc.
+// Swap exchanges two elements, which is necessary during sorting etc.
 // This is one of the three methods in the standard sort.Interface.
 func (list {{.TName}}List) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
@@ -30,6 +30,7 @@ func (list {{.TName}}List) Less(i, j int) bool {
 }
 
 // Sort returns a new ordered {{.TName}}List.
+// The returned list is a copy; the original list is not changed.
 func (list {{.TName}}List) Sort() {{.TName}}List {
 	result := make({{.TName}}List, len(list))
 	copy(result, list)
@@ -43,6 +44,7 @@ func (list {{.TName}}List) IsSorted() bool {
 }
 
 // SortDesc returns a new reverse-ordered {{.TName}}List.
+// The returned list is a copy; the original list is not changed.
 func (list {{.TName}}List) SortDesc() {{.TName}}List {
 	result := make({{.TName}}List, len(list))
 	copy(result, list)
@@ -55,5 +57,7 @@ func (list {{.TName}}List) IsSortedDesc() bool {
 	return sort.IsSorted(sort.Reverse(list))
 }
 
+{{else}}
+// The type {{.TName}} is not ordered so this list is not sortable.
 {{end}}
 `

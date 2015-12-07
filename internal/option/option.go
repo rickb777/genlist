@@ -131,7 +131,7 @@ func (o Optional{{.TName}}) Foreach(fn func({{.PName}})) {
 	}
 }
 
-// Send gets a channel that will send all the elements in order.
+// Send returns a channel that will send all the elements in order.
 func (o Optional{{.TName}}) Send() <-chan {{.PName}} {
 	ch := make(chan {{.PName}})
 	go func() {
