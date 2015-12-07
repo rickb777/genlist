@@ -1662,7 +1662,7 @@ func (list NumList) FoldRightFoo(zero Foo, fn func(Foo, Num) Foo) Foo {
 	return sum
 }
 
-// This methods require Num be comparable.
+// This method requires Foo be comparable.
 
 // GroupByFoo groups elements into a map keyed by Foo.
 func (list NumList) GroupByFoo(fn func(Num) Foo) map[Foo]NumList {

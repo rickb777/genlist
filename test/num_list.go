@@ -482,7 +482,7 @@ func (list NumList) MinBy(less func(Num, Num) bool) (result Num) {
 }
 
 // MaxBy returns an element of NumList containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list NumList) MaxBy(less func(Num, Num) bool) (result Num) {
 	l := len(list)
@@ -491,7 +491,7 @@ func (list NumList) MaxBy(less func(Num, Num) bool) (result Num) {
 	}
 	m := 0
 	for i := 1; i < l; i++ {
-		if list[i] != list[m] && !less(list[i], list[m]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}
@@ -1662,7 +1662,7 @@ func (list NumList) FoldRightFoo(zero Foo, fn func(Foo, Num) Foo) Foo {
 	return sum
 }
 
-// This methods require Num be comparable.
+// This method requires Foo be comparable.
 
 // GroupByFoo groups elements into a map keyed by Foo.
 func (list NumList) GroupByFoo(fn func(Num) Foo) map[Foo]NumList {
