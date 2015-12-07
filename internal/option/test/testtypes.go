@@ -11,3 +11,16 @@ type Foo string
 
 // +test * Option
 type Bar int
+
+// This contains a slice and should not be comparable
+// +test Option
+type WotHasSlice struct {
+	Stuff []int
+}
+
+// This contains a map and should not be comparable
+// +test Option
+type WotHasMap struct {
+	Stuff map[int]int
+}
+

@@ -6,6 +6,18 @@ type Thing struct {
 	Number Num1
 }
 
+// This contains a slice and should not be comparable
+// +test List
+type WotHasSlice struct {
+	Stuff []int
+}
+
+// This contains a map and should not be comparable
+// +test List
+type WotHasMap struct {
+	Stuff map[int]int
+}
+
 // methods where underlying type is ordered or numeric
 // +test List:"MapTo[Foo]"
 type Num1 Underlying

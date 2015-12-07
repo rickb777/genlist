@@ -60,7 +60,7 @@ func (list {{.TName}}List) MinBy(less func({{.PName}}, {{.PName}}) bool) (result
 }
 
 // MaxBy returns an element of {{.TName}}List containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list {{.TName}}List) MaxBy(less func({{.PName}}, {{.PName}}) bool) (result {{.PName}}) {
 	l := len(list)
@@ -69,7 +69,7 @@ func (list {{.TName}}List) MaxBy(less func({{.PName}}, {{.PName}}) bool) (result
 	}
 	m := 0
 	for i := 1; i < l; i++ {
-		if list[i] != list[m] && !less(list[i], list[m]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}

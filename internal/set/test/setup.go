@@ -25,6 +25,7 @@ func main() {
 		return
 	}
 
+	a.DescribeTypes = true
 	if _, err := a.WriteAll(); err != nil {
 		fmt.Println(err)
 		return

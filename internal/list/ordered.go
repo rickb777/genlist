@@ -67,7 +67,7 @@ func (list {{.TName}}List) Max(less func({{.PName}}, {{.PName}}) bool) (result {
 	}
 	m := 0
 	for i := 1; i < l; i++ {
-		if list[i] != list[m] && !less(list[i], list[m]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}
