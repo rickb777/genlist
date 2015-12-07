@@ -23,7 +23,7 @@ func (list {{.TName}}List) FoldRight{{.TypeParameter.LongName}}(zero {{.TypePara
 }
 
 {{if .TypeParameter.Comparable}}
-// This methods require {{.PName}} be comparable.
+// This method requires {{.TypeParameter}} be comparable.
 
 // GroupBy{{.TypeParameter.LongName}} groups elements into a map keyed by {{.TypeParameter}}.
 func (list {{.TName}}List) GroupBy{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) map[{{.TypeParameter}}]{{.TName}}List {
@@ -34,10 +34,10 @@ func (list {{.TName}}List) GroupBy{{.TypeParameter.LongName}}(fn func({{.PName}}
 	}
 	return result
 }
-{{end}}
 
+{{end}}
 {{if .TypeParameter.Numeric}}
-// These methods require {{.PName}} be numeric.
+// These methods require {{.TypeParameter}} be numeric.
 
 // Sum{{.TypeParameter.LongName}} sums {{.PName}} over elements in {{.TName}}List.
 func (list {{.TName}}List) Sum{{.TypeParameter.LongName}}(fn func({{.PName}}) {{.TypeParameter}}) (result {{.TypeParameter}}) {
@@ -60,8 +60,8 @@ func (list {{.TName}}List) Mean{{.TypeParameter.LongName}}(fn func({{.PName}}) {
 	result = result / {{.TypeParameter}}(l)
 	return
 }
-{{end}}
 
+{{end}}
 {{if .TypeParameter.Ordered}}
 // These methods require {{.TypeParameter}} be ordered.
 

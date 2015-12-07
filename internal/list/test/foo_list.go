@@ -462,7 +462,7 @@ func (list FooList) MinBy(less func(Foo, Foo) bool) (result Foo) {
 }
 
 // MaxBy returns an element of FooList containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list FooList) MaxBy(less func(Foo, Foo) bool) (result Foo) {
 	l := len(list)
@@ -471,7 +471,7 @@ func (list FooList) MaxBy(less func(Foo, Foo) bool) (result Foo) {
 	}
 	m := 0
 	for i := 1; i < l; i++ {
-		if list[i] != list[m] && !less(list[i], list[m]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}

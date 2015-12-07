@@ -1,7 +1,7 @@
 package list
 
 const equalsFunctions = `
-{{if .Type.Comparable}}
+{{if .Type.FullyComparable}}
 // Equals verifies that another {{.TName}}Collection has the same size and elements as this one. Also,
 // because this collection is a sequence, the order must be the same.
 // Omitted if {{.TName}} is not comparable.

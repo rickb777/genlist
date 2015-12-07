@@ -408,7 +408,7 @@ func (list ThingList) MinBy(less func(Thing, Thing) bool) (result Thing) {
 }
 
 // MaxBy returns an element of ThingList containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list ThingList) MaxBy(less func(Thing, Thing) bool) (result Thing) {
 	l := len(list)
@@ -417,7 +417,7 @@ func (list ThingList) MaxBy(less func(Thing, Thing) bool) (result Thing) {
 	}
 	m := 0
 	for i := 1; i < l; i++ {
-		if list[i] != list[m] && !less(list[i], list[m]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}
@@ -593,7 +593,7 @@ func (list ThingList) Max(less func(Thing, Thing) bool) (result Thing) {
 	}
 	m := 0
 	for i := 1; i < l; i++ {
-		if list[i] != list[m] && !less(list[i], list[m]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}
@@ -730,7 +730,7 @@ func (list ThingList) FoldRightNum1(zero Num1, fn func(Num1, Thing) Num1) Num1 {
 	return sum
 }
 
-// This methods require Thing be comparable.
+// This method requires Num1 be comparable.
 
 // GroupByNum1 groups elements into a map keyed by Num1.
 func (list ThingList) GroupByNum1(fn func(Thing) Num1) map[Num1]ThingList {
@@ -742,7 +742,7 @@ func (list ThingList) GroupByNum1(fn func(Thing) Num1) map[Num1]ThingList {
 	return result
 }
 
-// These methods require Thing be numeric.
+// These methods require Num1 be numeric.
 
 // SumNum1 sums Thing over elements in ThingList.
 func (list ThingList) SumNum1(fn func(Thing) Num1) (result Num1) {
@@ -836,7 +836,7 @@ func (list ThingList) FoldRightFoo(zero Foo, fn func(Foo, Thing) Foo) Foo {
 	return sum
 }
 
-// This methods require Thing be comparable.
+// This method requires Foo be comparable.
 
 // GroupByFoo groups elements into a map keyed by Foo.
 func (list ThingList) GroupByFoo(fn func(Thing) Foo) map[Foo]ThingList {

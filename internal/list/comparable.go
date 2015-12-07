@@ -1,7 +1,7 @@
 package list
 
 const comparableFunctions = `
-{{if .Type.Comparable}}
+{{if .Type.FullyComparable}}
 //-------------------------------------------------------------------------------------------------
 // These methods are provided because {{.PName}} is comparable.
 

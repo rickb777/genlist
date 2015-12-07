@@ -1,7 +1,7 @@
 package option
 
 const comparable = `
-{{if .Type.Comparable}}
+{{if .Type.FullyComparable}}
 //-------------------------------------------------------------------------------------------------
 // These methods require {{.PName}} be comparable.
 

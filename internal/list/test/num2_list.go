@@ -408,7 +408,7 @@ func (list Num2List) MinBy(less func(*Num2, *Num2) bool) (result *Num2) {
 }
 
 // MaxBy returns an element of Num2List containing the maximum value, when compared to other elements
-// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the last such
+// using a passed func defining ‘less’. In the case of multiple items being equally maximal, the first such
 // element is returned. Panics if there are no elements.
 func (list Num2List) MaxBy(less func(*Num2, *Num2) bool) (result *Num2) {
 	l := len(list)
@@ -417,7 +417,7 @@ func (list Num2List) MaxBy(less func(*Num2, *Num2) bool) (result *Num2) {
 	}
 	m := 0
 	for i := 1; i < l; i++ {
-		if list[i] != list[m] && !less(list[i], list[m]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}
@@ -593,7 +593,7 @@ func (list Num2List) Max(less func(*Num2, *Num2) bool) (result *Num2) {
 	}
 	m := 0
 	for i := 1; i < l; i++ {
-		if list[i] != list[m] && !less(list[i], list[m]) {
+		if less(list[m], list[i]) {
 			m = i
 		}
 	}

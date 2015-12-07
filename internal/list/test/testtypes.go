@@ -8,13 +8,25 @@ type Thing struct {
 
 // This contains a slice and should not be comparable
 // +test List
-type WotHasSlice struct {
+type WotHasSlice1 struct {
+	Stuff []int
+}
+
+// This contains a slice and should not be comparable
+// +test * List
+type WotHasSlice2 struct {
 	Stuff []int
 }
 
 // This contains a map and should not be comparable
 // +test List
-type WotHasMap struct {
+type WotHasMap1 struct {
+	Stuff map[int]int
+}
+
+// This contains a map and should not be comparable
+// +test * List
+type WotHasMap2 struct {
 	Stuff map[int]int
 }
 
