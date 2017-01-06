@@ -1,5 +1,7 @@
 # GoList
 
+**Status: obsolete** - this tool is harder to use than the alternative [**runtemplate**](https://github.com/rickb777/runtemplate), the latter being simpler and less prone to cyclic dependency issues in the build.
+
 This package is a typewriter for use with Mark Sherman's [gen](https://github.com/clipperhouse/gen), an excellent 
 type-driven code generation tool for Go.
 
